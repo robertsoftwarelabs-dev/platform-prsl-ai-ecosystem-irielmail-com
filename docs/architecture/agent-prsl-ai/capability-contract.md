@@ -191,7 +191,8 @@ Permissions are scoped declarations of authority required by an operation. They 
 - Request only the minimum permissions required.
 - Permission grants must be explicit, scoped, revocable, and evaluated at runtime.
 - A capability cannot grant, elevate, or persist its own permissions.
-- Permission to access a resource does not imply permission to retain, transmit, or repurpose its contents.\n- Remote disclosure and non-ephemeral retention require separate permission declarations and policy/consent evaluation. Remote disclosure must bind the exact recipient; retention must bind its storage scope and maximum duration.
+- Permission to access a resource does not imply permission to retain, transmit, or repurpose its contents.
+- Remote disclosure and non-ephemeral retention require separate permission declarations and policy/consent evaluation. Remote disclosure must bind the exact recipient; retention must bind its storage scope and maximum duration.
 - Platform permissions and PRSL-AI authorization are separate checks; both must pass where applicable.
 
 ## 8. Dependencies
