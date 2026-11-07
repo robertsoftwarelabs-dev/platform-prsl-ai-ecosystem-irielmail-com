@@ -195,5 +195,4 @@ describe("validateDecisionBinding", () => {
       reason: "SCOPE_WIDENED",
     });
   });
-
 });
