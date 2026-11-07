@@ -177,7 +177,7 @@ Permissions are scoped declarations of authority required by an operation. They 
 | `files.read` | Read authorized files. |
 | `files.write` | Create or modify authorized files. |
 | `notifications.schedule` | Schedule notifications or reminders. |
-| `network.access` | Access network resources. |
+| `network.access` | Access network resources. |\n| `data.remote_disclose` | Disclose protected data to a remote provider or service for a specific authorized operation. |\n| `data.retain` | Retain data beyond the transient operation under an explicit scope. |
 | `tools.execute` | Execute an approved tool. |
 | `system.invoke` | Invoke an approved operating-system surface. |
 | `accessibility.read` | Read content through authorized accessibility interfaces. |
@@ -189,7 +189,7 @@ Permissions are scoped declarations of authority required by an operation. They 
 - Request only the minimum permissions required.
 - Permission grants must be explicit, scoped, revocable, and evaluated at runtime.
 - A capability cannot grant, elevate, or persist its own permissions.
-- Permission to access a resource does not imply permission to retain, transmit, or repurpose its contents.
+- Permission to access a resource does not imply permission to retain, transmit, or repurpose its contents.\n- Remote disclosure and non-ephemeral retention require separate permission declarations and policy/consent evaluation.
 - Platform permissions and PRSL-AI authorization are separate checks; both must pass where applicable.
 
 ## 8. Dependencies
