@@ -13,15 +13,12 @@
     "type": "object",
     "additionalProperties": false,
     "required": [
-      "source"
+      "source",
+      "requested_precision"
     ],
     "properties": {
       "source": {
-        "enum": [
-          "device_location",
-          "place_reference",
-          "coordinates"
-        ]
+        "const": "device_location"
       },
       "place_reference": {
         "type": "string"
@@ -47,10 +44,7 @@
         }
       },
       "requested_precision": {
-        "enum": [
-          "approximate",
-          "precise"
-        ]
+        "const": "approximate"
       },
       "language": {
         "type": "string"
@@ -87,7 +81,6 @@
       "precision": {
         "enum": [
           "approximate",
-          "precise",
           "unknown"
         ]
       },
@@ -140,7 +133,7 @@
       "dependency_missing",
       "degraded_with_fallback"
     ],
-    "notes": "Availability is evaluated at runtime from authorization, compatible resources, dependency health, and PRSL-AI policy. No runtime availability is asserted by this specification."
+    "notes": "This operation specifically resolves device location. Place-reference and coordinate-only resolution should use separate operations that do not request device-location permission."
   },
   "execution_policy": {
     "execution_modes": [
