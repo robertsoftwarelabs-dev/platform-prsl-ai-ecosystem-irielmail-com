@@ -54,7 +54,9 @@ Initial vocabulary (extensible through reviewed governance):
 | `files.read` | Read files within an authorized scope |
 | `files.write` | Create or modify files within an authorized scope |
 | `notifications.schedule` | Schedule notifications or reminders |
-| `network.access` | Access network resources |\n| `data.remote_disclose` | Disclose authorized data to a remote provider or service for a specifically authorized operation |\n| `data.retain` | Retain data beyond the transient operation under an explicitly approved retention scope |
+| `network.access` | Access network resources |
+| `data.remote_disclose` | Disclose authorized data to a remote provider or service for a specifically authorized operation |
+| `data.retain` | Retain data beyond the transient operation under an explicitly approved retention scope |
 | `tools.execute` | Invoke an approved tool |
 | `system.invoke` | Invoke an approved operating-system surface |
 | `accessibility.read` | Read content through an authorized accessibility interface |
