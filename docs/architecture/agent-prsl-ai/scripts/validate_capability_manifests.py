@@ -7,7 +7,7 @@ import json
 import sys
 from pathlib import Path
 
-from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema import Draft202012Validator, FormatChecker, SchemaError
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_PATH = ROOT / "schemas" / "capability-manifest.schema.json"
@@ -43,16 +43,20 @@ def main() -> int:
         errors = sorted(validator.iter_errors(manifest), key=lambda error: list(error.absolute_path))
         semantic_errors = []
 
+        for schema_field in ("input_schema", "output_schema"):
+            try:
+                Draft202012Validator.check_schema(manifest[schema_field])
+            except (SchemaError, KeyError) as exc:
+                semantic_errors.append(f"{schema_field} is not a valid JSON Schema: {exc}")
+
         capability_id = manifest.get("capability_id", "")
         module_id = manifest.get("module_id", "")
         if capability_id in seen_ids:
             semantic_errors.append(f"duplicate capability_id: {capability_id}")
         seen_ids.add(capability_id)
 
-        if capability_id.startswith("prsl.agent.") and not capability_id.startswith(module_id + "."):
-            semantic_errors.append("agent capability_id must begin with its module_id plus an operation suffix")
-        if capability_id.startswith("prsl.integration.") and not capability_id.startswith(module_id + "."):
-            semantic_errors.append("integration capability_id must begin with its module_id plus an operation suffix")
+        if capability_id.startswith(("prsl.agent.", "prsl.integration.")) and not capability_id.startswith(module_id + "."):
+            semantic_errors.append("capability_id must begin with its module_id plus an operation suffix")
 
         declared_permissions = set(manifest.get("permissions", []))
         dependency_permissions = {
@@ -80,7 +84,7 @@ def main() -> int:
         print(f"\n{failures} manifest(s) failed validation.")
         return 1
 
-    print(f"\nPASS: {len(files)} manifest(s); schema and semantic checks succeeded.")
+    print(f"\nPASS: {len(files)} manifest(s); manifest, nested schemas, and semantic checks succeeded.")
     return 0
 
 
