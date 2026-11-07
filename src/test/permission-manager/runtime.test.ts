@@ -133,7 +133,9 @@ describe("PermissionManagerRuntime.evaluate", () => {
     );
     expect(p.decisionAuthority.issue).toHaveBeenCalledOnce();
     expect(p.audit.record).toHaveBeenCalledOnce();
-    expect(p.audit.record).toHaveBeenCalledWith(expect.objectContaining({ subject_ref: "subject-hash:test-user-01" }));
+    expect(p.audit.record).toHaveBeenCalledWith(
+      expect.objectContaining({ subject_ref: "subject-hash:test-user-01" }),
+    );
   });
   it("rejects malformed requests and unknown fields before authentication", async () => {
     const p = ports();
@@ -189,7 +191,10 @@ describe("PermissionManagerRuntime.evaluate", () => {
           ...capability,
           manifest: {
             ...capability.manifest,
-            execution_policy: { ...capability.manifest.execution_policy, confirmation_required: true },
+            execution_policy: {
+              ...capability.manifest.execution_policy,
+              confirmation_required: true,
+            },
           },
         })),
       },
@@ -207,7 +212,11 @@ describe("PermissionManagerRuntime.evaluate", () => {
     const locationRequest = {
       ...request,
       permission_id: "location.coarse",
-      resource_scope: { resource_type: "location", scope_mode: "bounded", boundary: "current area" },
+      resource_scope: {
+        resource_type: "location",
+        scope_mode: "bounded",
+        boundary: "current area",
+      },
     };
     const p = ports();
     expect(await runtime(p).evaluate(locationRequest, {})).toEqual({
@@ -307,7 +316,9 @@ describe("PermissionManagerRuntime.evaluate", () => {
     };
     const p = ports({
       registry: { resolve: vi.fn(async () => remoteCapability) },
-      policy: { evaluate: vi.fn(async () => ({ ...policy, approved_scope: remote.resource_scope })) },
+      policy: {
+        evaluate: vi.fn(async () => ({ ...policy, approved_scope: remote.resource_scope })),
+      },
       remoteDisclosure: { verify: vi.fn(async () => ({ status: "required" as const })) },
     });
     const result = await runtime(p).evaluate(remote, {});

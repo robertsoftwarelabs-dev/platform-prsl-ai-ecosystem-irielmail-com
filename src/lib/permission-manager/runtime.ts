@@ -299,7 +299,10 @@ export interface PermissionManagerPorts {
     ): Promise<PolicyEvaluation>;
   };
   confirmation: {
-    verify(request: PermissionRequest, principal: AuthenticatedPrincipal): Promise<ConfirmationVerification>;
+    verify(
+      request: PermissionRequest,
+      principal: AuthenticatedPrincipal,
+    ): Promise<ConfirmationVerification>;
   };
   consent: {
     verify(
@@ -368,7 +371,13 @@ export class PermissionManagerRuntime {
       const capability = await this.ports.registry.resolve(request.capability_id);
       const registryFailure = validateRegistryCapability(capability, request);
       if (registryFailure)
-        return this.issueNonGrant(request, principal, "policy_blocked", registryFailure, "registry-gate/1.0");
+        return this.issueNonGrant(
+          request,
+          principal,
+          "policy_blocked",
+          registryFailure,
+          "registry-gate/1.0",
+        );
 
       const policy = await this.ports.policy.evaluate(request, capability!);
       if (!policy.allowed)
@@ -381,7 +390,13 @@ export class PermissionManagerRuntime {
         );
 
       if (!scopeIsNoBroaderThan(policy.approved_scope, request.resource_scope))
-        return this.issueNonGrant(request, principal, "policy_blocked", "POLICY_SCOPE_MISSING_OR_WIDENED", policy.policy_version);
+        return this.issueNonGrant(
+          request,
+          principal,
+          "policy_blocked",
+          "POLICY_SCOPE_MISSING_OR_WIDENED",
+          policy.policy_version,
+        );
 
       const evidenceRefs: string[] = [
         "registry:" + capability!.registry_id + ":" + capability!.manifest_digest,
@@ -389,8 +404,18 @@ export class PermissionManagerRuntime {
       if (capability!.manifest.execution_policy.confirmation_required) {
         const confirmation = await this.ports.confirmation.verify(request, principal);
         if (confirmation.status !== "valid") {
-          const status = confirmation.status === "required" ? "consent_required" : confirmation.status === "unavailable" ? "indeterminate" : "policy_blocked";
-          const reason = confirmation.status === "required" ? "USER_CONFIRMATION_REQUIRED" : confirmation.status === "unavailable" ? "USER_CONFIRMATION_UNAVAILABLE" : "USER_CONFIRMATION_NOT_VALID";
+          const status =
+            confirmation.status === "required"
+              ? "consent_required"
+              : confirmation.status === "unavailable"
+                ? "indeterminate"
+                : "policy_blocked";
+          const reason =
+            confirmation.status === "required"
+              ? "USER_CONFIRMATION_REQUIRED"
+              : confirmation.status === "unavailable"
+                ? "USER_CONFIRMATION_UNAVAILABLE"
+                : "USER_CONFIRMATION_NOT_VALID";
           return this.issueNonGrant(request, principal, status, reason, policy.policy_version);
         }
         evidenceRefs.push(confirmation.evidence_ref);
@@ -415,7 +440,10 @@ export class PermissionManagerRuntime {
         evidenceRefs.push(consent.evidence_ref);
       }
 
-      if (requiresRemoteDisclosure(request, policy) && request.permission_id !== "data.remote_disclose") {
+      if (
+        requiresRemoteDisclosure(request, policy) &&
+        request.permission_id !== "data.remote_disclose"
+      ) {
         const disclosure = await this.ports.remoteDisclosure.verify(request, principal);
         if (disclosure.status !== "valid") {
           const status = disclosure.status === "unavailable" ? "indeterminate" : "policy_blocked";
@@ -522,7 +550,10 @@ export class PermissionManagerRuntime {
         if (consent.status !== "valid")
           return { eligible: false, reason_code: "CONSENT_NOT_VALID" };
       }
-      if (requiresRemoteDisclosure(request, policy) && request.permission_id !== "data.remote_disclose") {
+      if (
+        requiresRemoteDisclosure(request, policy) &&
+        request.permission_id !== "data.remote_disclose"
+      ) {
         const disclosure = await this.ports.remoteDisclosure.verify(request, principal);
         if (disclosure.status !== "valid")
           return { eligible: false, reason_code: "REMOTE_DISCLOSURE_NOT_AUTHORIZED" };
@@ -623,31 +654,55 @@ export class PermissionManagerRuntime {
 }
 
 function requiresRemoteDisclosure(request: PermissionRequest, policy: PolicyEvaluation): boolean {
-  const protectedData = ["personal", "sensitive", "restricted"].includes(request.data_classification);
-  return policy.remote_disclosure_required || (request.execution_mode !== "on_device" && protectedData);
+  const protectedData = ["personal", "sensitive", "restricted"].includes(
+    request.data_classification,
+  );
+  return (
+    policy.remote_disclosure_required || (request.execution_mode !== "on_device" && protectedData)
+  );
 }
 
-function scopeIsNoBroaderThan(approved: ResourceScope | undefined, requested: ResourceScope): boolean {
+function scopeIsNoBroaderThan(
+  approved: ResourceScope | undefined,
+  requested: ResourceScope,
+): boolean {
   if (!approved) return false;
-  if (approved.resource_type !== requested.resource_type || approved.scope_mode !== requested.scope_mode) return false;
+  if (
+    approved.resource_type !== requested.resource_type ||
+    approved.scope_mode !== requested.scope_mode
+  )
+    return false;
   if (requested.scope_mode === "exact") {
     const requestedIds = requested.resource_ids ?? [];
     const approvedIds = approved.resource_ids ?? [];
     if (!requestedIds.length || !approvedIds.length) return false;
-    if (new Set(requestedIds).size !== requestedIds.length || new Set(approvedIds).size !== approvedIds.length) return false;
+    if (
+      new Set(requestedIds).size !== requestedIds.length ||
+      new Set(approvedIds).size !== approvedIds.length
+    )
+      return false;
     if (!approvedIds.every((id) => requestedIds.includes(id))) return false;
   } else if (!requested.boundary || approved.boundary !== requested.boundary) {
     return false;
   }
   if (approved.precision !== requested.precision) {
-    if (approved.precision === "not_applicable" || requested.precision === "not_applicable") return false;
+    if (approved.precision === "not_applicable" || requested.precision === "not_applicable")
+      return false;
     if (!(approved.precision === "coarse" && requested.precision === "precise")) return false;
   }
   if (approved.recipient !== requested.recipient) return false;
   if (requested.retention) {
-    if (!approved.retention || approved.retention.storage_scope !== requested.retention.storage_scope) return false;
+    if (
+      !approved.retention ||
+      approved.retention.storage_scope !== requested.retention.storage_scope
+    )
+      return false;
     if (approved.retention.duration_seconds > requested.retention.duration_seconds) return false;
-    if (requested.retention.deletion_trigger && approved.retention.deletion_trigger !== requested.retention.deletion_trigger) return false;
+    if (
+      requested.retention.deletion_trigger &&
+      approved.retention.deletion_trigger !== requested.retention.deletion_trigger
+    )
+      return false;
   } else if (approved.retention) {
     return false;
   }
