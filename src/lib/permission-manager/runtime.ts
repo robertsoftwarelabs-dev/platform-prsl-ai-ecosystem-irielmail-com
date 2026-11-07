@@ -108,11 +108,47 @@ export const permissionRequestSchema = z
           path: ["execution_mode"],
         });
     }
-    if (request.permission_id === "location.coarse" && request.resource_scope.precision !== "coarse")
-    ctx.addIssue({ code: "custom", message: "Coarse location permission requires coarse precision.", path: ["resource_scope", "precision"] });
-  if (request.permission_id === "location.precise" && request.resource_scope.precision !== "precise")
-    ctx.addIssue({ code: "custom", message: "Precise location permission requires precise precision.", path: ["resource_scope", "precision"] });
-  if (request.permission_id === "data.retain" && !request.resource_scope.retention)
+    if (
+      request.permission_id === "location.coarse" &&
+      request.resource_scope.precision !== "coarse"
+    )
+      ctx.addIssue({
+        code: "custom",
+        message: "Coarse location permission requires coarse precision.",
+        path: ["resource_scope", "precision"],
+      });
+    if (
+      request.permission_id === "location.precise" &&
+      request.resource_scope.precision !== "precise"
+    )
+      ctx.addIssue({
+        code: "custom",
+        message: "Precise location permission requires precise precision.",
+        path: ["resource_scope", "precision"],
+      });
+    if (request.resource_scope.retention && request.permission_id !== "data.retain")
+      ctx.addIssue({
+        code: "custom",
+        message: "Retention scope requires data.retain permission.",
+        path: ["resource_scope", "retention"],
+      });
+    if (request.resource_scope.recipient && request.execution_mode === "on_device")
+      ctx.addIssue({
+        code: "custom",
+        message: "A remote recipient cannot be bound to on-device execution.",
+        path: ["resource_scope", "recipient"],
+      });
+    if (
+      request.execution_mode !== "on_device" &&
+      ["personal", "sensitive", "restricted"].includes(request.data_classification) &&
+      !request.resource_scope.recipient
+    )
+      ctx.addIssue({
+        code: "custom",
+        message: "Protected remote processing requires an exact recipient.",
+        path: ["resource_scope", "recipient"],
+      });
+    if (request.permission_id === "data.retain" && !request.resource_scope.retention)
       ctx.addIssue({
         code: "custom",
         message: "Retention requires an explicit retention scope.",
@@ -192,6 +228,7 @@ export type PermissionDecision = z.infer<typeof permissionDecisionSchema>;
 export type PermissionId = (typeof permissionIds)[number];
 export type DecisionStatus = z.infer<typeof decisionStatus>;
 export type Principal = z.infer<typeof principalSchema>;
+export type ResourceScope = z.infer<typeof resourceScopeSchema>;
 
 export interface AuthenticatedPrincipal extends Principal {
   authentication_method: string;
@@ -221,6 +258,7 @@ export interface PolicyEvaluation {
   allowed: boolean;
   policy_version: string;
   reason_code: string;
+  approved_scope: ResourceScope;
   consent_required: boolean;
   native_permission_required: boolean;
   remote_disclosure_required: boolean;
@@ -287,6 +325,7 @@ export interface PermissionManagerPorts {
       decisionId: string;
       request: PermissionRequest;
       principal: AuthenticatedPrincipal;
+      currentApprovedScope: ResourceScope;
     }): Promise<DecisionVerification>;
   };
   audit: { record(event: PermissionAuditEvent): Promise<void> };
@@ -338,6 +377,9 @@ export class PermissionManagerRuntime {
           policy.policy_version,
         );
 
+      if (!scopeIsNoBroaderThan(policy.approved_scope, request.resource_scope))
+        return this.issueNonGrant(request, principal, "policy_blocked", "POLICY_SCOPE_MISSING_OR_WIDENED", policy.policy_version);
+
       const evidenceRefs: string[] = [];
       if (capability!.manifest.execution_policy.confirmation_required) {
         const confirmation = await this.ports.confirmation.verify(request, principal);
@@ -372,7 +414,7 @@ export class PermissionManagerRuntime {
         evidenceRefs.push(consent.evidence_ref);
       }
 
-      if (policy.remote_disclosure_required && request.permission_id !== "data.remote_disclose") {
+      if (requiresRemoteDisclosure(request, policy) && request.permission_id !== "data.remote_disclose") {
         const disclosure = await this.ports.remoteDisclosure.verify(request, principal);
         if (disclosure.status !== "valid") {
           const status = disclosure.status === "unavailable" ? "indeterminate" : "policy_blocked";
@@ -429,7 +471,7 @@ export class PermissionManagerRuntime {
         subject: request.subject,
         capability_id: request.capability_id,
         permission_id: request.permission_id,
-        approved_scope: request.resource_scope,
+        approved_scope: policy.approved_scope,
         purpose: request.purpose,
         execution_mode: request.execution_mode,
         issued_at: issuedAt.toISOString(),
@@ -466,6 +508,8 @@ export class PermissionManagerRuntime {
       const policy = await this.ports.policy.evaluate(request, capability!);
       if (!policy.allowed)
         return { eligible: false, reason_code: safeReason(policy.reason_code, "POLICY_BLOCKED") };
+      if (!scopeIsNoBroaderThan(policy.approved_scope, request.resource_scope))
+        return { eligible: false, reason_code: "POLICY_SCOPE_MISSING_OR_WIDENED" };
 
       if (policy.consent_required) {
         const consent = await this.ports.consent.verify(request, principal);
@@ -489,6 +533,7 @@ export class PermissionManagerRuntime {
         decisionId,
         request,
         principal,
+        currentApprovedScope: policy.approved_scope,
       });
       if (verification !== "valid")
         return { eligible: false, reason_code: "DECISION_" + verification.toUpperCase() };
@@ -566,6 +611,37 @@ export class PermissionManagerRuntime {
       return { status: "rejected", reason_code: "RUNTIME_DEPENDENCY_UNAVAILABLE" };
     }
   }
+}
+
+function requiresRemoteDisclosure(request: PermissionRequest, policy: PolicyEvaluation): boolean {
+  const protectedData = ["personal", "sensitive", "restricted"].includes(request.data_classification);
+  return policy.remote_disclosure_required || (request.execution_mode !== "on_device" && protectedData);
+}
+
+function scopeIsNoBroaderThan(approved: ResourceScope, requested: ResourceScope): boolean {
+  if (approved.resource_type !== requested.resource_type || approved.scope_mode !== requested.scope_mode) return false;
+  if (requested.scope_mode === "exact") {
+    const requestedIds = requested.resource_ids ?? [];
+    const approvedIds = approved.resource_ids ?? [];
+    if (!requestedIds.length || !approvedIds.length) return false;
+    if (new Set(requestedIds).size !== requestedIds.length || new Set(approvedIds).size !== approvedIds.length) return false;
+    if (!approvedIds.every((id) => requestedIds.includes(id))) return false;
+  } else if (!requested.boundary || approved.boundary !== requested.boundary) {
+    return false;
+  }
+  if (approved.precision !== requested.precision) {
+    if (approved.precision === "not_applicable" || requested.precision === "not_applicable") return false;
+    if (!(approved.precision === "coarse" && requested.precision === "precise")) return false;
+  }
+  if (approved.recipient !== requested.recipient) return false;
+  if (requested.retention) {
+    if (!approved.retention || approved.retention.storage_scope !== requested.retention.storage_scope) return false;
+    if (approved.retention.duration_seconds > requested.retention.duration_seconds) return false;
+    if (requested.retention.deletion_trigger && approved.retention.deletion_trigger !== requested.retention.deletion_trigger) return false;
+  } else if (approved.retention) {
+    return false;
+  }
+  return true;
 }
 
 function samePrincipal(principal: Principal, requested: Principal): boolean {
