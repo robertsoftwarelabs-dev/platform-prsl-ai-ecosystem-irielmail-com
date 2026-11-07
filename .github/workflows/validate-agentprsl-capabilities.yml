@@ -55,14 +55,5 @@ jobs:
         run: bun run test
       - name: Type-check the application
         run: bunx tsc --noEmit
-      - name: Format Permission Manager runtime files
-        run: bunx prettier --write src/lib/permission-manager/runtime.ts src/test/permission-manager/runtime.test.ts
-      - name: Export formatted runtime files
-        run: |
-          for file in src/lib/permission-manager/runtime.ts src/test/permission-manager/runtime.test.ts; do
-            echo "FORMATTED_FILE:$file"
-            base64 -w0 "$file"
-            echo
-          done
       - name: Lint the Permission Manager implementation
         run: bunx eslint src/lib/permission-manager/*.ts src/test/permission-manager/*.test.ts
