@@ -181,4 +181,19 @@ describe("validateDecisionBinding", () => {
       reason: "SCOPE_WIDENED",
     });
   });
+  it("rejects an inapplicable precision label for a coarse request", () => {
+    const candidate = {
+      ...decision,
+      approved_scope: { ...decision.approved_scope!, precision: "not_applicable" as const },
+    };
+    const coarseRequest = {
+      ...request,
+      resource_scope: { ...request.resource_scope, precision: "coarse" as const },
+    };
+    expect(validateDecisionBinding(coarseRequest, candidate, now)).toEqual({
+      eligible: false,
+      reason: "SCOPE_WIDENED",
+    });
+  });
+
 });
