@@ -29,7 +29,7 @@ The branded wording **“Powerfully Intelligence Environment”** is intentional
 
 | Classification | Definition |
 |---|---|
-| Primary type | Personal intelligence environment |
+| Primary type | Personal intelligence orchestration environment |
 | Architectural role | User-facing intelligence coordination and orchestration environment |
 | Core responsibility | Translate human intent into authorized, contextualized intelligence workflows and present coherent outcomes |
 | Control responsibility | Coordinate identity, context, consent experience, routing requests, capabilities, providers, and continuity |
