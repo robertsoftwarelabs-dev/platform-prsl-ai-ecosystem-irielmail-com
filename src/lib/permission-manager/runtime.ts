@@ -258,7 +258,7 @@ export interface PolicyEvaluation {
   allowed: boolean;
   policy_version: string;
   reason_code: string;
-  approved_scope: ResourceScope;
+  approved_scope?: ResourceScope;
   consent_required: boolean;
   native_permission_required: boolean;
   remote_disclosure_required: boolean;
@@ -472,7 +472,7 @@ export class PermissionManagerRuntime {
         subject: request.subject,
         capability_id: request.capability_id,
         permission_id: request.permission_id,
-        approved_scope: policy.approved_scope,
+        approved_scope: policy.approved_scope!,
         purpose: request.purpose,
         execution_mode: request.execution_mode,
         issued_at: issuedAt.toISOString(),
@@ -539,7 +539,7 @@ export class PermissionManagerRuntime {
         decisionId,
         request,
         principal,
-        currentApprovedScope: policy.approved_scope,
+        currentApprovedScope: policy.approved_scope!,
         currentPolicyVersion: policy.policy_version,
         registryId: capability!.registry_id,
         manifestDigest: capability!.manifest_digest,
@@ -627,7 +627,8 @@ function requiresRemoteDisclosure(request: PermissionRequest, policy: PolicyEval
   return policy.remote_disclosure_required || (request.execution_mode !== "on_device" && protectedData);
 }
 
-function scopeIsNoBroaderThan(approved: ResourceScope, requested: ResourceScope): boolean {
+function scopeIsNoBroaderThan(approved: ResourceScope | undefined, requested: ResourceScope): boolean {
+  if (!approved) return false;
   if (approved.resource_type !== requested.resource_type || approved.scope_mode !== requested.scope_mode) return false;
   if (requested.scope_mode === "exact") {
     const requestedIds = requested.resource_ids ?? [];
