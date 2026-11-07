@@ -28,6 +28,8 @@ A module can contain multiple independently registered capabilities. A module na
 
 ### 3.1 Vision Intelligence
 
+[Manifest: Analyze Image](./examples/vision-analyze-image.manifest.json)
+
 **Module ID:** `prsl.agent.vision`  
 **Display name:** Vision Intelligence  
 **Responsibility:** Visual perception and interpretation.
@@ -48,6 +50,8 @@ Potential permissions: `media.read`, `camera.use`, and operation-specific access
 [Representative manifest](./examples/vision-analyze-image.manifest.json).
 
 ### 3.2 Voice Intelligence
+
+[Manifest: Synthesize Speech](./examples/voice-synthesize-speech.manifest.json)
 
 **Module ID:** `prsl.agent.voice`  
 **Display name:** Voice Intelligence  
@@ -70,6 +74,8 @@ Voice identity, regional variation, accent, prosody, and register must remain po
 
 ### 3.3 Location Intelligence
 
+[Manifest: Resolve Location](./examples/location-resolve-location.manifest.json)
+
 **Module ID:** `prsl.agent.location`  
 **Display name:** Location Intelligence  
 **Responsibility:** Geographic and spatial context.
@@ -91,6 +97,8 @@ Precise location must not be requested when approximate location is sufficient.
 
 ### 3.4 Recognizers Intelligence
 
+[Manifest: Classify Content](./examples/recognizers-classify-content.manifest.json)
+
 **Module ID:** `prsl.agent.recognizers`  
 **Display name:** Recognizers Intelligence  
 **Responsibility:** Recognition, detection, identification, and classification across supported modalities.
@@ -109,6 +117,8 @@ Typical output: recognized items, labels, structured entities, confidence/uncert
 Permissions depend on the input modality and source.
 
 ### 3.5 Tools Intelligence
+
+[Manifest: Evaluate Tool](./examples/tools-evaluate-tool.manifest.json)
 
 **Module ID:** `prsl.agent.tools`  
 **Display name:** Tools Intelligence  
@@ -131,6 +141,8 @@ Tool discovery does not authorize execution. Every invocation must be independen
 
 ### 3.6 Creative Intelligence
 
+[Manifest: Generate Text](./examples/creative-generate-text.manifest.json)
+
 **Module ID:** `prsl.agent.creative`  
 **Display name:** Creative Intelligence  
 **Responsibility:** Creative planning and generation of user-requested content.
@@ -149,6 +161,8 @@ Typical output: generated artifact or structured creative plan, with provenance 
 Permissions depend on the requested output and the execution provider.
 
 ### 3.7 Reader Intelligence
+
+[Manifest: Extract Document Content](./examples/reader-extract-document-content.manifest.json)
 
 **Module ID:** `prsl.agent.reader`  
 **Display name:** Reader Intelligence  
