@@ -108,7 +108,11 @@ export const permissionRequestSchema = z
           path: ["execution_mode"],
         });
     }
-    if (request.permission_id === "data.retain" && !request.resource_scope.retention)
+    if (request.permission_id === "location.coarse" && request.resource_scope.precision !== "coarse")
+    ctx.addIssue({ code: "custom", message: "Coarse location permission requires coarse precision.", path: ["resource_scope", "precision"] });
+  if (request.permission_id === "location.precise" && request.resource_scope.precision !== "precise")
+    ctx.addIssue({ code: "custom", message: "Precise location permission requires precise precision.", path: ["resource_scope", "precision"] });
+  if (request.permission_id === "data.retain" && !request.resource_scope.retention)
       ctx.addIssue({
         code: "custom",
         message: "Retention requires an explicit retention scope.",
@@ -191,10 +195,12 @@ export type Principal = z.infer<typeof principalSchema>;
 
 export interface AuthenticatedPrincipal extends Principal {
   authentication_method: string;
+  audit_subject_ref: string;
 }
 export interface RegisteredCapability {
   registry_id: string;
   manifest_digest: string;
+  digest_verified: boolean;
   registered: boolean;
   validation_status: "passing" | "failing" | "pending";
   review_status: "approved" | "rejected" | "pending";
@@ -220,6 +226,9 @@ export interface PolicyEvaluation {
   remote_disclosure_required: boolean;
   explanation?: string;
 }
+export type ConfirmationVerification =
+  | { status: "valid"; evidence_ref: string }
+  | { status: "required" | "denied" | "mismatch" | "unavailable" };
 export type ConsentVerification =
   | { status: "valid"; evidence_ref: string }
   | { status: "required" | "expired" | "revoked" | "mismatch" | "unavailable" };
@@ -250,6 +259,9 @@ export interface PermissionManagerPorts {
       request: PermissionRequest,
       capability: RegisteredCapability,
     ): Promise<PolicyEvaluation>;
+  };
+  confirmation: {
+    verify(request: PermissionRequest, principal: AuthenticatedPrincipal): Promise<ConfirmationVerification>;
   };
   consent: {
     verify(
@@ -308,13 +320,13 @@ export class PermissionManagerRuntime {
     const request = parsed.data;
     try {
       const principal = await this.ports.authenticator.authenticate(authContext);
-      if (!principal || !samePrincipal(principal, request.subject))
+      if (!principal || !principal.audit_subject_ref || !samePrincipal(principal, request.subject))
         return { status: "rejected", reason_code: "SUBJECT_UNAUTHENTICATED" };
 
       const capability = await this.ports.registry.resolve(request.capability_id);
       const registryFailure = validateRegistryCapability(capability, request);
       if (registryFailure)
-        return this.issueNonGrant(request, principal, "policy_blocked", registryFailure, "1.0");
+        return this.issueNonGrant(request, principal, "policy_blocked", registryFailure, "registry-gate/1.0");
 
       const policy = await this.ports.policy.evaluate(request, capability!);
       if (!policy.allowed)
@@ -327,6 +339,19 @@ export class PermissionManagerRuntime {
         );
 
       const evidenceRefs: string[] = [];
+      if (capability!.manifest.execution_policy.confirmation_required) {
+        const confirmation = await this.ports.confirmation.verify(request, principal);
+        if (confirmation.status !== "valid") {
+          const status = confirmation.status === "required" ? "consent_required" : confirmation.status === "unavailable" ? "indeterminate" : "policy_blocked";
+          const reason = confirmation.status === "required" ? "USER_CONFIRMATION_REQUIRED" : confirmation.status === "unavailable" ? "USER_CONFIRMATION_UNAVAILABLE" : "USER_CONFIRMATION_NOT_VALID";
+          return this.issueNonGrant(request, principal, status, reason, policy.policy_version);
+        }
+        evidenceRefs.push(confirmation.evidence_ref);
+      }
+      if (capability!.manifest.execution_policy.confirmation_required) {
+        const confirmation = await this.ports.confirmation.verify(request, principal);
+        if (confirmation.status !== "valid") return { eligible: false, reason_code: "USER_CONFIRMATION_NOT_VALID" };
+      }
       if (policy.consent_required) {
         const consent = await this.ports.consent.verify(request, principal);
         if (consent.status !== "valid") {
@@ -347,7 +372,7 @@ export class PermissionManagerRuntime {
         evidenceRefs.push(consent.evidence_ref);
       }
 
-      if (policy.remote_disclosure_required) {
+      if (policy.remote_disclosure_required && request.permission_id !== "data.remote_disclose") {
         const disclosure = await this.ports.remoteDisclosure.verify(request, principal);
         if (disclosure.status !== "valid") {
           const status = disclosure.status === "unavailable" ? "indeterminate" : "policy_blocked";
@@ -431,7 +456,7 @@ export class PermissionManagerRuntime {
     const request = parsed.data;
     try {
       const principal = await this.ports.authenticator.authenticate(authContext);
-      if (!principal || !samePrincipal(principal, request.subject))
+      if (!principal || !principal.audit_subject_ref || !samePrincipal(principal, request.subject))
         return { eligible: false, reason_code: "SUBJECT_UNAUTHENTICATED" };
 
       const capability = await this.ports.registry.resolve(request.capability_id);
@@ -447,7 +472,7 @@ export class PermissionManagerRuntime {
         if (consent.status !== "valid")
           return { eligible: false, reason_code: "CONSENT_NOT_VALID" };
       }
-      if (policy.remote_disclosure_required) {
+      if (policy.remote_disclosure_required && request.permission_id !== "data.remote_disclose") {
         const disclosure = await this.ports.remoteDisclosure.verify(request, principal);
         if (disclosure.status !== "valid")
           return { eligible: false, reason_code: "REMOTE_DISCLOSURE_NOT_AUTHORIZED" };
@@ -472,7 +497,7 @@ export class PermissionManagerRuntime {
         event_type: "execution_verification",
         request_id: request.request_id,
         decision_id: decisionId,
-        subject_ref: principal.principal_id,
+        subject_ref: principal.audit_subject_ref,
         capability_id: request.capability_id,
         permission_id: request.permission_id,
         status: "eligible",
@@ -560,6 +585,7 @@ function validateRegistryCapability(
   if (capability.manifest.capability_id !== request.capability_id) return "CAPABILITY_ID_MISMATCH";
   if (capability.manifest.lifecycle_status !== "verified") return "CAPABILITY_NOT_VERIFIED";
   if (!capability.manifest_digest) return "CAPABILITY_DIGEST_MISSING";
+  if (!capability.digest_verified) return "CAPABILITY_DIGEST_NOT_VERIFIED";
   if (!capability.manifest.permissions.includes(request.permission_id))
     return "PERMISSION_NOT_DECLARED";
   if (
