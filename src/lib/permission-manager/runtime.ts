@@ -10,7 +10,7 @@ const principalSchema = z.object({
 const resourceScopeSchema = z.object({
   resource_type: z.string().min(1).max(100),
   scope_mode: z.enum(["exact","bounded"]),
-  resource_ids: z.array(z.string().min(1).max(512)).min(1).max(1000).optional(),
+  resource_ids: z.array(z.string().min(1).max(512)).min(1).optional(),
   boundary: z.string().min(1).max(512).optional(),
   precision: z.enum(["coarse","precise","not_applicable"]).optional(),
   recipient: z.string().min(1).max(256).optional(),
@@ -374,7 +374,7 @@ function canonicalJson(value:unknown):string {
     const record=value as Record<string,unknown>;
     return "{"+Object.keys(record).sort().map(key=>JSON.stringify(key)+":"+canonicalJson(record[key])).join(",")+"}";
   }
-  return JSON.stringify(value);
+  return JSON.stringify(value) ?? "undefined";
 }
 function safeReason(value:string,fallback:string):string {
   return /^[A-Z][A-Z0-9_]{1,79}$/.test(value)?value:fallback;
