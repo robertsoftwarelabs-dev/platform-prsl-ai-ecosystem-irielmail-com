@@ -1,171 +1,246 @@
-import { describe, expect, it, vi } from "vitest";
-import { PermissionManagerRuntime, type AuthenticatedPrincipal, type PermissionManagerPorts, type PermissionRequest, type RegisteredCapability } from "@/lib/permission-manager/runtime";
+ÛMº×];Omxó]vëÝ4×fZ[\ÜÈ\ØÜXK^XÝ]HHÛH]\ÝÂ[\ÜÂ\Z\ÜÚ[ÛX[YÙ\[[YK\H]][XØ]Y[Ú\[\H\Z\ÜÚ[ÛX[YÙ\ÜË\H\Z\ÜÚ[Û\]Y\Ý\HYÚ\Ý\YØ\X[]KHÛHÛXÜ\Z\ÜÚ[Û[X[YÙ\Ü[[YHÂÛÛÝ\]Y\Ý\Z\ÜÚ[Û\]Y\ÝHÂØÚ[XWÝ\Ú[ÛK\]Y\ÝÚYMÙKNXÌKMLXLLKMYÎÌLHÝXXÝÈ[Ú\[Ý\N\Ù\[Ú\[ÚY\Ù\LHÙ\ÜÚ[ÛÚYÙ\ÜÚ[ÛLHKØ\X[]WÚYÛYÙ[\Ú[Û[[^KZ[XYÙH\Z\ÜÚ[ÛÚYYYXKXYXÝ[ÛXYÝ\Ù\ÜÙ[XÝYÚ[XYÙH\ÛÝ\ÙWÜØÛÜNÈ\ÛÝ\ÙWÝ\N[XYÙHØÛÜWÛ[ÙN^XÝ\ÛÝ\ÙWÚYÎÈYYXKLHHK\ÜÙNÈ\ÜÙWÚY[\Ý[Ú[XYÙH\ØÜ\[Û\ØÜXHHÙ[XÝY[XYÙKK]WØÛ\ÜÚYXØ][Û\ÛÛ[^XÝ][ÛÛ[ÙNÛÙ]XÙH\]Y\ÝYÙ\][ÛÈÚ[ÙXÛÛÈÙXÛÛÎKNÂÛÛÝ[Ú\[]][XØ]Y[Ú\[HÂ\]Y\ÝÝXXÝ]][XØ][ÛÛY]Ù\YYY]\Ý\Ù\ÜÚ[ÛNÂÛÛÝØ\X[]NYÚ\Ý\YØ\X[]HHÂYÚ\ÝWÚYYÚ\ÝK]\Ú[ÛLHX[Y\ÝÙYÙ\ÝÚLMÞ[]XÈYÚ\Ý\YYK[Y][ÛÜÝ]\Î\ÜÚ[È]Y]×ÜÝ]\Î\ÝYX[Y\ÝÂØ\X[]WÚY\]Y\ÝØ\X[]WÚYYXÞXÛWÜÝ]\Î\YYY\Z\ÜÚ[ÛÎÈYYXKXYK\[[ÚY\ÎÈ\Z\ÜÚ[ÛÞÈYYYXKXY\]Z\YYHWHK^XÝ][ÛÜÛXÞNÂ^XÝ][ÛÛ[Ù\ÎÈÛÙ]XÙHKÛÛ\X][ÛÜ\]Z\Y[ÙK[Y[Ý]Û\ÎÌKKNÂÛÛÝÛXÞHHÂ[ÝÙYYKÛXÞWÝ\Ú[Û\Ý\ÛXÞKLHX\ÛÛØÛÙNUUÔVQÛÛÙ[Ü\]Z\Y[ÙK]]WÜ\Z\ÜÚ[ÛÜ\]Z\Y[ÙK[[ÝWÙ\ØÛÜÝ\WÜ\]Z\Y[ÙKNÂ[Ý[ÛÜÊÝ\Y\Î\X[\Z\ÜÚ[ÛX[YÙ\ÜÏHßJN\Z\ÜÚ[ÛX[YÙ\ÜÈÂÛÛÝ\ÙN\Z\ÜÚ[ÛX[YÙ\ÜÈHÂ]][XØ]ÜÈ]][XØ]NK\Þ[È
 
-const request: PermissionRequest = {
-  schema_version:"1.0", request_id:"4d2d4e7e-9c0e-4d50-a2a1-6d5f2f6c8c11",
-  subject:{principal_type:"user",principal_id:"user-01",session_id:"session-01"},
-  capability_id:"prsl.agent.vision.analyze-image", permission_id:"media.read",
-  action:"read_user_selected_image",
-  resource_scope:{resource_type:"image",scope_mode:"exact",resource_ids:["media-01"]},
-  purpose:{purpose_id:"understand_image",description:"Describe the selected image."},
-  data_classification:"personal",execution_mode:"on_device",
-  requested_duration:{kind:"seconds",seconds:60},
-};
-const principal:AuthenticatedPrincipal={...request.subject,authentication_method:"verified-test-session"};
-const capability:RegisteredCapability={
-  registry_id:"registry-vision-01",manifest_digest:"sha256:synthetic",registered:true,
-  validation_status:"passing",review_status:"approved",
-  manifest:{
-    capability_id:request.capability_id,lifecycle_status:"verified",permissions:["media.read"],
-    dependencies:{permission:[{id:"media.read",required:true}]},
-    execution_policy:{execution_modes:["on_device"],confirmation_required:false,timeout_ms:30000},
-  },
-};
-const policy={allowed:true,policy_version:"test-policy-1",reason_code:"AUTHORIZED",consent_required:false,native_permission_required:false,remote_disclosure_required:false};
+HO[Ú\[
+HKYÚ\ÝNÈ\ÛÛNK\Þ[È
 
-function ports(overrides:Partial<PermissionManagerPorts>={}):PermissionManagerPorts {
-  const base:PermissionManagerPorts={
-    authenticator:{authenticate:vi.fn(async()=>principal)},
-    registry:{resolve:vi.fn(async()=>capability)},
-    policy:{evaluate:vi.fn(async()=>policy)},
-    consent:{verify:vi.fn(async()=>({status:"valid",evidence_ref:"consent:test"} as const))},
-    nativePermissions:{verify:vi.fn(async()=>({status:"granted",evidence_ref:"native:test"} as const))},
-    remoteDisclosure:{verify:vi.fn(async()=>({status:"valid",evidence_ref:"disclosure:test"} as const))},
-    decisionAuthority:{issue:vi.fn(async decision=>decision),verifyAndConsume:vi.fn(async()=>"valid" as const)},
-    audit:{record:vi.fn(async()=>undefined)},
-  };
-  return {
-    ...base,...overrides,
-    authenticator:overrides.authenticator??base.authenticator,
-    registry:overrides.registry??base.registry,
-    policy:overrides.policy??base.policy,
-    consent:overrides.consent??base.consent,
-    nativePermissions:overrides.nativePermissions??base.nativePermissions,
-    remoteDisclosure:overrides.remoteDisclosure??base.remoteDisclosure,
-    decisionAuthority:overrides.decisionAuthority??base.decisionAuthority,
-    audit:overrides.audit??base.audit,
-  };
-}
-function runtime(p:PermissionManagerPorts,timeoutMs=30000) {
-  const wired:PermissionManagerPorts={
-    ...p,
-    registry:{resolve:async id=>{
-      const found=await p.registry.resolve(id);
-      return found?{...found,manifest:{...found.manifest,execution_policy:{...found.manifest.execution_policy,timeout_ms:Math.min(timeoutMs,found.manifest.execution_policy.timeout_ms)}}}:null;
-    }},
-  };
-  return new PermissionManagerRuntime({ports:wired,now:()=>new Date("2026-11-07T20:00:00.000Z"),createId:()=>"5d2d4e7e-9c0e-4d50-a2a1-6d5f2f6c8c11"});
-}
+HOØ\X[]JHKÛXÞNÈ][X]NK\Þ[È
 
-describe("PermissionManagerRuntime.evaluate",()=>{
-  it("issues a short-lived single-use grant after all checks pass",async()=>{
-    const p=ports(); const result=await runtime(p,5000).evaluate(request,{});
-    expect(result.status).toBe("issued");
-    if(result.status!=="issued")return;
-    expect(result.decision.status).toBe("granted");
-    expect(result.decision.single_use).toBe(true);
-    expect(result.decision.approved_scope).toEqual(request.resource_scope);
-    expect(Date.parse(result.decision.expires_at!)-Date.parse(result.decision.issued_at)).toBe(5000);
-    expect(p.decisionAuthority.issue).toHaveBeenCalledOnce();
-    expect(p.audit.record).toHaveBeenCalledOnce();
-  });
-  it("rejects malformed requests and unknown fields before authentication",async()=>{
-    const p=ports(); const result=await runtime(p).evaluate({...request,unexpected:true},{});
-    expect(result).toEqual({status:"rejected",reason_code:"INVALID_REQUEST"});
-    expect(p.authenticator.authenticate).not.toHaveBeenCalled();
-    expect(p.decisionAuthority.issue).not.toHaveBeenCalled();
-  });
-  it("rejects an unauthenticated principal before registry lookup",async()=>{
-    const p=ports({authenticator:{authenticate:vi.fn(async()=>({...principal,principal_id:"other"}))}});
-    expect(await runtime(p).evaluate(request,{})).toEqual({status:"rejected",reason_code:"SUBJECT_UNAUTHENTICATED"});
-    expect(p.registry.resolve).not.toHaveBeenCalled();
-  });
-  it("blocks a registered capability that is not verified",async()=>{
-    const p=ports({registry:{resolve:vi.fn(async()=>({...capability,manifest:{...capability.manifest,lifecycle_status:"specified" as const}}))}});
-    const result=await runtime(p).evaluate(request,{});
-    expect(result.status).toBe("issued");
-    if(result.status==="issued"){expect(result.decision.status).toBe("policy_blocked");expect(result.decision.reason_code).toBe("CAPABILITY_NOT_VERIFIED");expect(result.decision.approved_scope).toBeUndefined();}
-    expect(p.policy.evaluate).not.toHaveBeenCalled();
-  });
-  it("blocks permissions absent from the registered manifest",async()=>{
-    const p=ports({registry:{resolve:vi.fn(async()=>({...capability,manifest:{...capability.manifest,permissions:[]}}))}});
-    const result=await runtime(p).evaluate(request,{});
-    expect(result.status).toBe("issued");
-    if(result.status==="issued")expect(result.decision.reason_code).toBe("PERMISSION_NOT_DECLARED");
-  });
-  it("issues a policy-blocked result when policy denies",async()=>{
-    const p=ports({policy:{evaluate:vi.fn(async()=>({...policy,allowed:false,reason_code:"REMOTE_POLICY_BLOCKED"}))}});
-    const result=await runtime(p).evaluate(request,{});
-    expect(result.status).toBe("issued");
-    if(result.status==="issued"){expect(result.decision.status).toBe("policy_blocked");expect(result.decision.reason_code).toBe("REMOTE_POLICY_BLOCKED");}
-  });
-  it("does not grant when required consent is absent",async()=>{
-    const p=ports({policy:{evaluate:vi.fn(async()=>({...policy,consent_required:true}))},consent:{verify:vi.fn(async()=>({status:"required" as const}))}});
-    const result=await runtime(p).evaluate(request,{});
-    expect(result.status).toBe("issued");
-    if(result.status==="issued")expect(result.decision.status).toBe("consent_required");
-  });
-  it("fails closed when consent is revoked",async()=>{
-    const p=ports({policy:{evaluate:vi.fn(async()=>({...policy,consent_required:true}))},consent:{verify:vi.fn(async()=>({status:"revoked" as const}))}});
-    const result=await runtime(p).evaluate(request,{});
-    expect(result.status).toBe("issued");
-    if(result.status==="issued")expect(result.decision.reason_code).toBe("CONSENT_NOT_VALID");
-  });
-  it("requires a separate remote-disclosure authorization",async()=>{
-    const remote:PermissionRequest={...request,execution_mode:"remote",resource_scope:{...request.resource_scope,recipient:"provider:approved-service"}};
-    const remoteCapability:RegisteredCapability={
-      ...capability,
-      manifest:{
-        ...capability.manifest,
-        permissions:["media.read","data.remote_disclose"],
-        dependencies:{permission:[{id:"media.read",required:true},{id:"data.remote_disclose",required:true}]},
-        execution_policy:{...capability.manifest.execution_policy,execution_modes:["remote"]},
-      },
-    };
-    const p=ports({
-      registry:{resolve:vi.fn(async()=>remoteCapability)},
-      policy:{evaluate:vi.fn(async()=>({...policy,remote_disclosure_required:true}))},
-      remoteDisclosure:{verify:vi.fn(async()=>({status:"required" as const}))},
-    });
-    const result=await runtime(p).evaluate(remote,{});
-    expect(result.status).toBe("issued");
-    if(result.status==="issued"){expect(result.decision.status).toBe("policy_blocked");expect(result.decision.reason_code).toBe("REMOTE_DISCLOSURE_NOT_AUTHORIZED");}
-  });
-  it("requires native host permission independently",async()=>{
-    const p=ports({policy:{evaluate:vi.fn(async()=>({...policy,native_permission_required:true}))},nativePermissions:{verify:vi.fn(async()=>({status:"required" as const}))}});
-    const result=await runtime(p).evaluate(request,{});
-    expect(result.status).toBe("issued");
-    if(result.status==="issued")expect(result.decision.status).toBe("platform_permission_required");
-  });
-  it("rejects an issuer that widens the approved scope",async()=>{
-    const p=ports({decisionAuthority:{issue:vi.fn(async d=>({...d,approved_scope:{...request.resource_scope,resource_ids:["media-01","media-02"]}})),verifyAndConsume:vi.fn(async()=>"valid" as const)}});
-    expect(await runtime(p).evaluate(request,{})).toEqual({status:"rejected",reason_code:"DECISION_AUTHORITY_UNVERIFIABLE"});
-  });
-  it("does not issue when audit is unavailable",async()=>{
-    const p=ports({audit:{record:vi.fn(async()=>{throw new Error("unavailable");})}});
-    expect(await runtime(p).evaluate(request,{})).toEqual({status:"rejected",reason_code:"RUNTIME_DEPENDENCY_UNAVAILABLE"});
-    expect(p.decisionAuthority.issue).not.toHaveBeenCalled();
-  });
-  it("fails closed when a required dependency throws",async()=>{
-    const p=ports({policy:{evaluate:vi.fn(async()=>{throw new Error("offline");})}});
-    expect(await runtime(p).evaluate(request,{})).toEqual({status:"rejected",reason_code:"RUNTIME_DEPENDENCY_UNAVAILABLE"});
-  });
-});
+HOÛXÞJHKÛÛÙ[Â\YNK\Þ[È
 
-describe("PermissionManagerRuntime.verifyForExecution",()=>{
-  it("rechecks policy and atomically consumes the one-time decision",async()=>{
-    const p=ports();
-    expect(await runtime(p).verifyForExecution("5d2d4e7e-9c0e-4d50-a2a1-6d5f2f6c8c11",request,{})).toEqual({eligible:true,decision_id:"5d2d4e7e-9c0e-4d50-a2a1-6d5f2f6c8c11"});
-    expect(p.policy.evaluate).toHaveBeenCalledOnce();
-    expect(p.decisionAuthority.verifyAndConsume).toHaveBeenCalledOnce();
-  });
-  it("rejects replayed decisions",async()=>{
-    const p=ports({decisionAuthority:{issue:vi.fn(async d=>d),verifyAndConsume:vi.fn(async()=>"replayed" as const)}});
-    expect(await runtime(p).verifyForExecution("5d2d4e7e-9c0e-4d50-a2a1-6d5f2f6c8c11",request,{})).toEqual({eligible:false,reason_code:"DECISION_REPLAYED"});
-  });
-  it("rejects execution when current policy changes to deny",async()=>{
-    const p=ports({policy:{evaluate:vi.fn(async()=>({...policy,allowed:false,reason_code:"POLICY_CHANGED"}))}});
-    expect(await runtime(p).verifyForExecution("5d2d4e7e-9c0e-4d50-a2a1-6d5f2f6c8c11",request,{})).toEqual({eligible:false,reason_code:"POLICY_CHANGED"});
-    expect(p.decisionAuthority.verifyAndConsume).not.toHaveBeenCalled();
-  });
-});
+HO
+ÈÝ]\Î[Y]Y[ÙWÜYÛÛÙ[\ÝJH\ÈÛÛÝ
+KK]]T\Z\ÜÚ[ÛÎÂ\YNK\Þ[È
+
+HO
+ÈÝ]\ÎÜ[Y]Y[ÙWÜY]]N\ÝJH\ÈÛÛÝ
+KK[[ÝQ\ØÛÜÝ\NÂ\YNK\Þ[È
+
+HO
+ÈÝ]\Î[Y]Y[ÙWÜY\ØÛÜÝ\N\ÝJH\ÈÛÛÝ
+KKXÚ\Ú[Û]]Ü]NÂ\ÜÝYNK\Þ[È
+XÚ\Ú[ÛHOXÚ\Ú[ÛK\YP[ÛÛÝ[YNK\Þ[È
+
+HO[Y\ÈÛÛÝ
+KK]Y]ÈXÛÜK\Þ[È
+
+HO[Y[Y
+HKNÂ]\Â\ÙKÝ\Y\Ë]][XØ]ÜÝ\Y\Ë]][XØ]ÜÏÈ\ÙK]][XØ]ÜYÚ\ÝNÝ\Y\ËYÚ\ÝHÏÈ\ÙKYÚ\ÝKÛXÞNÝ\Y\ËÛXÞHÏÈ\ÙKÛXÞKÛÛÙ[Ý\Y\ËÛÛÙ[ÏÈ\ÙKÛÛÙ[]]T\Z\ÜÚ[ÛÎÝ\Y\Ë]]T\Z\ÜÚ[ÛÈÏÈ\ÙK]]T\Z\ÜÚ[ÛË[[ÝQ\ØÛÜÝ\NÝ\Y\Ë[[ÝQ\ØÛÜÝ\HÏÈ\ÙK[[ÝQ\ØÛÜÝ\KXÚ\Ú[Û]]Ü]NÝ\Y\ËXÚ\Ú[Û]]Ü]HÏÈ\ÙKXÚ\Ú[Û]]Ü]K]Y]Ý\Y\Ë]Y]ÏÈ\ÙK]Y]NÂB[Ý[Û[[YJ\Z\ÜÚ[ÛX[YÙ\ÜË[Y[Ý]\ÈHÌ
+HÂÛÛÝÚ\Y\Z\ÜÚ[ÛX[YÙ\ÜÈHÂYÚ\ÝNÂ\ÛÛN\Þ[È
+Y
+HOÂÛÛÝÝ[H]ØZ]YÚ\ÝK\ÛÛJY
+NÂ]\Ý[ÈÂÝ[X[Y\ÝÂÝ[X[Y\Ý^XÝ][ÛÜÛXÞNÂÝ[X[Y\Ý^XÝ][ÛÜÛXÞK[Y[Ý]Û\ÎX]Z[[Y[Ý]\ËÝ[X[Y\Ý^XÝ][ÛÜÛXÞK[Y[Ý]Û\ÊKKKB[ÂKKNÂ]\]È\Z\ÜÚ[ÛX[YÙ\[[YJÂÜÎÚ\YÝÎ
+
+HO]È]JLLKLÕKÜX]RY
+
+HOYMÙKNXÌKMLXLLKMYÎÌLHJNÂB\ØÜXJ\Z\ÜÚ[ÛX[YÙ\[[YK][X]H
+
+HOÂ]
+\ÜÝY\ÈHÚÜ[]YÚ[ÛK]\ÙHÜ[Y\[ÚXÚÜÈ\ÜÈ\Þ[È
+
+HOÂÛÛÝHÜÊ
+NÂÛÛÝ\Ý[H]ØZ][[YJL
+K][X]J\]Y\ÝßJNÂ^XÝ
+\Ý[Ý]\ÊKÐJ\ÜÝYYNÂY
+\Ý[Ý]\ÈOOH\ÜÝYYH]\Â^XÝ
+\Ý[XÚ\Ú[ÛÝ]\ÊKÐJÜ[YNÂ^XÝ
+\Ý[XÚ\Ú[ÛÚ[ÛWÝ\ÙJKÐJYJNÂ^XÝ
+\Ý[XÚ\Ú[Û\ÝYÜØÛÜJKÑ\]X[
+\]Y\Ý\ÛÝ\ÙWÜØÛÜJNÂ^XÝ
+]K\ÙJ\Ý[XÚ\Ú[Û^\\×Ø]JHH]K\ÙJ\Ý[XÚ\Ú[Û\ÜÝYYØ]
+JKÐJL
+NÂ^XÝ
+XÚ\Ú[Û]]Ü]K\ÜÝYJKÒ]PY[Ø[YÛÙJ
+NÂ^XÝ
+]Y]XÛÜ
+KÒ]PY[Ø[YÛÙJ
+NÂJNÂ]
+ZXÝÈX[ÜYY\]Y\ÝÈ[[ÛÝÛY[ÈYÜH]][XØ][Û\Þ[È
+
+HOÂÛÛÝHÜÊ
+NÂÛÛÝ\Ý[H]ØZ][[YJ
+K][X]JÈ\]Y\Ý[^XÝYYHKßJNÂ^XÝ
+\Ý[
+KÑ\]X[
+ÈÝ]\ÎZXÝYX\ÛÛØÛÙNSSQÔTUQTÕJNÂ^XÝ
+]][XØ]Ü]][XØ]JKÝÒ]PY[Ø[Y
+
+NÂ^XÝ
+XÚ\Ú[Û]]Ü]K\ÜÝYJKÝÒ]PY[Ø[Y
+
+NÂJNÂ]
+ZXÝÈ[[]][XØ]Y[Ú\[YÜHYÚ\ÝHÛÚÝ\\Þ[È
+
+HOÂÛÛÝHÜÊÂ]][XØ]ÜÈ]][XØ]NK\Þ[È
+
+HO
+È[Ú\[[Ú\[ÚYÝ\JJHKJNÂ^XÝ
+]ØZ][[YJ
+K][X]J\]Y\ÝßJJKÑ\]X[
+ÂÝ]\ÎZXÝYX\ÛÛØÛÙNÕPPÕÕSUUSPÐUQJNÂ^XÝ
+YÚ\ÝK\ÛÛJKÝÒ]PY[Ø[Y
+
+NÂJNÂ]
+ØÚÜÈHYÚ\Ý\YØ\X[]H]\ÈÝ\YYY\Þ[È
+
+HOÂÛÛÝHÜÊÂYÚ\ÝNÂ\ÛÛNK\Þ[È
+
+HO
+ÂØ\X[]KX[Y\ÝÈØ\X[]KX[Y\ÝYXÞXÛWÜÝ]\ÎÜXÚYYY\ÈÛÛÝKJJKKJNÂÛÛÝ\Ý[H]ØZ][[YJ
+K][X]J\]Y\ÝßJNÂ^XÝ
+\Ý[Ý]\ÊKÐJ\ÜÝYYNÂY
+\Ý[Ý]\ÈOOH\ÜÝYYHÂ^XÝ
+\Ý[XÚ\Ú[ÛÝ]\ÊKÐJÛXÞWØØÚÙYNÂ^XÝ
+\Ý[XÚ\Ú[ÛX\ÛÛØÛÙJKÐJÐTPSUWÓÕÕTQQQNÂ^XÝ
+\Ý[XÚ\Ú[Û\ÝYÜØÛÜJKÐU[Y[Y
+
+NÂB^XÝ
+ÛXÞK][X]JKÝÒ]PY[Ø[Y
+
+NÂJNÂ]
+ØÚÜÈ\Z\ÜÚ[ÛÈXÙ[ÛHHYÚ\Ý\YX[Y\Ý\Þ[È
+
+HOÂÛÛÝHÜÊÂYÚ\ÝNÂ\ÛÛNK\Þ[È
+
+HO
+ÂØ\X[]KX[Y\ÝÈØ\X[]KX[Y\Ý\Z\ÜÚ[ÛÎ×HKJJKKJNÂÛÛÝ\Ý[H]ØZ][[YJ
+K][X]J\]Y\ÝßJNÂ^XÝ
+\Ý[Ý]\ÊKÐJ\ÜÝYYNÂY
+\Ý[Ý]\ÈOOH\ÜÝYYB^XÝ
+\Ý[XÚ\Ú[ÛX\ÛÛØÛÙJKÐJTRTÔÒSÓÓÕÑPÓTQNÂJNÂ]
+\ÜÝY\ÈHÛXÞKXØÚÙY\Ý[Ú[ÛXÞH[Y\È\Þ[È
+
+HOÂÛÛÝHÜÊÂÛXÞNÂ][X]NK\Þ[È
+
+HO
+ÂÛXÞK[ÝÙY[ÙKX\ÛÛØÛÙNSSÕWÔÓPÖWÐÐÒÑQJJKKJNÂÛÛÝ\Ý[H]ØZ][[YJ
+K][X]J\]Y\ÝßJNÂ^XÝ
+\Ý[Ý]\ÊKÐJ\ÜÝYYNÂY
+\Ý[Ý]\ÈOOH\ÜÝYYHÂ^XÝ
+\Ý[XÚ\Ú[ÛÝ]\ÊKÐJÛXÞWØØÚÙYNÂ^XÝ
+\Ý[XÚ\Ú[ÛX\ÛÛØÛÙJKÐJSSÕWÔÓPÖWÐÐÒÑQNÂBJNÂ]
+Ù\ÈÝÜ[Ú[\]Z\YÛÛÙ[\ÈXÙ[\Þ[È
+
+HOÂÛÛÝHÜÊÂÛXÞNÈ][X]NK\Þ[È
+
+HO
+ÈÛXÞKÛÛÙ[Ü\]Z\YYHJJHKÛÛÙ[È\YNK\Þ[È
+
+HO
+ÈÝ]\Î\]Z\Y\ÈÛÛÝJJHKJNÂÛÛÝ\Ý[H]ØZ][[YJ
+K][X]J\]Y\ÝßJNÂ^XÝ
+\Ý[Ý]\ÊKÐJ\ÜÝYYNÂY
+\Ý[Ý]\ÈOOH\ÜÝYYH^XÝ
+\Ý[XÚ\Ú[ÛÝ]\ÊKÐJÛÛÙ[Ü\]Z\YNÂJNÂ]
+Z[ÈÛÜÙYÚ[ÛÛÙ[\È]ÚÙY\Þ[È
+
+HOÂÛÛÝHÜÊÂÛXÞNÈ][X]NK\Þ[È
+
+HO
+ÈÛXÞKÛÛÙ[Ü\]Z\YYHJJHKÛÛÙ[È\YNK\Þ[È
+
+HO
+ÈÝ]\Î]ÚÙY\ÈÛÛÝJJHKJNÂÛÛÝ\Ý[H]ØZ][[YJ
+K][X]J\]Y\ÝßJNÂ^XÝ
+\Ý[Ý]\ÊKÐJ\ÜÝYYNÂY
+\Ý[Ý]\ÈOOH\ÜÝYYH^XÝ
+\Ý[XÚ\Ú[ÛX\ÛÛØÛÙJKÐJÓÓÑSÓÕÕSQNÂJNÂ]
+\]Z\\ÈHÙ\\]H[[ÝKY\ØÛÜÝ\H]]Ü^][Û\Þ[È
+
+HOÂÛÛÝ[[ÝN\Z\ÜÚ[Û\]Y\ÝHÂ\]Y\Ý^XÝ][ÛÛ[ÙN[[ÝH\ÛÝ\ÙWÜØÛÜNÈ\]Y\Ý\ÛÝ\ÙWÜØÛÜKXÚ\Y[ÝY\\ÝY\Ù\XÙHKNÂÛÛÝ[[ÝPØ\X[]NYÚ\Ý\YØ\X[]HHÂØ\X[]KX[Y\ÝÂØ\X[]KX[Y\Ý\Z\ÜÚ[ÛÎÈYYXKXY]K[[ÝWÙ\ØÛÜÙHK\[[ÚY\ÎÂ\Z\ÜÚ[ÛÂÈYYYXKXY\]Z\YYHKÈY]K[[ÝWÙ\ØÛÜÙH\]Z\YYHKKK^XÝ][ÛÜÛXÞNÈØ\X[]KX[Y\Ý^XÝ][ÛÜÛXÞK^XÝ][ÛÛ[Ù\ÎÈ[[ÝHHKKNÂÛÛÝHÜÊÂYÚ\ÝNÈ\ÛÛNK\Þ[È
+
+HO[[ÝPØ\X[]JHKÛXÞNÈ][X]NK\Þ[È
+
+HO
+ÈÛXÞK[[ÝWÙ\ØÛÜÝ\WÜ\]Z\YYHJJHK[[ÝQ\ØÛÜÝ\NÈ\YNK\Þ[È
+
+HO
+ÈÝ]\Î\]Z\Y\ÈÛÛÝJJHKJNÂÛÛÝ\Ý[H]ØZ][[YJ
+K][X]J[[ÝKßJNÂ^XÝ
+\Ý[Ý]\ÊKÐJ\ÜÝYYNÂY
+\Ý[Ý]\ÈOOH\ÜÝYYHÂ^XÝ
+\Ý[XÚ\Ú[ÛÝ]\ÊKÐJÛXÞWØØÚÙYNÂ^XÝ
+\Ý[XÚ\Ú[ÛX\ÛÛØÛÙJKÐJSSÕWÑTÐÓÔÕTWÓÕÐUUÔVQNÂBJNÂ]
+\]Z\\È]]HÜÝ\Z\ÜÚ[Û[\[[H\Þ[È
+
+HOÂÛÛÝHÜÊÂÛXÞNÈ][X]NK\Þ[È
+
+HO
+ÈÛXÞK]]WÜ\Z\ÜÚ[ÛÜ\]Z\YYHJJHK]]T\Z\ÜÚ[ÛÎÈ\YNK\Þ[È
+
+HO
+ÈÝ]\Î\]Z\Y\ÈÛÛÝJJHKJNÂÛÛÝ\Ý[H]ØZ][[YJ
+K][X]J\]Y\ÝßJNÂ^XÝ
+\Ý[Ý]\ÊKÐJ\ÜÝYYNÂY
+\Ý[Ý]\ÈOOH\ÜÝYYB^XÝ
+\Ý[XÚ\Ú[ÛÝ]\ÊKÐJ]ÜWÜ\Z\ÜÚ[ÛÜ\]Z\YNÂJNÂ]
+ZXÝÈ[\ÜÝY\]ÚY[ÈH\ÝYØÛÜH\Þ[È
+
+HOÂÛÛÝHÜÊÂXÚ\Ú[Û]]Ü]NÂ\ÜÝYNK\Þ[È
+
+HO
+Â\ÝYÜØÛÜNÈ\]Y\Ý\ÛÝ\ÙWÜØÛÜK\ÛÝ\ÙWÚYÎÈYYXKLHYYXKLHKJJK\YP[ÛÛÝ[YNK\Þ[È
+
+HO[Y\ÈÛÛÝ
+KKJNÂ^XÝ
+]ØZ][[YJ
+K][X]J\]Y\ÝßJJKÑ\]X[
+ÂÝ]\ÎZXÝYX\ÛÛØÛÙNPÒTÒSÓÐUUÔUWÕSTQPPHJNÂJNÂ]
+Ù\ÈÝ\ÜÝYHÚ[]Y]\È[]Z[XH\Þ[È
+
+HOÂÛÛÝHÜÊÂ]Y]ÂXÛÜK\Þ[È
+
+HOÂÝÈ]È\Ü[]Z[XHNÂJKKJNÂ^XÝ
+]ØZ][[YJ
+K][X]J\]Y\ÝßJJKÑ\]X[
+ÂÝ]\ÎZXÝYX\ÛÛØÛÙNSSQWÑTSSÖWÕSURSPHJNÂ^XÝ
+XÚ\Ú[Û]]Ü]K\ÜÝYJKÝÒ]PY[Ø[Y
+
+NÂJNÂ]
+Z[ÈÛÜÙYÚ[H\]Z\Y\[[ÞHÝÜÈ\Þ[È
+
+HOÂÛÛÝHÜÊÂÛXÞNÂ][X]NK\Þ[È
+
+HOÂÝÈ]È\ÜÙ[HNÂJKKJNÂ^XÝ
+]ØZ][[YJ
+K][X]J\]Y\ÝßJJKÑ\]X[
+ÂÝ]\ÎZXÝYX\ÛÛØÛÙNSSQWÑTSSÖWÕSURSPHJNÂJNÂJNÂ\ØÜXJ\Z\ÜÚ[ÛX[YÙ\[[YK\YQÜ^XÝ][Û
+
+HOÂ]
+XÚXÚÜÈÛXÞH[]ÛZXØ[HÛÛÝ[Y\ÈHÛK][YHXÚ\Ú[Û\Þ[È
+
+HOÂÛÛÝHÜÊ
+NÂ^XÝ
+]ØZ][[YJ
+K\YQÜ^XÝ][ÛYMÙKNXÌKMLXLLKMYÎÌLH\]Y\ÝßJK
+KÑ\]X[
+È[YÚXNYKXÚ\Ú[ÛÚYYMÙKNXÌKMLXLLKMYÎÌLHJNÂ^XÝ
+ÛXÞK][X]JKÒ]PY[Ø[YÛÙJ
+NÂ^XÝ
+XÚ\Ú[Û]]Ü]K\YP[ÛÛÝ[YJKÒ]PY[Ø[YÛÙJ
+NÂJNÂ]
+ZXÝÈ\^YYXÚ\Ú[ÛÈ\Þ[È
+
+HOÂÛÛÝHÜÊÂXÚ\Ú[Û]]Ü]NÂ\ÜÝYNK\Þ[È
+
+HO
+K\YP[ÛÛÝ[YNK\Þ[È
+
+HO\^YY\ÈÛÛÝ
+KKJNÂ^XÝ
+]ØZ][[YJ
+K\YQÜ^XÝ][ÛYMÙKNXÌKMLXLLKMYÎÌLH\]Y\ÝßJK
+KÑ\]X[
+È[YÚXN[ÙKX\ÛÛØÛÙNPÒTÒSÓÔTVQQJNÂJNÂ]
+ZXÝÈ^XÝ][ÛÚ[Ý\[ÛXÞHÚ[Ù\ÈÈ[H\Þ[È
+
+HOÂÛÛÝHÜÊÂÛXÞNÂ][X]NK\Þ[È
+
+HO
+ÈÛXÞK[ÝÙY[ÙKX\ÛÛØÛÙNÓPÖWÐÒSÑQJJKKJNÂ^XÝ
+]ØZ][[YJ
+K\YQÜ^XÝ][ÛYMÙKNXÌKMLXLLKMYÎÌLH\]Y\ÝßJK
+KÑ\]X[
+È[YÚXN[ÙKX\ÛÛØÛÙNÓPÖWÐÒSÑQJNÂ^XÝ
+XÚ\Ú[Û]]Ü]K\YP[ÛÛÝ[YJKÝÒ]PY[Ø[Y
+
+NÂJNÂJNÂ
