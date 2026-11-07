@@ -29,3 +29,5 @@ jobs:
         run: python -m pip install -r docs/architecture/agent-prsl-ai/requirements-dev.txt
       - name: Validate manifests
         run: python docs/architecture/agent-prsl-ai/scripts/validate_capability_manifests.py
+      - name: Validate Permission Manager contracts
+        run: python docs/architecture/agent-prsl-ai/scripts/validate_permission_manager.py
