@@ -48,6 +48,7 @@ const policy = {
   allowed: true,
   policy_version: "test-policy-1",
   reason_code: "AUTHORIZED",
+  approved_scope: request.resource_scope,
   consent_required: false,
   native_permission_required: false,
   remote_disclosure_required: false,
@@ -229,6 +230,26 @@ describe("PermissionManagerRuntime.evaluate", () => {
     if (result.status === "issued")
       expect(result.decision.reason_code).toBe("PERMISSION_NOT_DECLARED");
   });
+  it("rejects a policy-approved scope that widens the requested resources", async () => {
+    const broadRequest: PermissionRequest = {
+      ...request,
+      resource_scope: { ...request.resource_scope, resource_ids: ["media-01", "media-02"] },
+    };
+    const p = ports({
+      policy: {
+        evaluate: vi.fn(async () => ({
+          ...policy,
+          approved_scope: { ...request.resource_scope, resource_ids: ["media-01", "media-03"] },
+        })),
+      },
+    });
+    const result = await runtime(p).evaluate(broadRequest, {});
+    expect(result.status).toBe("issued");
+    if (result.status === "issued") {
+      expect(result.decision.status).toBe("policy_blocked");
+      expect(result.decision.reason_code).toBe("POLICY_SCOPE_MISSING_OR_WIDENED");
+    }
+  });
   it("issues a policy-blocked result when policy denies", async () => {
     const p = ports({
       policy: {
@@ -286,7 +307,7 @@ describe("PermissionManagerRuntime.evaluate", () => {
     };
     const p = ports({
       registry: { resolve: vi.fn(async () => remoteCapability) },
-      policy: { evaluate: vi.fn(async () => ({ ...policy, remote_disclosure_required: true })) },
+      policy: { evaluate: vi.fn(async () => ({ ...policy, approved_scope: remote.resource_scope })) },
       remoteDisclosure: { verify: vi.fn(async () => ({ status: "required" as const })) },
     });
     const result = await runtime(p).evaluate(remote, {});
