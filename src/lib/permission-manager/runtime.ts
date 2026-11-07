@@ -395,10 +395,6 @@ export class PermissionManagerRuntime {
         }
         evidenceRefs.push(confirmation.evidence_ref);
       }
-      if (capability!.manifest.execution_policy.confirmation_required) {
-        const confirmation = await this.ports.confirmation.verify(request, principal);
-        if (confirmation.status !== "valid") return { eligible: false, reason_code: "USER_CONFIRMATION_NOT_VALID" };
-      }
       if (policy.consent_required) {
         const consent = await this.ports.consent.verify(request, principal);
         if (consent.status !== "valid") {
@@ -516,12 +512,17 @@ export class PermissionManagerRuntime {
       if (!scopeIsNoBroaderThan(policy.approved_scope, request.resource_scope))
         return { eligible: false, reason_code: "POLICY_SCOPE_MISSING_OR_WIDENED" };
 
+      if (capability!.manifest.execution_policy.confirmation_required) {
+        const confirmation = await this.ports.confirmation.verify(request, principal);
+        if (confirmation.status !== "valid")
+          return { eligible: false, reason_code: "USER_CONFIRMATION_NOT_VALID" };
+      }
       if (policy.consent_required) {
         const consent = await this.ports.consent.verify(request, principal);
         if (consent.status !== "valid")
           return { eligible: false, reason_code: "CONSENT_NOT_VALID" };
       }
-      if (policy.remote_disclosure_required && request.permission_id !== "data.remote_disclose") {
+      if (requiresRemoteDisclosure(request, policy) && request.permission_id !== "data.remote_disclose") {
         const disclosure = await this.ports.remoteDisclosure.verify(request, principal);
         if (disclosure.status !== "valid")
           return { eligible: false, reason_code: "REMOTE_DISCLOSURE_NOT_AUTHORIZED" };
