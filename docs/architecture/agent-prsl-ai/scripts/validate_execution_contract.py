@@ -51,6 +51,11 @@ def evaluate_gate(case: dict, manifest_template: dict, request_template: dict, d
         decision["execution_mode"] = "remote"
     if case.get("decision_status"):
         decision["status"] = case["decision_status"]
+        decision["reason_code"] = "USER_DENIED"
+        decision.pop("approved_scope", None)
+        decision.pop("execution_mode", None)
+        decision.pop("expires_at", None)
+        decision.pop("single_use", None)
     if case.get("decision_request_mismatch"):
         decision["request_id"] = "4d2d4e7e-9c0e-4d50-a2a1-6d5f2f6c8cff"
     if case.get("decision_subject_mismatch"):
