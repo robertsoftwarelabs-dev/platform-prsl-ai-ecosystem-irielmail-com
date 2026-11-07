@@ -27,7 +27,10 @@ The governing separation is:
 | [Capability Contract v1.0](./capability-contract.md) | Shared contract for identity, schemas, permissions, dependencies, availability, and execution policy. |
 | [Capability Catalog](./capability-catalog.md) | Initial module and interface inventory with candidate capability operations. |
 | [Capability Registry Specification](./registry-specification.md) | Registration, discovery, lifecycle, and dispatch governance. |
-| [Permission Manager Specification](./permission-manager-specification.md) | Authorization authority, consent lifecycle, runtime gate, revocation, delegation, and fail-closed enforcement. |\n| [Permission Request Schema](./schemas/permission-request.schema.json) | Machine-readable input contract for one protected operation. |\n| [Permission Decision Schema](./schemas/permission-decision.schema.json) | Machine-readable, scope-bound authorization outcome. |\n| [Permission Manager Test Vectors](./validation/permission-manager-cases.json) | Positive and negative request/decision contract cases. |
+| [Permission Manager Specification](./permission-manager-specification.md) | Authorization authority, consent lifecycle, runtime gate, revocation, delegation, and fail-closed enforcement. |
+| [Permission Request Schema](./schemas/permission-request.schema.json) | Machine-readable input contract for one protected operation. |
+| [Permission Decision Schema](./schemas/permission-decision.schema.json) | Machine-readable, scope-bound authorization outcome. |
+| [Permission Manager Test Vectors](./validation/permission-manager-cases.json) | Positive and negative request/decision contract cases. |
 | [Capability Manifest JSON Schema](./schemas/capability-manifest.schema.json) | Machine-readable validation schema for capability manifests. |
 | Capability manifests | [Vision](./examples/vision-analyze-image.manifest.json) · [Voice](./examples/voice-synthesize-speech.manifest.json) · [Location](./examples/location-resolve-location.manifest.json) · [Recognizers](./examples/recognizers-classify-content.manifest.json) · [Tools](./examples/tools-evaluate-tool.manifest.json) · [Creative](./examples/creative-generate-text.manifest.json) · [Reader](./examples/reader-extract-document-content.manifest.json). All seven are specified examples, not implementation claims. |
 | [Validation instructions](./validation/README.md) | Local validation commands and CI behavior. |
@@ -35,7 +38,7 @@ The governing separation is:
 
 ## Canonical architecture flow
 
-`Human → iRiel identity/context → PRSL-AI intent and policy → Intelligence Router → capability or integration adapter → authorized execution target`
+`Human → iRiel identity/context → PRSL-AI intent and policy → Intelligence Router (candidate selection only) → Permission Manager (authorization gate) → capability or integration adapter → execution target`
 
 The flow is conceptual. Concrete runtime components and integrations must be verified separately.
 
@@ -53,7 +56,7 @@ Do not use *Implemented* or *Verified* based only on documentation or a declared
 
 1. Provider independence: capability identity does not depend on a model vendor.
 2. Minimum disclosure: only data required for a specific operation may cross a boundary.
-3. Explicit authority: a capability cannot grant itself permissions.
+3. Explicit authority: the Permission Manager is the only PRSL-AI component that issues authorization decisions; a capability cannot grant itself permissions.
 4. Local-first preference: local execution is preferred where compatible and policy-compliant.
 5. Graceful degradation: optional integrations may be unavailable without invalidating the agent or capability identity.
 6. Memory separation: transient execution context does not automatically become persistent memory.
