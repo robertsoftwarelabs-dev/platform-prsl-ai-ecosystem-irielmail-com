@@ -548,7 +548,7 @@ export class PermissionManagerRuntime {
         event_type: "decision_issuance_requested",
         request_id: request.request_id,
         decision_id: payload.decision_id,
-        subject_ref: principal.principal_id,
+        subject_ref: principal.audit_subject_ref,
         capability_id: request.capability_id,
         permission_id: request.permission_id,
         status: payload.status,
