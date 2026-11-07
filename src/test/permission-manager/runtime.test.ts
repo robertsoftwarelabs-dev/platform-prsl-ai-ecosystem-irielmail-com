@@ -113,8 +113,17 @@ describe("PermissionManagerRuntime.evaluate",()=>{
   });
   it("requires a separate remote-disclosure authorization",async()=>{
     const remote:PermissionRequest={...request,execution_mode:"remote",resource_scope:{...request.resource_scope,recipient:"provider:approved-service"}};
+    const remoteCapability:RegisteredCapability={
+      ...capability,
+      manifest:{
+        ...capability.manifest,
+        permissions:["media.read","data.remote_disclose"],
+        dependencies:{permission:[{id:"media.read",required:true},{id:"data.remote_disclose",required:true}]},
+        execution_policy:{...capability.manifest.execution_policy,execution_modes:["remote"]},
+      },
+    };
     const p=ports({
-      registry:{resolve:vi.fn(async()=>({...capability,manifest:{...capability.manifest,permissions:["media.read","data.remote_disclose"],dependencies:{permission:[{id:"media.read",required:true},{id:"data.remote_disclose",required:true}]},execution_policy:{...capability.manifest.execution_policy,execution_modes:["remote"]}}}))},
+      registry:{resolve:vi.fn(async()=>remoteCapability)},
       policy:{evaluate:vi.fn(async()=>({...policy,remote_disclosure_required:true}))},
       remoteDisclosure:{verify:vi.fn(async()=>({status:"required" as const}))},
     });
