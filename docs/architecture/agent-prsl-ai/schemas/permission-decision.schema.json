@@ -335,6 +335,33 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "permission_id": {
+            "const": "data.remote_disclose"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "execution_mode": {
+            "enum": [
+              "remote",
+              "hybrid"
+            ]
+          },
+          "approved_scope": {
+            "required": [
+              "recipient"
+            ]
+          }
+        },
+        "required": [
+          "execution_mode"
+        ]
+      }
     }
   ]
 }
