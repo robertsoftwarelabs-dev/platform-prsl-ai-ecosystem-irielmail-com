@@ -26,6 +26,10 @@ The governing separation is:
 |---|---|
 | [Capability Contract v1.0](./capability-contract.md) | Shared contract for identity, schemas, permissions, dependencies, availability, and execution policy. |
 | [Capability Catalog](./capability-catalog.md) | Initial module and interface inventory with candidate capability operations. |
+| [Capability Registry Specification](./registry-specification.md) | Registration, discovery, lifecycle, and dispatch governance. |
+| [Capability Manifest JSON Schema](./schemas/capability-manifest.schema.json) | Machine-readable validation schema for capability manifests. |
+| [Validated Vision example](./examples/vision-analyze-image.manifest.json) | Representative manifest using the shared contract. |
+| [Validation instructions](./validation/README.md) | Local validation commands and CI behavior. |
 | [Apple Integration — Canonical Extension v5](./extensions/apple-integration-v5.md) | Controlled integration boundary for Apple technologies and system surfaces. |
 
 ## Canonical architecture flow
@@ -54,6 +58,12 @@ Do not use *Implemented* or *Verified* based only on documentation or a declared
 6. Memory separation: transient execution context does not automatically become persistent memory.
 7. Accessibility and inclusion are structural requirements, not optional presentation features.
 8. Human authority governs consent and consequential actions.
+
+## Validation
+
+A GitHub Actions workflow validates JSON syntax, JSON Schema conformance, unique capability identifiers, module/identifier consistency, and permission declaration consistency for example manifests on relevant pull requests.
+
+A passing documentation validation is not proof of a deployed runtime, provider connection, permission grant, or operational capability.
 
 ## Scope note
 
