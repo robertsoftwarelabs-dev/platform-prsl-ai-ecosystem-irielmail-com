@@ -326,6 +326,9 @@ export interface PermissionManagerPorts {
       request: PermissionRequest;
       principal: AuthenticatedPrincipal;
       currentApprovedScope: ResourceScope;
+      currentPolicyVersion: string;
+      registryId: string;
+      manifestDigest: string;
     }): Promise<DecisionVerification>;
   };
   audit: { record(event: PermissionAuditEvent): Promise<void> };
@@ -380,7 +383,9 @@ export class PermissionManagerRuntime {
       if (!scopeIsNoBroaderThan(policy.approved_scope, request.resource_scope))
         return this.issueNonGrant(request, principal, "policy_blocked", "POLICY_SCOPE_MISSING_OR_WIDENED", policy.policy_version);
 
-      const evidenceRefs: string[] = [];
+      const evidenceRefs: string[] = [
+        "registry:" + capability!.registry_id + ":" + capability!.manifest_digest,
+      ];
       if (capability!.manifest.execution_policy.confirmation_required) {
         const confirmation = await this.ports.confirmation.verify(request, principal);
         if (confirmation.status !== "valid") {
@@ -534,6 +539,9 @@ export class PermissionManagerRuntime {
         request,
         principal,
         currentApprovedScope: policy.approved_scope,
+        currentPolicyVersion: policy.policy_version,
+        registryId: capability!.registry_id,
+        manifestDigest: capability!.manifest_digest,
       });
       if (verification !== "valid")
         return { eligible: false, reason_code: "DECISION_" + verification.toUpperCase() };
