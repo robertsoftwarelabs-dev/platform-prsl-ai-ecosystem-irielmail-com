@@ -20,29 +20,6 @@
       "source": {
         "const": "device_location"
       },
-      "place_reference": {
-        "type": "string"
-      },
-      "coordinates": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": [
-          "latitude",
-          "longitude"
-        ],
-        "properties": {
-          "latitude": {
-            "type": "number",
-            "minimum": -90,
-            "maximum": 90
-          },
-          "longitude": {
-            "type": "number",
-            "minimum": -180,
-            "maximum": 180
-          }
-        }
-      },
       "requested_precision": {
         "const": "approximate"
       },
