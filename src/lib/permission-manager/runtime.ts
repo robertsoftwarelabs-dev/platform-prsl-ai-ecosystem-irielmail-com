@@ -327,21 +327,25 @@ export class PermissionManagerRuntime {
   private async issue(payload:PermissionDecision,request:PermissionRequest,principal:AuthenticatedPrincipal):Promise<EvaluationResult> {
     const validated=permissionDecisionSchema.safeParse(payload);
     if(!validated.success) return {status:"rejected",reason_code:"DECISION_CONTRACT_INVALID"};
-    await this.ports.audit.record({
-      event_type:"decision_issuance_requested",
-      request_id:request.request_id,
-      decision_id:payload.decision_id,
-      subject_ref:principal.principal_id,
-      capability_id:request.capability_id,
-      permission_id:request.permission_id,
-      status:payload.status,
-      reason_code:payload.reason_code,
-      policy_version:payload.policy_version,
-      occurred_at:this.now().toISOString(),
-    });
-    const issued=permissionDecisionSchema.safeParse(await this.ports.decisionAuthority.issue(validated.data));
-    if(!issued.success||!sameDecisionBinding(validated.data,issued.data)) return {status:"rejected",reason_code:"DECISION_AUTHORITY_UNVERIFIABLE"};
-    return {status:"issued",decision:issued.data};
+    try {
+      await this.ports.audit.record({
+        event_type:"decision_issuance_requested",
+        request_id:request.request_id,
+        decision_id:payload.decision_id,
+        subject_ref:principal.principal_id,
+        capability_id:request.capability_id,
+        permission_id:request.permission_id,
+        status:payload.status,
+        reason_code:payload.reason_code,
+        policy_version:payload.policy_version,
+        occurred_at:this.now().toISOString(),
+      });
+      const issued=permissionDecisionSchema.safeParse(await this.ports.decisionAuthority.issue(validated.data));
+      if(!issued.success||!sameDecisionBinding(validated.data,issued.data)) return {status:"rejected",reason_code:"DECISION_AUTHORITY_UNVERIFIABLE"};
+      return {status:"issued",decision:issued.data};
+    } catch {
+      return {status:"rejected",reason_code:"RUNTIME_DEPENDENCY_UNAVAILABLE"};
+    }
   }
 }
 
