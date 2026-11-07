@@ -72,7 +72,8 @@ These are logical API proposals, not existing deployed endpoints.
 - Require authorized publisher identity for write operations.
 - Verify manifest digest and version during dispatch.
 - Re-check lifecycle status, availability, permissions, and execution policy at runtime.
-- Do not route to entries marked `proposed`, `specified`, `in_development`, or `deprecated`.\n- Dispatch only a registered record whose manifest lifecycle state is `verified`, whose manifest digest is current, and whose validation and policy-review statuses are passing/approved.
+- Do not route to entries marked `proposed`, `specified`, `in_development`, or `deprecated`.
+- Dispatch only a registered record whose manifest lifecycle state is `verified`, whose manifest digest is current, and whose validation and policy-review statuses are passing/approved.
 - Treat registry data and all external metadata as untrusted until validated.
 
 ## 8. Security and privacy
