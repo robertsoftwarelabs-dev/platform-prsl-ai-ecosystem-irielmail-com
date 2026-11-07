@@ -132,6 +132,7 @@ describe("PermissionManagerRuntime.evaluate", () => {
     );
     expect(p.decisionAuthority.issue).toHaveBeenCalledOnce();
     expect(p.audit.record).toHaveBeenCalledOnce();
+    expect(p.audit.record).toHaveBeenCalledWith(expect.objectContaining({ subject_ref: "subject-hash:test-user-01" }));
   });
   it("rejects malformed requests and unknown fields before authentication", async () => {
     const p = ports();
@@ -167,6 +168,52 @@ describe("PermissionManagerRuntime.evaluate", () => {
       expect(result.decision.approved_scope).toBeUndefined();
     }
     expect(p.policy.evaluate).not.toHaveBeenCalled();
+  });
+  it("blocks registry records whose manifest digest has not been verified", async () => {
+    const p = ports({
+      registry: {
+        resolve: vi.fn(async () => ({ ...capability, digest_verified: false })),
+      },
+    });
+    const result = await runtime(p).evaluate(request, {});
+    expect(result.status).toBe("issued");
+    if (result.status === "issued")
+      expect(result.decision.reason_code).toBe("CAPABILITY_DIGEST_NOT_VERIFIED");
+    expect(p.policy.evaluate).not.toHaveBeenCalled();
+  });
+  it("requires explicit user confirmation when the capability policy requires it", async () => {
+    const p = ports({
+      registry: {
+        resolve: vi.fn(async () => ({
+          ...capability,
+          manifest: {
+            ...capability.manifest,
+            execution_policy: { ...capability.manifest.execution_policy, confirmation_required: true },
+          },
+        })),
+      },
+      confirmation: { verify: vi.fn(async () => ({ status: "required" as const })) },
+    });
+    const result = await runtime(p).evaluate(request, {});
+    expect(result.status).toBe("issued");
+    if (result.status === "issued") {
+      expect(result.decision.status).toBe("consent_required");
+      expect(result.decision.reason_code).toBe("USER_CONFIRMATION_REQUIRED");
+    }
+    expect(p.consent.verify).not.toHaveBeenCalled();
+  });
+  it("rejects location requests that omit the requested precision", async () => {
+    const locationRequest = {
+      ...request,
+      permission_id: "location.coarse",
+      resource_scope: { resource_type: "location", scope_mode: "bounded", boundary: "current area" },
+    };
+    const p = ports();
+    expect(await runtime(p).evaluate(locationRequest, {})).toEqual({
+      status: "rejected",
+      reason_code: "INVALID_REQUEST",
+    });
+    expect(p.authenticator.authenticate).not.toHaveBeenCalled();
   });
   it("blocks permissions absent from the registered manifest", async () => {
     const p = ports({
