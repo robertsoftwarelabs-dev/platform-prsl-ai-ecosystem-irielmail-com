@@ -113,27 +113,41 @@ export function validateDecisionBinding(
   if (request.schema_version !== "1.0" || decision.schema_version !== "1.0") {
     return fail("SCHEMA_VERSION_MISMATCH");
   }
-  if (decision.status !== "granted") return fail("DECISION_NOT_GRANTED");
-  if (decision.request_id !== request.request_id) return fail("REQUEST_BINDING_MISMATCH");
+  if (decision.status !== "granted") {
+    return fail("DECISION_NOT_GRANTED");
+  }
+  if (decision.request_id !== request.request_id) {
+    return fail("REQUEST_BINDING_MISMATCH");
+  }
 
   if (
     decision.subject.principal_type !== request.subject.principal_type ||
     decision.subject.principal_id !== request.subject.principal_id ||
     (decision.subject.session_id ?? null) !== (request.subject.session_id ?? null)
-  ) return fail("SUBJECT_MISMATCH");
+  ) {
+    return fail("SUBJECT_MISMATCH");
+  }
 
-  if (decision.capability_id !== request.capability_id) return fail("CAPABILITY_MISMATCH");
-  if (decision.permission_id !== request.permission_id) return fail("PERMISSION_MISMATCH");
+  if (decision.capability_id !== request.capability_id) {
+    return fail("CAPABILITY_MISMATCH");
+  }
+  if (decision.permission_id !== request.permission_id) {
+    return fail("PERMISSION_MISMATCH");
+  }
   if (
     decision.purpose.purpose_id !== request.purpose.purpose_id ||
     decision.purpose.description !== request.purpose.description
-  ) return fail("PURPOSE_MISMATCH");
+  ) {
+    return fail("PURPOSE_MISMATCH");
+  }
 
   if (decision.execution_mode !== request.execution_mode) {
     return fail("EXECUTION_MODE_MISMATCH");
   }
 
-  if (!decision.approved_scope) return fail("SCOPE_MISSING");
+  if (!decision.approved_scope) {
+    return fail("SCOPE_MISSING");
+  }
   if (!isScopeNoBroaderThan(decision.approved_scope, request.resource_scope)) {
     return fail("SCOPE_WIDENED");
   }
@@ -147,11 +161,19 @@ export function validateDecisionBinding(
     !Number.isFinite(expiresAt) ||
     !Number.isFinite(nowMs) ||
     expiresAt <= issuedAt
-  ) return fail("INVALID_TIME_WINDOW");
+  ) {
+    return fail("INVALID_TIME_WINDOW");
+  }
 
-  if (nowMs < issuedAt) return fail("DECISION_NOT_YET_VALID");
-  if (nowMs >= expiresAt) return fail("DECISION_EXPIRED");
-  if (decision.single_use !== true) return fail("NOT_SINGLE_USE");
+  if (nowMs < issuedAt) {
+    return fail("DECISION_NOT_YET_VALID");
+  }
+  if (nowMs >= expiresAt) {
+    return fail("DECISION_EXPIRED");
+  }
+  if (decision.single_use !== true) {
+    return fail("NOT_SINGLE_USE");
+  }
 
   const maximumDurationSeconds =
     request.requested_duration.kind === "seconds"
@@ -168,16 +190,28 @@ function isScopeNoBroaderThan(
   approved: PermissionResourceScope,
   requested: PermissionResourceScope,
 ): boolean {
-  if (approved.resource_type !== requested.resource_type) return false;
-  if (approved.scope_mode !== requested.scope_mode) return false;
+  if (approved.resource_type !== requested.resource_type) {
+    return false;
+  }
+  if (approved.scope_mode !== requested.scope_mode) {
+    return false;
+  }
 
   if (requested.scope_mode === "exact") {
     const requestedIds = requested.resource_ids ?? [];
     const approvedIds = approved.resource_ids ?? [];
-    if (requestedIds.length === 0 || approvedIds.length === 0) return false;
-    if (new Set(requestedIds).size !== requestedIds.length) return false;
-    if (new Set(approvedIds).size !== approvedIds.length) return false;
-    if (!approvedIds.every((id) => requestedIds.includes(id))) return false;
+    if (requestedIds.length === 0 || approvedIds.length === 0) {
+      return false;
+    }
+    if (new Set(requestedIds).size !== requestedIds.length) {
+      return false;
+    }
+    if (new Set(approvedIds).size !== approvedIds.length) {
+      return false;
+    }
+    if (!approvedIds.every((id) => requestedIds.includes(id))) {
+      return false;
+    }
   } else if (approved.boundary !== requested.boundary || !approved.boundary) {
     return false;
   }
@@ -191,16 +225,26 @@ function isScopeNoBroaderThan(
     }
   }
 
-  if (requested.recipient !== approved.recipient) return false;
+  if (requested.recipient !== approved.recipient) {
+    return false;
+  }
 
   if (requested.retention) {
-    if (!approved.retention) return false;
-    if (approved.retention.storage_scope !== requested.retention.storage_scope) return false;
-    if (approved.retention.duration_seconds > requested.retention.duration_seconds) return false;
+    if (!approved.retention) {
+      return false;
+    }
+    if (approved.retention.storage_scope !== requested.retention.storage_scope) {
+      return false;
+    }
+    if (approved.retention.duration_seconds > requested.retention.duration_seconds) {
+      return false;
+    }
     if (
       requested.retention.deletion_trigger &&
       approved.retention.deletion_trigger !== requested.retention.deletion_trigger
-    ) return false;
+    ) {
+      return false;
+    }
   } else if (approved.retention) {
     return false;
   }
