@@ -24,7 +24,7 @@ This directory contains the canonical architecture definitions and technical spe
 
 - **Robert Software Labs** is the creator and institutional owner.
 - **PRSL-AI Ecosystem** defines the shared platform architecture, policy, and reusable capabilities.
-- **iRiel** coordinates the personal intelligence environment and the user's experience.
+- **iRiel** coordinates the Powerfully Intelligence Environment and the user's experience.
 - **Agent PRSL-AI** performs specialized PRSL-AI platform assistance within its declared scope.
 - **The model** provides inference and remains replaceable.
 - **The Intelligence Router** selects eligible execution candidates; it does not authorize protected operations.
