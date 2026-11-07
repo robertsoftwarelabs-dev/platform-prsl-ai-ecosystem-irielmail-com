@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "description": "Deterministic contract-level gate scenarios. The verified registry record is synthetic test data; no production capability is registered by these vectors.",
   "gate_cases": [
     {
@@ -113,6 +112,14 @@
       "state": "completed",
       "verification_status": "passed",
       "include_observation": false
+    },
+    {
+      "name": "ready envelope missing a required permission check is rejected",
+      "valid": false,
+      "state": "ready",
+      "verification_status": "not_started",
+      "include_observation": false,
+      "omit_permission_check": true
     }
   ]
 }
