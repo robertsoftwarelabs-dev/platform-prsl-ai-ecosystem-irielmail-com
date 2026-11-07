@@ -22,7 +22,7 @@
       }
     },
     "capability_id": { "type": "string", "pattern": "^prsl\\.(agent|integration)\\.[a-z0-9]+(?:-[a-z0-9]+)*(?:\\.[a-z0-9]+(?:-[a-z0-9]+)*)+$" },
-    "permission_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(?:\\.[a-z][a-z0-9_]*)+$" },
+    "permission_id": { "enum": ["media.read","camera.use","microphone.use","location.coarse","location.precise","files.read","files.write","notifications.schedule","network.access","tools.execute","system.invoke","accessibility.read","speech.output"] },
     "approved_scope": {
       "type": "object",
       "additionalProperties": false,
