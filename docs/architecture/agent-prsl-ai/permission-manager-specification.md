@@ -62,7 +62,7 @@ Initial vocabulary (extensible through reviewed governance):
 | `accessibility.read` | Read content through an authorized accessibility interface |
 | `speech.output` | Produce spoken output |
 
-A permission may require additional scope attributes, such as resource identifiers, directory boundaries, location precision, duration, or operation purpose. A bare permission string is not sufficient evidence of a grant.
+A permission may require additional scope attributes, such as resource identifiers, directory boundaries, location precision, recipient identity, retention duration, or operation purpose. `data.remote_disclose` must bind the exact recipient; `data.retain` must bind a storage scope and maximum retention duration. A bare permission string is not sufficient evidence of a grant.
 
 ## 5. Request contract
 
