@@ -242,6 +242,38 @@
           "kind": "single_operation"
         }
       }
+    },
+    {
+      "name": "reject remote disclosure requested as on-device",
+      "valid": false,
+      "value": {
+        "schema_version": "1.0",
+        "request_id": "4d2d4e7e-9c0e-4d50-a2a1-6d5f2f6c8c19",
+        "subject": {
+          "principal_type": "user",
+          "principal_id": "user-pseudonymous-01"
+        },
+        "capability_id": "prsl.agent.reader.extract-document-content",
+        "permission_id": "data.remote_disclose",
+        "action": "send_minimized_text",
+        "resource_scope": {
+          "resource_type": "document",
+          "scope_mode": "exact",
+          "resource_ids": [
+            "document-ref-01"
+          ],
+          "recipient": "provider:approved-translation-service"
+        },
+        "purpose": {
+          "purpose_id": "translate_document",
+          "description": "Translate the selected document."
+        },
+        "data_classification": "sensitive",
+        "execution_mode": "on_device",
+        "requested_duration": {
+          "kind": "single_operation"
+        }
+      }
     }
   ],
   "decision_cases": [
