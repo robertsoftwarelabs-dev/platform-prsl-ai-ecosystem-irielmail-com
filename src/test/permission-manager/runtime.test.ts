@@ -23,10 +23,12 @@ const request: PermissionRequest = {
 const principal: AuthenticatedPrincipal = {
   ...request.subject,
   authentication_method: "verified-test-session",
+  audit_subject_ref: "subject-hash:test-user-01",
 };
 const capability: RegisteredCapability = {
   registry_id: "registry-vision-01",
   manifest_digest: "sha256:synthetic",
+  digest_verified: true,
   registered: true,
   validation_status: "passing",
   review_status: "approved",
@@ -56,6 +58,9 @@ function ports(overrides: Partial<PermissionManagerPorts> = {}): PermissionManag
     authenticator: { authenticate: vi.fn(async () => principal) },
     registry: { resolve: vi.fn(async () => capability) },
     policy: { evaluate: vi.fn(async () => policy) },
+    confirmation: {
+      verify: vi.fn(async () => ({ status: "valid", evidence_ref: "confirmation:test" }) as const),
+    },
     consent: {
       verify: vi.fn(async () => ({ status: "valid", evidence_ref: "consent:test" }) as const),
     },
@@ -77,6 +82,7 @@ function ports(overrides: Partial<PermissionManagerPorts> = {}): PermissionManag
     authenticator: overrides.authenticator ?? base.authenticator,
     registry: overrides.registry ?? base.registry,
     policy: overrides.policy ?? base.policy,
+    confirmation: overrides.confirmation ?? base.confirmation,
     consent: overrides.consent ?? base.consent,
     nativePermissions: overrides.nativePermissions ?? base.nativePermissions,
     remoteDisclosure: overrides.remoteDisclosure ?? base.remoteDisclosure,
