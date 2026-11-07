@@ -111,6 +111,7 @@ export interface PolicyEvaluation {
   reason_code:string;
   consent_required:boolean;
   native_permission_required:boolean;
+  remote_disclosure_required:boolean;
   explanation?:string;
 }
 export type ConsentVerification =
@@ -140,6 +141,7 @@ export interface PermissionManagerPorts {
   policy:{evaluate(request:PermissionRequest,capability:RegisteredCapability):Promise<PolicyEvaluation>};
   consent:{verify(request:PermissionRequest,principal:AuthenticatedPrincipal):Promise<ConsentVerification>};
   nativePermissions:{verify(request:PermissionRequest,principal:AuthenticatedPrincipal):Promise<NativePermissionVerification>};
+  remoteDisclosure:{verify(request:PermissionRequest,principal:AuthenticatedPrincipal):Promise<ConsentVerification>};
   decisionAuthority:{
     issue(decision:PermissionDecision):Promise<unknown>;
     verifyAndConsume(input:{decisionId:string;request:PermissionRequest;principal:AuthenticatedPrincipal}):Promise<DecisionVerification>;
@@ -197,9 +199,19 @@ export class PermissionManagerRuntime {
         evidenceRefs.push(consent.evidence_ref);
       }
 
+      if(policy.remote_disclosure_required) {
+        const disclosure=await this.ports.remoteDisclosure.verify(request,principal);
+        if(disclosure.status!=="valid") {
+          const status=disclosure.status==="unavailable"?"indeterminate":"policy_blocked";
+          const reason=disclosure.status==="unavailable"?"REMOTE_DISCLOSURE_EVIDENCE_UNAVAILABLE":"REMOTE_DISCLOSURE_NOT_AUTHORIZED";
+          return this.issueNonGrant(request,principal,status,reason,policy.policy_version);
+        }
+        evidenceRefs.push(disclosure.evidence_ref);
+      }
+
       if(policy.native_permission_required) {
         const native=await this.ports.nativePermissions.verify(request,principal);
-        if(native.status!=="granted"&&native.status!=="not_applicable") {
+        if(native.status!=="granted") {
           const status=native.status==="required"||native.status==="denied"?"platform_permission_required":"indeterminate";
           const reason=native.status==="unavailable"?"NATIVE_PERMISSION_UNAVAILABLE":"NATIVE_PERMISSION_REQUIRED";
           return this.issueNonGrant(request,principal,status,reason,policy.policy_version);
@@ -255,9 +267,13 @@ export class PermissionManagerRuntime {
         const consent=await this.ports.consent.verify(request,principal);
         if(consent.status!=="valid") return {eligible:false,reason_code:"CONSENT_NOT_VALID"};
       }
+      if(policy.remote_disclosure_required) {
+        const disclosure=await this.ports.remoteDisclosure.verify(request,principal);
+        if(disclosure.status!=="valid") return {eligible:false,reason_code:"REMOTE_DISCLOSURE_NOT_AUTHORIZED"};
+      }
       if(policy.native_permission_required) {
         const native=await this.ports.nativePermissions.verify(request,principal);
-        if(native.status!=="granted"&&native.status!=="not_applicable") return {eligible:false,reason_code:"NATIVE_PERMISSION_NOT_VALID"};
+        if(native.status!=="granted") return {eligible:false,reason_code:"NATIVE_PERMISSION_NOT_VALID"};
       }
 
       // This trusted operation must atomically check revocation/expiry/binding
@@ -349,7 +365,16 @@ function sameDecisionBinding(expected:PermissionDecision,actual:PermissionDecisi
     samePrincipal(actual.subject,expected.subject)&&actual.capability_id===expected.capability_id&&actual.permission_id===expected.permission_id&&
     actual.purpose.purpose_id===expected.purpose.purpose_id&&actual.purpose.description===expected.purpose.description&&
     actual.execution_mode===expected.execution_mode&&actual.issued_at===expected.issued_at&&actual.expires_at===expected.expires_at&&
-    actual.single_use===expected.single_use&&actual.policy_version===expected.policy_version&&actual.reason_code===expected.reason_code;
+    actual.single_use===expected.single_use&&actual.policy_version===expected.policy_version&&actual.reason_code===expected.reason_code&&
+    canonicalJson(actual.approved_scope)===canonicalJson(expected.approved_scope)&&canonicalJson(actual.evidence_refs??[])===canonicalJson(expected.evidence_refs??[]);
+}
+function canonicalJson(value:unknown):string {
+  if(Array.isArray(value)) return "["+value.map(canonicalJson).join(",")+"]";
+  if(value&&typeof value==="object") {
+    const record=value as Record<string,unknown>;
+    return "{"+Object.keys(record).sort().map(key=>JSON.stringify(key)+":"+canonicalJson(record[key])).join(",")+"}";
+  }
+  return JSON.stringify(value);
 }
 function safeReason(value:string,fallback:string):string {
   return /^[A-Z][A-Z0-9_]{1,79}$/.test(value)?value:fallback;
