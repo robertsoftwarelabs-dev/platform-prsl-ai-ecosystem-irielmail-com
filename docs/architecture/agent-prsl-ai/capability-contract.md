@@ -228,7 +228,10 @@ Dependencies describe technical prerequisites. They do not confer authority.
     "service": [],
     "capability": [],
     "permission": [
-      "media.read"
+      {
+        "id": "media.read",
+        "required": true
+      }
     ]
   }
 }
