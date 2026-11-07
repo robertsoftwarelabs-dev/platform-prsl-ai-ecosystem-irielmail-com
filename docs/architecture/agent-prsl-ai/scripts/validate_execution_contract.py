@@ -38,12 +38,6 @@ def parse_time(value: str) -> datetime:
     return datetime.fromisoformat(value.replace("Z", "+00:00"))
 
 
-def merge_overrides(target: dict, overrides: dict) -> dict:
-    for key, value in overrides.items():
-        target[key] = value
-    return target
-
-
 def evaluate_gate(case: dict, manifest_template: dict, request_template: dict, decision_template: dict) -> tuple[bool, str, dict]:
     manifest = copy.deepcopy(manifest_template)
     manifest["lifecycle_status"] = case.get("manifest_lifecycle_status", "verified")
@@ -170,7 +164,12 @@ def validate_envelope_cases(cases: list[dict], manifest: dict, schema: dict) -> 
             envelope["verification"]["evidence_refs"] = ["verification:evidence-01"]
         if case["include_observation"]:
             envelope["observation_ref"] = "observation:result-01"
+        if case.get("omit_permission_check"):
+            envelope["permission_checks"] = []
         errors = list(validator.iter_errors(envelope))
+        checked_permissions = [item["permission_id"] for item in envelope["permission_checks"]]
+        if set(checked_permissions) != set(envelope["required_permissions"]) or len(checked_permissions) != len(set(checked_permissions)):
+            errors.append("permission_checks must cover each required permission exactly once")
         actual_valid = not errors
         if actual_valid != case["valid"]:
             failures += 1
