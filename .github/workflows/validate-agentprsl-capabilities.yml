@@ -53,3 +53,7 @@ jobs:
         run: bun install --frozen-lockfile
       - name: Run application and Permission Manager tests
         run: bun run test
+      - name: Type-check the application
+        run: bunx tsc --noEmit
+      - name: Lint the Permission Manager implementation
+        run: bunx eslint src/lib/permission-manager/decision-gate.ts src/test/permission-manager/decision-gate.test.ts

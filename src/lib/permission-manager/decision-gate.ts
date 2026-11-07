@@ -6,8 +6,8 @@
  * decision, issue grants, collect consent, inspect native OS permissions,
  * or replace server-side policy enforcement.
  *
- * Never treat this client-bundle-safe validator as proof of authorization.
- * Protected resource access must remain behind a trusted server/host boundary.
+ * Never treat this validator as proof of authorization. Protected resource
+ * access must remain behind a trusted server/host boundary.
  */
 
 export type ExecutionMode = "on_device" | "remote" | "hybrid";
@@ -78,6 +78,7 @@ export interface PermissionDecision {
 }
 
 export type DecisionGateFailure =
+  | "SCHEMA_VERSION_MISMATCH"
   | "DECISION_NOT_GRANTED"
   | "REQUEST_BINDING_MISMATCH"
   | "SUBJECT_MISMATCH"
@@ -96,16 +97,22 @@ export type DecisionGateResult =
   | { eligible: true; decision_id: string; request_id: string }
   | { eligible: false; reason: DecisionGateFailure };
 
+const MAX_SINGLE_OPERATION_TTL_SECONDS = 900;
+
 /**
  * Performs deterministic request/decision binding checks.
- * "eligible" means only that the returned grant matches this request;
+ * "eligible" means only that the supplied grant matches this request;
  * it is not an authorization token and does not prove decision authenticity.
+ * The caller must separately authenticate, validate, and consume the decision.
  */
 export function validateDecisionBinding(
   request: PermissionRequest,
   decision: PermissionDecision,
   now: Date = new Date(),
 ): DecisionGateResult {
+  if (request.schema_version !== "1.0" || decision.schema_version !== "1.0") {
+    return fail("SCHEMA_VERSION_MISMATCH");
+  }
   if (decision.status !== "granted") return fail("DECISION_NOT_GRANTED");
   if (decision.request_id !== request.request_id) return fail("REQUEST_BINDING_MISMATCH");
 
@@ -149,7 +156,7 @@ export function validateDecisionBinding(
   const maximumDurationSeconds =
     request.requested_duration.kind === "seconds"
       ? request.requested_duration.seconds
-      : 900;
+      : MAX_SINGLE_OPERATION_TTL_SECONDS;
   if (expiresAt - issuedAt > maximumDurationSeconds * 1000) {
     return fail("INVALID_TIME_WINDOW");
   }
@@ -168,16 +175,20 @@ function isScopeNoBroaderThan(
     const requestedIds = requested.resource_ids ?? [];
     const approvedIds = approved.resource_ids ?? [];
     if (requestedIds.length === 0 || approvedIds.length === 0) return false;
+    if (new Set(requestedIds).size !== requestedIds.length) return false;
+    if (new Set(approvedIds).size !== approvedIds.length) return false;
     if (!approvedIds.every((id) => requestedIds.includes(id))) return false;
   } else if (approved.boundary !== requested.boundary || !approved.boundary) {
     return false;
   }
 
-  const precisionRank = { coarse: 0, not_applicable: 0, precise: 1 } as const;
-  if (approved.precision && requested.precision) {
-    if (precisionRank[approved.precision] > precisionRank[requested.precision]) return false;
-  } else if (approved.precision !== requested.precision) {
-    return false;
+  if (approved.precision !== requested.precision) {
+    if (approved.precision === "not_applicable" || requested.precision === "not_applicable") {
+      return false;
+    }
+    if (approved.precision !== "coarse" || requested.precision !== "precise") {
+      return false;
+    }
   }
 
   if (requested.recipient !== approved.recipient) return false;

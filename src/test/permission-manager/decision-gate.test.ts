@@ -58,6 +58,7 @@ describe("validateDecisionBinding", () => {
   });
 
   it.each([
+    ["schema version mismatch", { schema_version: "2.0" }, "SCHEMA_VERSION_MISMATCH"],
     ["non-granted decision", { status: "policy_blocked" }, "DECISION_NOT_GRANTED"],
     ["request correlation mismatch", { request_id: "other" }, "REQUEST_BINDING_MISMATCH"],
     ["subject mismatch", { subject: { ...request.subject, principal_id: "other" } }, "SUBJECT_MISMATCH"],
@@ -149,6 +150,17 @@ describe("validateDecisionBinding", () => {
       },
     };
     expect(validateDecisionBinding(retentionRequest, retentionDecision, now)).toEqual({
+      eligible: false,
+      reason: "SCOPE_WIDENED",
+    });
+  });
+
+  it("rejects duplicate resource identifiers", () => {
+    const duplicateRequest = {
+      ...request,
+      resource_scope: { ...request.resource_scope, resource_ids: ["media-01", "media-01"] },
+    };
+    expect(validateDecisionBinding(duplicateRequest, decision, now)).toEqual({
       eligible: false,
       reason: "SCOPE_WIDENED",
     });
