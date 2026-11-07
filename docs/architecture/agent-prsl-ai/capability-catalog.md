@@ -267,7 +267,7 @@ A status transition to `implemented` or `verified` requires a code reference and
 ## 9. Next technical artifacts
 
 1. Per-module operation manifests and input/output schemas.
-2. Permission Manager contract.
+2. [Permission Manager Specification](./permission-manager-specification.md) — authorization authority, consent, scope, revocation, and enforcement.
 3. Dependency and Availability Resolver contracts.
 4. Execution Policy evaluation contract.
 5. Runtime implementation and acceptance tests.
