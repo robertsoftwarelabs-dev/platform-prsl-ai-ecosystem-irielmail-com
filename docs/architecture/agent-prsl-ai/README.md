@@ -3,6 +3,7 @@
 **Owner:** Robert Software Labs  
 **Ecosystem:** PRSL-AI Ecosystem  
 **Canonical agent identity:** `@prsl-ai.agent.prsl.ai`  
+**Parent platform identity:** `@prsl-ai.prsl.ai.ecosystem`  
 **Institutional signature:** Powerful by Robert Software Labs  
 **Document status:** Architecture specification; implementation status is component-specific
 
