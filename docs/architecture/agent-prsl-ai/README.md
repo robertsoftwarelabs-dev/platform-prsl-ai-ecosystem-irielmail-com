@@ -27,6 +27,7 @@ The governing separation is:
 | [Capability Contract v1.0](./capability-contract.md) | Shared contract for identity, schemas, permissions, dependencies, availability, and execution policy. |
 | [Capability Catalog](./capability-catalog.md) | Initial module and interface inventory with candidate capability operations. |
 | [Capability Registry Specification](./registry-specification.md) | Registration, discovery, lifecycle, and dispatch governance. |
+| [Permission Manager Specification](./permission-manager-specification.md) | Authorization decisions, consent lifecycle, native permission checks, revocation, delegation, and fail-closed enforcement. |
 | [Capability Manifest JSON Schema](./schemas/capability-manifest.schema.json) | Machine-readable validation schema for capability manifests. |
 | Capability manifests | [Vision](./examples/vision-analyze-image.manifest.json) · [Voice](./examples/voice-synthesize-speech.manifest.json) · [Location](./examples/location-resolve-location.manifest.json) · [Recognizers](./examples/recognizers-classify-content.manifest.json) · [Tools](./examples/tools-evaluate-tool.manifest.json) · [Creative](./examples/creative-generate-text.manifest.json) · [Reader](./examples/reader-extract-document-content.manifest.json). All seven are specified examples, not implementation claims. |
 | [Validation instructions](./validation/README.md) | Local validation commands and CI behavior. |
