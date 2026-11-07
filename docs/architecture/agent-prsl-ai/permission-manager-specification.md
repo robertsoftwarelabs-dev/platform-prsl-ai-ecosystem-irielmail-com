@@ -217,3 +217,49 @@ Potential logical operations (not deployed endpoints):
 The implementation must define authenticated transport, token format, cryptographic integrity, storage, concurrency, revocation propagation, and platform-specific adapters before production use.
 
 This specification defines expected behavior only. It does not assert that a Permission Manager runtime, consent store, token issuer, native permission adapter, or production endpoint exists.
+
+## 16. Normative machine-readable contracts
+
+The machine-readable request and decision contracts are:
+
+- [Permission Request JSON Schema](./schemas/permission-request.schema.json)
+- [Permission Decision JSON Schema](./schemas/permission-decision.schema.json)
+- [Positive and negative contract vectors](./validation/permission-manager-cases.json)
+
+Both schemas use JSON Schema Draft 2020-12. Unknown properties are rejected. Permission identifiers are restricted to the reviewed vocabulary in the schemas; extending that vocabulary requires a reviewed change to the specification, both schemas, capability manifests where applicable, and validation vectors.
+
+### Request boundary
+
+A request is a proposal for one protected operation. It is not a grant. It binds the authenticated principal, exact Capability ID, one permission identifier, action, bounded resource scope, purpose, data classification, execution mode, and bounded duration. Requests with an unbounded resource scope or a purpose that cannot be explained to the user are invalid.
+
+### Decision boundary
+
+A decision is an authorization outcome, not a reusable credential. A granted decision must include an approved scope, execution mode, issue time, expiry time, and single-use policy. The decision must remain bound to the originating request, subject, capability, permission, purpose, and policy version. The execution boundary must verify the decision with the trusted Permission Manager; a capability must not treat a client-supplied decision object as self-authenticating proof.
+
+A non-granted decision must not include an approved scope. A grant whose expiry is not later than its issue time is invalid.
+
+## 17. Mandatory execution gate
+
+Every protected operation must pass this gate immediately before resource access:
+
+1. Validate the invocation envelope and capability manifest.
+2. Confirm the capability is `verified` and dispatch-eligible under registry policy.
+3. Submit a permission request to the Permission Manager.
+4. Require a `granted` decision whose subject, Capability ID, permission, purpose, scope, execution mode, and validity match the invocation exactly or are narrower.
+5. Independently verify native operating-system or host permission when applicable.
+6. Re-evaluate current policy and revocation state at the execution boundary.
+7. Permit only the authorized operation; reject scope expansion, replay, stale decisions, and mismatched request IDs.
+
+If the Permission Manager cannot be reached, its response cannot be verified, or any binding is ambiguous, execution is denied. There is no direct module-to-resource bypass path.
+
+## 18. Permission authority and change control
+
+The Permission Manager is the only component allowed to issue PRSL-AI authorization decisions. iRiel remains the authority for user consent and revocation intent; the operating system remains the authority for native grants; PRSL-AI policy remains the authority for policy constraints. These authorities are complementary and cannot impersonate one another.
+
+Capabilities may declare required permissions but cannot create, edit, approve, or broaden permission vocabulary, consent evidence, policy, or authorization decisions. Permission vocabulary and policy changes require reviewed governance and validation.
+
+## 19. Implementation readiness boundary
+
+This documentation establishes contracts and acceptance tests, not an operational authorization service. Before protected operations can be enabled, an implementation must provide authenticated request transport, trusted registry resolution, policy evaluation, consent evidence verification, native permission adapters, decision integrity and replay protection, revocation propagation, audit minimization, and execution-boundary enforcement.
+
+Until those controls are implemented and independently verified, the Permission Manager status remains `specified` and protected runtime execution must remain disabled or fail closed.
