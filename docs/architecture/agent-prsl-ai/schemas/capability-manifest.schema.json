@@ -271,7 +271,7 @@
           "type": "array",
           "uniqueItems": true,
           "items": {
-            "type": "string"
+            "$ref": "#/$defs/dependencyRef"
           }
         }
       }
