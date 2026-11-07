@@ -31,7 +31,7 @@ The Registry must not:
 
 `draft → schema_validated → policy_reviewed → registered → deprecated`
 
-A registration is not eligible for routing until it is schema-valid, policy-reviewed, and in an eligible lifecycle state. `proposed` and `specified` entries are documentation/discovery records only and must not be dispatched as executable capabilities.
+A registration is not eligible for routing until it is schema-valid, policy-reviewed, and in an eligible lifecycle state. `proposed`, `specified`, `in_development`, and `deprecated` entries are documentation or development records only and must not be dispatched as executable capabilities. For protected execution, the manifest lifecycle state must be `verified`, the registry record must be `registered`, `validation_status` must be passing, and `review_status` must be approved. No other manifest lifecycle state is dispatch-eligible.
 
 ## 5. Registry record
 
@@ -67,12 +67,12 @@ These are logical API proposals, not existing deployed endpoints.
 
 ## 7. Registration and dispatch controls
 
-- Validate the complete manifest before registration.
+- Validate the complete manifest before registration, including compiling each embedded `input_schema` and `output_schema` with a Draft 2020-12 validator equivalent to `Draft202012Validator.check_schema`; validating only the outer manifest is insufficient.
 - Enforce uniqueness and immutable identity semantics.
 - Require authorized publisher identity for write operations.
 - Verify manifest digest and version during dispatch.
 - Re-check lifecycle status, availability, permissions, and execution policy at runtime.
-- Do not route to entries marked `proposed`, `specified`, or `deprecated`.
+- Do not route to entries marked `proposed`, `specified`, `in_development`, or `deprecated`.\n- Dispatch only a registered record whose manifest lifecycle state is `verified`, whose manifest digest is current, and whose validation and policy-review statuses are passing/approved.
 - Treat registry data and all external metadata as untrusted until validated.
 
 ## 8. Security and privacy
@@ -92,7 +92,7 @@ Registry unavailability must fail closed for new dispatches unless a separately 
 1. Duplicate IDs are rejected.
 2. Invalid manifests are rejected with actionable validation errors.
 3. Discovery returns only records visible to the caller.
-4. Proposed and deprecated capabilities cannot be dispatched.
+4. Proposed, specified, in-development, and deprecated capabilities cannot be dispatched; only verified manifests on approved registered records are eligible.
 5. Registry registration does not imply permission or availability.
 6. Manifest version and digest are available to the Router.
 7. Revocation is enforced at dispatch time.
