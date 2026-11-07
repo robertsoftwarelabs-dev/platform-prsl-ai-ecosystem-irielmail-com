@@ -177,7 +177,9 @@ Permissions are scoped declarations of authority required by an operation. They 
 | `files.read` | Read authorized files. |
 | `files.write` | Create or modify authorized files. |
 | `notifications.schedule` | Schedule notifications or reminders. |
-| `network.access` | Access network resources. |\n| `data.remote_disclose` | Disclose protected data to a remote provider or service for a specific authorized operation. |\n| `data.retain` | Retain data beyond the transient operation under an explicit scope. |
+| `network.access` | Access network resources. |
+| `data.remote_disclose` | Disclose protected data to a remote provider or service for a specific authorized operation. |
+| `data.retain` | Retain data beyond the transient operation under an explicit scope. |
 | `tools.execute` | Execute an approved tool. |
 | `system.invoke` | Invoke an approved operating-system surface. |
 | `accessibility.read` | Read content through authorized accessibility interfaces. |
