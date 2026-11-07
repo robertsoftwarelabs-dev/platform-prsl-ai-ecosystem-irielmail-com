@@ -3,7 +3,9 @@
 **Classification:** Initial architecture catalog  
 **Owner:** Robert Software Labs  
 **Parent identity:** `@AgentPRSL-AI`  
-**Contract:** [Canonical Capability Contract v1.0](./capability-contract.md)
+**Contract:** [Canonical Capability Contract v1.0](./capability-contract.md)  
+**Registry:** [Capability Registry Specification](./registry-specification.md)  
+**Manifest schema:** [Capability Manifest JSON Schema](./schemas/capability-manifest.schema.json)
 
 ## 1. Purpose
 
@@ -42,6 +44,8 @@ Typical input: authorized image or frame reference, analysis intent, language, a
 Typical output: structured visual description, extracted information, confidence or uncertainty indicators, and limitations.
 
 Potential permissions: `media.read`, `camera.use`, and operation-specific accessibility permissions.
+
+[Representative manifest](./examples/vision-analyze-image.manifest.json).
 
 ### 3.2 Voice Intelligence
 
@@ -248,9 +252,8 @@ A status transition to `implemented` or `verified` requires a code reference and
 
 ## 9. Next technical artifacts
 
-1. Machine-readable JSON Schema for the Capability Manifest.
-2. Capability Registry interface and discovery contract.
-3. Permission Manager contract.
-4. Dependency and Availability Resolver contracts.
-5. Execution Policy evaluation contract.
-6. Per-module input/output schemas and acceptance tests.
+1. Per-module operation manifests and input/output schemas.
+2. Permission Manager contract.
+3. Dependency and Availability Resolver contracts.
+4. Execution Policy evaluation contract.
+5. Runtime implementation and acceptance tests.
