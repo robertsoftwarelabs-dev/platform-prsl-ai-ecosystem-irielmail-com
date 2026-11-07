@@ -54,7 +54,7 @@ Initial vocabulary (extensible through reviewed governance):
 | `files.read` | Read files within an authorized scope |
 | `files.write` | Create or modify files within an authorized scope |
 | `notifications.schedule` | Schedule notifications or reminders |
-| `network.access` | Access network resources |
+| `network.access` | Access network resources |\n| `data.remote_disclose` | Disclose authorized data to a remote provider or service for a specifically authorized operation |\n| `data.retain` | Retain data beyond the transient operation under an explicitly approved retention scope |
 | `tools.execute` | Invoke an approved tool |
 | `system.invoke` | Invoke an approved operating-system surface |
 | `accessibility.read` | Read content through an authorized accessibility interface |
@@ -152,9 +152,10 @@ Delegation cannot widen this intersection. A child operation that needs addition
 
 ## 11. Remote processing and data boundaries
 
-Permission to access a local resource is not permission to transmit its contents.
+Permission to access a local resource is not permission to transmit or retain its contents. Remote disclosure requires the separately declared `data.remote_disclose` permission and an independent policy/consent decision. Retention beyond the transient operation requires `data.retain` and an explicit retention scope.
 
 Before any remote or hybrid route:
+- require the operation to declare `data.remote_disclose` where protected user data leaves the device;
 - evaluate the remote-processing policy independently;
 - identify the data to be disclosed and the receiving provider/service;
 - minimize or transform the payload where possible;
