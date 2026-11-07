@@ -1,318 +1,612 @@
-ÛMº×];Omxó]:ë®uóVZ[\ÜÈHÛHÙÂÛÛÝ\Z\ÜÚ[ÛYÈHÂYYXKXYØ[Y\K\ÙHZXÜÜÛK\ÙHØØ][ÛÛØ\ÙHØØ][ÛXÚ\ÙH[\ËXY[\ËÜ]HÝYXØ][ÛËØÚY[H]ÛÜËXØÙ\ÜÈ]K[[ÝWÙ\ØÛÜÙH]K]Z[ÛÛË^XÝ]HÞ\Ý[K[ÚÙHXØÙ\ÜÚX[]KXYÜYXÚÝ]]H\ÈÛÛÝÂÛÛÝ^XÝ][Û[Ù\ÈHÈÛÙ]XÙH[[ÝHXYH\ÈÛÛÝÂÛÛÝ[Ú\[ØÚ[XHHØXÝ
-Â[Ú\[Ý\N[[JÈ\Ù\Þ\Ý[HJK[Ú\[ÚYÝ[Ê
-KZ[JKX^
-M
-KÙ\ÜÚ[ÛÚYÝ[Ê
-KX^
-M
-K[XJ
-KÜ[Û[
+import { z } from "zod";
 
-KJBÝXÝ
+const permissionIds = [
+  "media.read",
+  "camera.use",
+  "microphone.use",
+  "location.coarse",
+  "location.precise",
+  "files.read",
+  "files.write",
+  "notifications.schedule",
+  "network.access",
+  "data.remote_disclose",
+  "data.retain",
+  "tools.execute",
+  "system.invoke",
+  "accessibility.read",
+  "speech.output",
+] as const;
+const executionModes = ["on_device", "remote", "hybrid"] as const;
+const principalSchema = z
+  .object({
+    principal_type: z.enum(["user", "system"]),
+    principal_id: z.string().min(1).max(160),
+    session_id: z.string().max(160).nullable().optional(),
+  })
+  .strict();
+const resourceScopeSchema = z
+  .object({
+    resource_type: z.string().min(1).max(100),
+    scope_mode: z.enum(["exact", "bounded"]),
+    resource_ids: z.array(z.string().min(1).max(512)).min(1).optional(),
+    boundary: z.string().min(1).max(512).optional(),
+    precision: z.enum(["coarse", "precise", "not_applicable"]).optional(),
+    recipient: z.string().min(1).max(256).optional(),
+    retention: z
+      .object({
+        duration_seconds: z.number().int().min(1).max(31536000),
+        storage_scope: z.string().min(1).max(256),
+        deletion_trigger: z.enum(["expiry", "user_revocation", "operation_completion"]).optional(),
+      })
+      .strict()
+      .optional(),
+  })
+  .strict()
+  .superRefine((scope, ctx) => {
+    if (scope.scope_mode === "exact" && !scope.resource_ids?.length)
+      ctx.addIssue({
+        code: "custom",
+        message: "Exact scope requires resource_ids.",
+        path: ["resource_ids"],
+      });
+    if (scope.scope_mode === "bounded" && !scope.boundary)
+      ctx.addIssue({
+        code: "custom",
+        message: "Bounded scope requires boundary.",
+        path: ["boundary"],
+      });
+    if (scope.resource_ids && new Set(scope.resource_ids).size !== scope.resource_ids.length)
+      ctx.addIssue({
+        code: "custom",
+        message: "Resource identifiers must be unique.",
+        path: ["resource_ids"],
+      });
+  });
+const purposeSchema = z
+  .object({
+    purpose_id: z.string().regex(/^[a-z][a-z0-9_.-]{1,79}$/),
+    description: z.string().min(1).max(500),
+  })
+  .strict();
 
-NÂÛÛÝ\ÛÝ\ÙTØÛÜTØÚ[XHHØXÝ
-Â\ÛÝ\ÙWÝ\NÝ[Ê
-KZ[JKX^
-L
-KØÛÜWÛ[ÙN[[JÈ^XÝÝ[YJK\ÛÝ\ÙWÚYÎ\^JÝ[Ê
-KZ[JKX^
-LLJKZ[JKÜ[Û[
+export const permissionRequestSchema = z
+  .object({
+    schema_version: z.literal("1.0"),
+    request_id: z.string().uuid(),
+    subject: principalSchema,
+    capability_id: z
+      .string()
+      .regex(
+        /^prsl\.(agent|integration)\.[a-z0-9]+(?:-[a-z0-9]+)*(?:\.[a-z0-9]+(?:-[a-z0-9]+)*)+$/,
+      ),
+    permission_id: z.enum(permissionIds),
+    action: z.string().min(1).max(160),
+    resource_scope: resourceScopeSchema,
+    purpose: purposeSchema,
+    data_classification: z.enum(["public", "internal", "personal", "sensitive", "restricted"]),
+    execution_mode: z.enum(executionModes),
+    requested_duration: z.discriminatedUnion("kind", [
+      z.object({ kind: z.literal("single_operation") }).strict(),
+      z.object({ kind: z.literal("seconds"), seconds: z.number().int().min(1).max(900) }).strict(),
+    ]),
+    context_ref: z.string().min(1).max(256).optional(),
+  })
+  .strict()
+  .superRefine((request, ctx) => {
+    if (request.permission_id === "data.remote_disclose") {
+      if (!request.resource_scope.recipient)
+        ctx.addIssue({
+          code: "custom",
+          message: "Remote disclosure must bind a recipient.",
+          path: ["resource_scope", "recipient"],
+        });
+      if (request.execution_mode === "on_device")
+        ctx.addIssue({
+          code: "custom",
+          message: "Remote disclosure requires remote or hybrid execution.",
+          path: ["execution_mode"],
+        });
+    }
+    if (request.permission_id === "data.retain" && !request.resource_scope.retention)
+      ctx.addIssue({
+        code: "custom",
+        message: "Retention requires an explicit retention scope.",
+        path: ["resource_scope", "retention"],
+      });
+  });
 
-KÝ[\NÝ[Ê
-KZ[JKX^
-LLKÜ[Û[
+const decisionStatus = z.enum([
+  "granted",
+  "denied",
+  "consent_required",
+  "platform_permission_required",
+  "policy_blocked",
+  "revoked",
+  "indeterminate",
+]);
+const permissionDecisionSchema = z
+  .object({
+    schema_version: z.literal("1.0"),
+    decision_id: z.string().uuid(),
+    request_id: z.string().uuid(),
+    status: decisionStatus,
+    subject: principalSchema,
+    capability_id: z.string(),
+    permission_id: z.enum(permissionIds),
+    approved_scope: resourceScopeSchema.optional(),
+    purpose: purposeSchema,
+    execution_mode: z.enum(executionModes).optional(),
+    issued_at: z.string().datetime({ offset: true }),
+    expires_at: z.string().datetime({ offset: true }).optional(),
+    single_use: z.boolean().optional(),
+    policy_version: z.string().min(1).max(80),
+    evidence_refs: z.array(z.string().min(1).max(256)).max(100).optional(),
+    reason_code: z.string().regex(/^[A-Z][A-Z0-9_]{1,79}$/),
+    explanation: z.string().max(1000).optional(),
+  })
+  .strict()
+  .superRefine((decision, ctx) => {
+    if (decision.status === "granted") {
+      if (!decision.approved_scope)
+        ctx.addIssue({
+          code: "custom",
+          message: "Grant requires approved_scope.",
+          path: ["approved_scope"],
+        });
+      if (!decision.execution_mode)
+        ctx.addIssue({
+          code: "custom",
+          message: "Grant requires execution_mode.",
+          path: ["execution_mode"],
+        });
+      if (!decision.expires_at)
+        ctx.addIssue({ code: "custom", message: "Grant requires expiry.", path: ["expires_at"] });
+      if (decision.single_use !== true)
+        ctx.addIssue({
+          code: "custom",
+          message: "Grant must be single-use.",
+          path: ["single_use"],
+        });
+      if (decision.expires_at && Date.parse(decision.expires_at) <= Date.parse(decision.issued_at))
+        ctx.addIssue({
+          code: "custom",
+          message: "Expiry must follow issue time.",
+          path: ["expires_at"],
+        });
+    } else if (decision.approved_scope) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Non-granted decisions cannot include approved_scope.",
+        path: ["approved_scope"],
+      });
+    }
+  });
 
-KXÚ\Ú[Û[[JÈÛØ\ÙHXÚ\ÙHÝØ\XØXHJKÜ[Û[
+export type PermissionRequest = z.infer<typeof permissionRequestSchema>;
+export type PermissionDecision = z.infer<typeof permissionDecisionSchema>;
+export type PermissionId = (typeof permissionIds)[number];
+export type DecisionStatus = z.infer<typeof decisionStatus>;
+export type Principal = z.infer<typeof principalSchema>;
 
-KXÚ\Y[Ý[Ê
-KZ[JKX^
-MKÜ[Û[
+export interface AuthenticatedPrincipal extends Principal {
+  authentication_method: string;
+}
+export interface RegisteredCapability {
+  registry_id: string;
+  manifest_digest: string;
+  registered: boolean;
+  validation_status: "passing" | "failing" | "pending";
+  review_status: "approved" | "rejected" | "pending";
+  manifest: {
+    capability_id: string;
+    lifecycle_status:
+      "proposed" | "specified" | "in_development" | "implemented" | "verified" | "deprecated";
+    permissions: string[];
+    dependencies: { permission: Array<{ id: string; required: boolean }> };
+    execution_policy: {
+      execution_modes: Array<(typeof executionModes)[number]>;
+      confirmation_required: boolean;
+      timeout_ms: number;
+    };
+  };
+}
+export interface PolicyEvaluation {
+  allowed: boolean;
+  policy_version: string;
+  reason_code: string;
+  consent_required: boolean;
+  native_permission_required: boolean;
+  remote_disclosure_required: boolean;
+  explanation?: string;
+}
+export type ConsentVerification =
+  | { status: "valid"; evidence_ref: string }
+  | { status: "required" | "expired" | "revoked" | "mismatch" | "unavailable" };
+export type NativePermissionVerification =
+  | { status: "granted"; evidence_ref?: string }
+  | { status: "not_applicable" }
+  | { status: "required" | "denied" | "unavailable" };
+export type DecisionVerification =
+  "valid" | "revoked" | "expired" | "replayed" | "mismatch" | "unavailable";
 
-K][[ÛØXÝ
-Â\][ÛÜÙXÛÛÎ[X\
-K[
+export interface PermissionAuditEvent {
+  event_type: "decision_issuance_requested" | "execution_verification";
+  request_id: string;
+  decision_id?: string;
+  subject_ref: string;
+  capability_id: string;
+  permission_id: PermissionId;
+  status: string;
+  reason_code: string;
+  policy_version?: string;
+  occurred_at: string;
+}
+export interface PermissionManagerPorts {
+  authenticator: { authenticate(authContext: unknown): Promise<AuthenticatedPrincipal | null> };
+  registry: { resolve(capabilityId: string): Promise<RegisteredCapability | null> };
+  policy: {
+    evaluate(
+      request: PermissionRequest,
+      capability: RegisteredCapability,
+    ): Promise<PolicyEvaluation>;
+  };
+  consent: {
+    verify(
+      request: PermissionRequest,
+      principal: AuthenticatedPrincipal,
+    ): Promise<ConsentVerification>;
+  };
+  nativePermissions: {
+    verify(
+      request: PermissionRequest,
+      principal: AuthenticatedPrincipal,
+    ): Promise<NativePermissionVerification>;
+  };
+  remoteDisclosure: {
+    verify(
+      request: PermissionRequest,
+      principal: AuthenticatedPrincipal,
+    ): Promise<ConsentVerification>;
+  };
+  decisionAuthority: {
+    issue(decision: PermissionDecision): Promise<unknown>;
+    verifyAndConsume(input: {
+      decisionId: string;
+      request: PermissionRequest;
+      principal: AuthenticatedPrincipal;
+    }): Promise<DecisionVerification>;
+  };
+  audit: { record(event: PermissionAuditEvent): Promise<void> };
+}
+export interface PermissionManagerRuntimeOptions {
+  ports: PermissionManagerPorts;
+  now?: () => Date;
+  createId?: () => string;
+}
+export type EvaluationResult =
+  { status: "issued"; decision: PermissionDecision } | { status: "rejected"; reason_code: string };
+export type ExecutionVerificationResult =
+  { eligible: true; decision_id: string } | { eligible: false; reason_code: string };
 
-KZ[JKX^
-ÌMLÍ
-KÝÜYÙWÜØÛÜNÝ[Ê
-KZ[JKX^
-MK[][ÛÝYÙÙ\[[JÈ^\H\Ù\Ü]ØØ][ÛÜ\][ÛØÛÛ\][ÛJKÜ[Û[
+const MAX_GRANT_TTL_SECONDS = 900;
 
-KJBÝXÝ
+export class PermissionManagerRuntime {
+  private readonly ports: PermissionManagerPorts;
+  private readonly now: () => Date;
+  private readonly createId: () => string;
 
-BÜ[Û[
+  constructor(options: PermissionManagerRuntimeOptions) {
+    this.ports = options.ports;
+    this.now = options.now ?? (() => new Date());
+    this.createId = options.createId ?? (() => crypto.randomUUID());
+  }
 
-KJBÝXÝ
+  async evaluate(rawRequest: unknown, authContext: unknown): Promise<EvaluationResult> {
+    const parsed = permissionRequestSchema.safeParse(rawRequest);
+    if (!parsed.success) return { status: "rejected", reason_code: "INVALID_REQUEST" };
+    const request = parsed.data;
+    try {
+      const principal = await this.ports.authenticator.authenticate(authContext);
+      if (!principal || !samePrincipal(principal, request.subject))
+        return { status: "rejected", reason_code: "SUBJECT_UNAUTHENTICATED" };
 
-BÝ\\Y[J
-ØÛÜKÝ
-HOÂY
-ØÛÜKØÛÜWÛ[ÙHOOH^XÝ	\ØÛÜK\ÛÝ\ÙWÚYÏË[Ý
-BÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙN^XÝØÛÜH\]Z\\È\ÛÝ\ÙWÚYË]È\ÛÝ\ÙWÚYÈKJNÂY
-ØÛÜKØÛÜWÛ[ÙHOOHÝ[Y	\ØÛÜKÝ[\JBÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙNÝ[YØÛÜH\]Z\\ÈÝ[\K]ÈÝ[\HKJNÂY
-ØÛÜK\ÛÝ\ÙWÚYÈ	]ÈÙ]
-ØÛÜK\ÛÝ\ÙWÚYÊKÚ^HOOHØÛÜK\ÛÝ\ÙWÚYË[Ý
-BÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙN\ÛÝ\ÙHY[YY\È]\ÝH[\]YK]È\ÛÝ\ÙWÚYÈKJNÂJNÂÛÛÝ\ÜÙTØÚ[XHHØXÝ
-Â\ÜÙWÚYÝ[Ê
-KYÙ^
-×ØK^VØK^NWËW^ÌKÎ_IÊK\ØÜ\[ÛÝ[Ê
-KZ[JKX^
-L
-KJBÝXÝ
+      const capability = await this.ports.registry.resolve(request.capability_id);
+      const registryFailure = validateRegistryCapability(capability, request);
+      if (registryFailure)
+        return this.issueNonGrant(request, principal, "policy_blocked", registryFailure, "1.0");
 
-NÂ^ÜÛÛÝ\Z\ÜÚ[Û\]Y\ÝØÚ[XHHØXÝ
-ÂØÚ[XWÝ\Ú[Û]\[
-KK\]Y\ÝÚYÝ[Ê
-K]ZY
+      const policy = await this.ports.policy.evaluate(request, capability!);
+      if (!policy.allowed)
+        return this.issueNonGrant(
+          request,
+          principal,
+          "policy_blocked",
+          safeReason(policy.reason_code, "POLICY_BLOCKED"),
+          policy.policy_version,
+        );
 
-KÝXXÝ[Ú\[ØÚ[XKØ\X[]WÚYÝ[Ê
-BYÙ^
-×ÛYÙ[[YÜ][ÛWØK^NWJÊÎVØK^NWJÊJÎØK^NWJÊÎVØK^NWJÊJJÉË
-K\Z\ÜÚ[ÛÚY[[J\Z\ÜÚ[ÛYÊKXÝ[ÛÝ[Ê
-KZ[JKX^
-M
-K\ÛÝ\ÙWÜØÛÜN\ÛÝ\ÙTØÛÜTØÚ[XK\ÜÙN\ÜÙTØÚ[XK]WØÛ\ÜÚYXØ][Û[[JÈXXÈ[\[\ÛÛ[Ù[Ú]]H\ÝXÝYJK^XÝ][ÛÛ[ÙN[[J^XÝ][Û[Ù\ÊK\]Y\ÝYÙ\][Û\ØÜ[Z[]Y[[ÛÚ[ÂØXÝ
-ÈÚ[]\[
-Ú[ÛWÛÜ\][ÛHJKÝXÝ
+      const evidenceRefs: string[] = [];
+      if (policy.consent_required) {
+        const consent = await this.ports.consent.verify(request, principal);
+        if (consent.status !== "valid") {
+          const status =
+            consent.status === "required"
+              ? "consent_required"
+              : consent.status === "unavailable"
+                ? "indeterminate"
+                : "policy_blocked";
+          const reason =
+            consent.status === "required"
+              ? "CONSENT_REQUIRED"
+              : consent.status === "unavailable"
+                ? "CONSENT_EVIDENCE_UNAVAILABLE"
+                : "CONSENT_NOT_VALID";
+          return this.issueNonGrant(request, principal, status, reason, policy.policy_version);
+        }
+        evidenceRefs.push(consent.evidence_ref);
+      }
 
-KØXÝ
-ÈÚ[]\[
-ÙXÛÛÈKÙXÛÛÎ[X\
-K[
+      if (policy.remote_disclosure_required) {
+        const disclosure = await this.ports.remoteDisclosure.verify(request, principal);
+        if (disclosure.status !== "valid") {
+          const status = disclosure.status === "unavailable" ? "indeterminate" : "policy_blocked";
+          const reason =
+            disclosure.status === "unavailable"
+              ? "REMOTE_DISCLOSURE_EVIDENCE_UNAVAILABLE"
+              : "REMOTE_DISCLOSURE_NOT_AUTHORIZED";
+          return this.issueNonGrant(request, principal, status, reason, policy.policy_version);
+        }
+        evidenceRefs.push(disclosure.evidence_ref);
+      }
 
-KZ[JKX^
-L
-HJKÝXÝ
+      if (policy.native_permission_required) {
+        const native = await this.ports.nativePermissions.verify(request, principal);
+        if (native.status !== "granted") {
+          const status =
+            native.status === "required" || native.status === "denied"
+              ? "platform_permission_required"
+              : "indeterminate";
+          const reason =
+            native.status === "unavailable"
+              ? "NATIVE_PERMISSION_UNAVAILABLE"
+              : "NATIVE_PERMISSION_REQUIRED";
+          return this.issueNonGrant(request, principal, status, reason, policy.policy_version);
+        }
+        if (native.status === "granted" && native.evidence_ref)
+          evidenceRefs.push(native.evidence_ref);
+      }
 
-KJKÛÛ^ÜYÝ[Ê
-KZ[JKX^
-MKÜ[Û[
+      const issuedAt = this.now();
+      const requestedTtl =
+        request.requested_duration.kind === "seconds"
+          ? request.requested_duration.seconds
+          : MAX_GRANT_TTL_SECONDS;
+      const ttlSeconds = Math.min(
+        requestedTtl,
+        MAX_GRANT_TTL_SECONDS,
+        Math.floor(capability!.manifest.execution_policy.timeout_ms / 1000),
+      );
+      if (ttlSeconds < 1)
+        return this.issueNonGrant(
+          request,
+          principal,
+          "policy_blocked",
+          "INVALID_CAPABILITY_TIMEOUT",
+          policy.policy_version,
+        );
 
-KJBÝXÝ
+      const payload: PermissionDecision = {
+        schema_version: "1.0",
+        decision_id: this.createId(),
+        request_id: request.request_id,
+        status: "granted",
+        subject: request.subject,
+        capability_id: request.capability_id,
+        permission_id: request.permission_id,
+        approved_scope: request.resource_scope,
+        purpose: request.purpose,
+        execution_mode: request.execution_mode,
+        issued_at: issuedAt.toISOString(),
+        expires_at: new Date(issuedAt.getTime() + ttlSeconds * 1000).toISOString(),
+        single_use: true,
+        policy_version: policy.policy_version,
+        evidence_refs: evidenceRefs,
+        reason_code: "AUTHORIZED",
+      };
+      return this.issue(payload, request, principal);
+    } catch {
+      return { status: "rejected", reason_code: "RUNTIME_DEPENDENCY_UNAVAILABLE" };
+    }
+  }
 
-BÝ\\Y[J
-\]Y\ÝÝ
-HOÂY
-\]Y\Ý\Z\ÜÚ[ÛÚYOOH]K[[ÝWÙ\ØÛÜÙHHÂY
-\\]Y\Ý\ÛÝ\ÙWÜØÛÜKXÚ\Y[
-BÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙN[[ÝH\ØÛÜÝ\H]\Ý[HXÚ\Y[]È\ÛÝ\ÙWÜØÛÜHXÚ\Y[KJNÂY
-\]Y\Ý^XÝ][ÛÛ[ÙHOOHÛÙ]XÙHBÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙN[[ÝH\ØÛÜÝ\H\]Z\\È[[ÝHÜXY^XÝ][Û]È^XÝ][ÛÛ[ÙHKJNÂBY
-\]Y\Ý\Z\ÜÚ[ÛÚYOOH]K]Z[	\\]Y\Ý\ÛÝ\ÙWÜØÛÜK][[ÛBÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙN][[Û\]Z\\È[^XÚ]][[ÛØÛÜK]È\ÛÝ\ÙWÜØÛÜH][[ÛKJNÂJNÂÛÛÝXÚ\Ú[ÛÝ]\ÈH[[JÂÜ[Y[YYÛÛÙ[Ü\]Z\Y]ÜWÜ\Z\ÜÚ[ÛÜ\]Z\YÛXÞWØØÚÙY]ÚÙY[]\Z[]HJNÂÛÛÝ\Z\ÜÚ[ÛXÚ\Ú[ÛØÚ[XHHØXÝ
-ÂØÚ[XWÝ\Ú[Û]\[
-KKXÚ\Ú[ÛÚYÝ[Ê
-K]ZY
+  async verifyForExecution(
+    decisionId: string,
+    rawRequest: unknown,
+    authContext: unknown,
+  ): Promise<ExecutionVerificationResult> {
+    const parsed = permissionRequestSchema.safeParse(rawRequest);
+    if (!parsed.success || !z.string().uuid().safeParse(decisionId).success)
+      return { eligible: false, reason_code: "INVALID_EXECUTION_CONTEXT" };
+    const request = parsed.data;
+    try {
+      const principal = await this.ports.authenticator.authenticate(authContext);
+      if (!principal || !samePrincipal(principal, request.subject))
+        return { eligible: false, reason_code: "SUBJECT_UNAUTHENTICATED" };
 
-K\]Y\ÝÚYÝ[Ê
-K]ZY
+      const capability = await this.ports.registry.resolve(request.capability_id);
+      const registryFailure = validateRegistryCapability(capability, request);
+      if (registryFailure) return { eligible: false, reason_code: registryFailure };
 
-KÝ]\ÎXÚ\Ú[ÛÝ]\ËÝXXÝ[Ú\[ØÚ[XKØ\X[]WÚYÝ[Ê
-K\Z\ÜÚ[ÛÚY[[J\Z\ÜÚ[ÛYÊK\ÝYÜØÛÜN\ÛÝ\ÙTØÛÜTØÚ[XKÜ[Û[
+      const policy = await this.ports.policy.evaluate(request, capability!);
+      if (!policy.allowed)
+        return { eligible: false, reason_code: safeReason(policy.reason_code, "POLICY_BLOCKED") };
 
-K\ÜÙN\ÜÙTØÚ[XK^XÝ][ÛÛ[ÙN[[J^XÝ][Û[Ù\ÊKÜ[Û[
+      if (policy.consent_required) {
+        const consent = await this.ports.consent.verify(request, principal);
+        if (consent.status !== "valid")
+          return { eligible: false, reason_code: "CONSENT_NOT_VALID" };
+      }
+      if (policy.remote_disclosure_required) {
+        const disclosure = await this.ports.remoteDisclosure.verify(request, principal);
+        if (disclosure.status !== "valid")
+          return { eligible: false, reason_code: "REMOTE_DISCLOSURE_NOT_AUTHORIZED" };
+      }
+      if (policy.native_permission_required) {
+        const native = await this.ports.nativePermissions.verify(request, principal);
+        if (native.status !== "granted")
+          return { eligible: false, reason_code: "NATIVE_PERMISSION_NOT_VALID" };
+      }
 
-K\ÜÝYYØ]Ý[Ê
-K]][YJÈÙÙ]YHJK^\\×Ø]Ý[Ê
-K]][YJÈÙÙ]YHJKÜ[Û[
+      // This trusted operation must atomically check revocation/expiry/binding
+      // and consume the one-time decision. Read-then-consume is replayable.
+      const verification = await this.ports.decisionAuthority.verifyAndConsume({
+        decisionId,
+        request,
+        principal,
+      });
+      if (verification !== "valid")
+        return { eligible: false, reason_code: "DECISION_" + verification.toUpperCase() };
 
-KÚ[ÛWÝ\ÙNÛÛX[
-KÜ[Û[
+      await this.ports.audit.record({
+        event_type: "execution_verification",
+        request_id: request.request_id,
+        decision_id: decisionId,
+        subject_ref: principal.principal_id,
+        capability_id: request.capability_id,
+        permission_id: request.permission_id,
+        status: "eligible",
+        reason_code: "VERIFIED_AND_CONSUMED",
+        policy_version: policy.policy_version,
+        occurred_at: this.now().toISOString(),
+      });
+      return { eligible: true, decision_id: decisionId };
+    } catch {
+      return { eligible: false, reason_code: "RUNTIME_DEPENDENCY_UNAVAILABLE" };
+    }
+  }
 
-KÛXÞWÝ\Ú[ÛÝ[Ê
-KZ[JKX^
-
-K]Y[ÙWÜYÎ\^JÝ[Ê
-KZ[JKX^
-MJKX^
-L
-KÜ[Û[
+  private async issueNonGrant(
+    request: PermissionRequest,
+    principal: AuthenticatedPrincipal,
+    status: Exclude<DecisionStatus, "granted">,
+    reasonCode: string,
+    policyVersion: string,
+  ): Promise<EvaluationResult> {
+    const issuedAt = this.now();
+    const payload: PermissionDecision = {
+      schema_version: "1.0",
+      decision_id: this.createId(),
+      request_id: request.request_id,
+      status,
+      subject: request.subject,
+      capability_id: request.capability_id,
+      permission_id: request.permission_id,
+      purpose: request.purpose,
+      execution_mode: request.execution_mode,
+      issued_at: issuedAt.toISOString(),
+      policy_version: policyVersion,
+      reason_code: safeReason(reasonCode, "POLICY_BLOCKED"),
+    };
+    return this.issue(payload, request, principal);
+  }
 
-KX\ÛÛØÛÙNÝ[Ê
-KYÙ^
-×ÐKVVÐKVNW×^ÌKÎ_IÊK^[][ÛÝ[Ê
-KX^
-L
-KÜ[Û[
+  private async issue(
+    payload: PermissionDecision,
+    request: PermissionRequest,
+    principal: AuthenticatedPrincipal,
+  ): Promise<EvaluationResult> {
+    const validated = permissionDecisionSchema.safeParse(payload);
+    if (!validated.success) return { status: "rejected", reason_code: "DECISION_CONTRACT_INVALID" };
+    try {
+      await this.ports.audit.record({
+        event_type: "decision_issuance_requested",
+        request_id: request.request_id,
+        decision_id: payload.decision_id,
+        subject_ref: principal.principal_id,
+        capability_id: request.capability_id,
+        permission_id: request.permission_id,
+        status: payload.status,
+        reason_code: payload.reason_code,
+        policy_version: payload.policy_version,
+        occurred_at: this.now().toISOString(),
+      });
+      const issued = permissionDecisionSchema.safeParse(
+        await this.ports.decisionAuthority.issue(validated.data),
+      );
+      if (!issued.success || !sameDecisionBinding(validated.data, issued.data))
+        return { status: "rejected", reason_code: "DECISION_AUTHORITY_UNVERIFIABLE" };
+      return { status: "issued", decision: issued.data };
+    } catch {
+      return { status: "rejected", reason_code: "RUNTIME_DEPENDENCY_UNAVAILABLE" };
+    }
+  }
+}
 
-KJBÝXÝ
-
-BÝ\\Y[J
-XÚ\Ú[ÛÝ
-HOÂY
-XÚ\Ú[ÛÝ]\ÈOOHÜ[YHÂY
-YXÚ\Ú[Û\ÝYÜØÛÜJBÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙNÜ[\]Z\\È\ÝYÜØÛÜK]È\ÝYÜØÛÜHKJNÂY
-YXÚ\Ú[Û^XÝ][ÛÛ[ÙJBÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙNÜ[\]Z\\È^XÝ][ÛÛ[ÙK]È^XÝ][ÛÛ[ÙHKJNÂY
-YXÚ\Ú[Û^\\×Ø]
-BÝY\ÜÝYJÈÛÙNÝ\ÝÛHY\ÜØYÙNÜ[\]Z\\È^\K]È^\\×Ø]HJNÂY
-XÚ\Ú[ÛÚ[ÛWÝ\ÙHOOHYJBÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙNÜ[]\ÝHÚ[ÛK]\ÙK]ÈÚ[ÛWÝ\ÙHKJNÂY
-XÚ\Ú[Û^\\×Ø]	]K\ÙJXÚ\Ú[Û^\\×Ø]
-HH]K\ÙJXÚ\Ú[Û\ÜÝYYØ]
-JBÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙN^\H]\ÝÛÝÈ\ÜÝYH[YK]È^\\×Ø]KJNÂH[ÙHY
-XÚ\Ú[Û\ÝYÜØÛÜJHÂÝY\ÜÝYJÂÛÙNÝ\ÝÛHY\ÜØYÙNÛYÜ[YXÚ\Ú[ÛÈØ[Ý[ÛYH\ÝYÜØÛÜK]È\ÝYÜØÛÜHKJNÂBJNÂ^Ü\H\Z\ÜÚ[Û\]Y\ÝH[\\[Ù\Z\ÜÚ[Û\]Y\ÝØÚ[XOÂ^Ü\H\Z\ÜÚ[ÛXÚ\Ú[ÛH[\\[Ù\Z\ÜÚ[ÛXÚ\Ú[ÛØÚ[XOÂ^Ü\H\Z\ÜÚ[ÛYH
-\[Ù\Z\ÜÚ[ÛYÊVÛ[X\NÂ^Ü\HXÚ\Ú[ÛÝ]\ÈH[\\[ÙXÚ\Ú[ÛÝ]\ÏÂ^Ü\H[Ú\[H[\\[Ù[Ú\[ØÚ[XOÂ^Ü[\XÙH]][XØ]Y[Ú\[^[È[Ú\[Â]][XØ][ÛÛY]ÙÝ[ÎÂB^Ü[\XÙHYÚ\Ý\YØ\X[]HÂYÚ\ÝWÚYÝ[ÎÂX[Y\ÝÙYÙ\ÝÝ[ÎÂYÚ\Ý\YÛÛX[Â[Y][ÛÜÝ]\Î\ÜÚ[ÈZ[[È[[ÈÂ]Y]×ÜÝ]\Î\ÝYZXÝY[[ÈÂX[Y\ÝÂØ\X[]WÚYÝ[ÎÂYXÞXÛWÜÝ]\ÎÜÜÙYÜXÚYYY[Ù][ÜY[[\[Y[Y\YYY\XØ]YÂ\Z\ÜÚ[ÛÎÝ[Ö×NÂ\[[ÚY\ÎÈ\Z\ÜÚ[Û\^OÈYÝ[ÎÈ\]Z\YÛÛX[ONÂ^XÝ][ÛÜÛXÞNÂ^XÝ][ÛÛ[Ù\Î\^O
-\[Ù^XÝ][Û[Ù\ÊVÛ[X\OÂÛÛ\X][ÛÜ\]Z\YÛÛX[Â[Y[Ý]Û\Î[X\ÂNÂNÂB^Ü[\XÙHÛXÞQ][X][ÛÂ[ÝÙYÛÛX[ÂÛXÞWÝ\Ú[ÛÝ[ÎÂX\ÛÛØÛÙNÝ[ÎÂÛÛÙ[Ü\]Z\YÛÛX[Â]]WÜ\Z\ÜÚ[ÛÜ\]Z\YÛÛX[Â[[ÝWÙ\ØÛÜÝ\WÜ\]Z\YÛÛX[Â^[][ÛÎÝ[ÎÂB^Ü\HÛÛÙ[\YXØ][ÛBÈÝ]\Î[YÈ]Y[ÙWÜYÝ[ÈBÈÝ]\Î\]Z\Y^\Y]ÚÙYZ\ÛX]Ú[]Z[XHNÂ^Ü\H]]T\Z\ÜÚ[Û\YXØ][ÛBÈÝ]\ÎÜ[YÈ]Y[ÙWÜYÎÝ[ÈBÈÝ]\ÎÝØ\XØXHBÈÝ]\Î\]Z\Y[YY[]Z[XHNÂ^Ü\HXÚ\Ú[Û\YXØ][ÛB[Y]ÚÙY^\Y\^YYZ\ÛX]Ú[]Z[XHÂ^Ü[\XÙH\Z\ÜÚ[Û]Y]][Â][Ý\NXÚ\Ú[ÛÚ\ÜÝX[ÙWÜ\]Y\ÝY^XÝ][ÛÝ\YXØ][ÛÂ\]Y\ÝÚYÝ[ÎÂXÚ\Ú[ÛÚYÎÝ[ÎÂÝXXÝÜYÝ[ÎÂØ\X[]WÚYÝ[ÎÂ\Z\ÜÚ[ÛÚY\Z\ÜÚ[ÛYÂÝ]\ÎÝ[ÎÂX\ÛÛØÛÙNÝ[ÎÂÛXÞWÝ\Ú[ÛÎÝ[ÎÂØØÝ\YØ]Ý[ÎÂB^Ü[\XÙH\Z\ÜÚ[ÛX[YÙ\ÜÈÂ]][XØ]ÜÈ]][XØ]J]]ÛÛ^[ÛÝÛNÛZ\ÙO]][XØ]Y[Ú\[[NÂYÚ\ÝNÈ\ÛÛJØ\X[]RYÝ[ÊNÛZ\ÙOYÚ\Ý\YØ\X[]H[NÂÛXÞNÂ][X]J\]Y\Ý\Z\ÜÚ[Û\]Y\ÝØ\X[]NYÚ\Ý\YØ\X[]K
-NÛZ\ÙOÛXÞQ][X][ÛÂNÂÛÛÙ[Â\YJ\]Y\Ý\Z\ÜÚ[Û\]Y\Ý[Ú\[]][XØ]Y[Ú\[
-NÛZ\ÙOÛÛÙ[\YXØ][ÛÂNÂ]]T\Z\ÜÚ[ÛÎÂ\YJ\]Y\Ý\Z\ÜÚ[Û\]Y\Ý[Ú\[]][XØ]Y[Ú\[
-NÛZ\ÙO]]T\Z\ÜÚ[Û\YXØ][ÛÂNÂ[[ÝQ\ØÛÜÝ\NÂ\YJ\]Y\Ý\Z\ÜÚ[Û\]Y\Ý[Ú\[]][XØ]Y[Ú\[
-NÛZ\ÙOÛÛÙ[\YXØ][ÛÂNÂXÚ\Ú[Û]]Ü]NÂ\ÜÝYJXÚ\Ú[Û\Z\ÜÚ[ÛXÚ\Ú[ÛNÛZ\ÙO[ÛÝÛÂ\YP[ÛÛÝ[YJ[]ÂXÚ\Ú[ÛYÝ[ÎÂ\]Y\Ý\Z\ÜÚ[Û\]Y\ÝÂ[Ú\[]][XØ]Y[Ú\[ÂJNÛZ\ÙOXÚ\Ú[Û\YXØ][ÛÂNÂ]Y]ÈXÛÜ
-][\Z\ÜÚ[Û]Y]][
-NÛZ\ÙOÚYNÂB^Ü[\XÙH\Z\ÜÚ[ÛX[YÙ\[[YSÜ[ÛÈÂÜÎ\Z\ÜÚ[ÛX[YÙ\ÜÎÂÝÏÎ
-
-HO]NÂÜX]RYÎ
-
-HOÝ[ÎÂB^Ü\H][X][Û\Ý[BÈÝ]\Î\ÜÝYYÈXÚ\Ú[Û\Z\ÜÚ[ÛXÚ\Ú[ÛHÈÝ]\ÎZXÝYÈX\ÛÛØÛÙNÝ[ÈNÂ^Ü\H^XÝ][Û\YXØ][Û\Ý[BÈ[YÚXNYNÈXÚ\Ú[ÛÚYÝ[ÈHÈ[YÚXN[ÙNÈX\ÛÛØÛÙNÝ[ÈNÂÛÛÝPVÑÔSÕÔÑPÓÓÈHLÂ^ÜÛ\ÜÈ\Z\ÜÚ[ÛX[YÙ\[[YHÂ]]HXYÛHÜÎ\Z\ÜÚ[ÛX[YÙ\ÜÎÂ]]HXYÛHÝÎ
-
-HO]NÂ]]HXYÛHÜX]RY
-
-HOÝ[ÎÂÛÛÝXÝÜÜ[ÛÎ\Z\ÜÚ[ÛX[YÙ\[[YSÜ[ÛÊHÂ\ËÜÈHÜ[ÛËÜÎÂ\ËÝÈHÜ[ÛËÝÈÏÈ
-
-
-HO]È]J
-JNÂ\ËÜX]RYHÜ[ÛËÜX]RYÏÈ
-
-
-HOÜ\Ë[ÛUURQ
-
-JNÂB\Þ[È][X]J]Ô\]Y\Ý[ÛÝÛ]]ÛÛ^[ÛÝÛNÛZ\ÙO][X][Û\Ý[ÂÛÛÝ\ÙYH\Z\ÜÚ[Û\]Y\ÝØÚ[XKØYT\ÙJ]Ô\]Y\Ý
-NÂY
-\\ÙYÝXØÙ\ÜÊH]\ÈÝ]\ÎZXÝYX\ÛÛØÛÙNSSQÔTUQTÕNÂÛÛÝ\]Y\ÝH\ÙY]NÂHÂÛÛÝ[Ú\[H]ØZ]\ËÜË]][XØ]Ü]][XØ]J]]ÛÛ^
-NÂY
-\[Ú\[\Ø[YT[Ú\[
-[Ú\[\]Y\ÝÝXXÝ
-JB]\ÈÝ]\ÎZXÝYX\ÛÛØÛÙNÕPPÕÕSUUSPÐUQNÂÛÛÝØ\X[]HH]ØZ]\ËÜËYÚ\ÝK\ÛÛJ\]Y\ÝØ\X[]WÚY
-NÂÛÛÝYÚ\ÝQZ[\HH[Y]TYÚ\ÝPØ\X[]JØ\X[]K\]Y\Ý
-NÂY
-YÚ\ÝQZ[\JB]\\Ë\ÜÝYSÛÜ[
-\]Y\Ý[Ú\[ÛXÞWØØÚÙYYÚ\ÝQZ[\KKNÂÛÛÝÛXÞHH]ØZ]\ËÜËÛXÞK][X]J\]Y\ÝØ\X[]HJNÂY
-\ÛXÞK[ÝÙY
-B]\\Ë\ÜÝYSÛÜ[
-\]Y\Ý[Ú\[ÛXÞWØØÚÙYØYTX\ÛÛÛXÞKX\ÛÛØÛÙKÓPÖWÐÐÒÑQKÛXÞKÛXÞWÝ\Ú[Û
-NÂÛÛÝ]Y[ÙTYÎÝ[Ö×HH×NÂY
-ÛXÞKÛÛÙ[Ü\]Z\Y
-HÂÛÛÝÛÛÙ[H]ØZ]\ËÜËÛÛÙ[\YJ\]Y\Ý[Ú\[
-NÂY
-ÛÛÙ[Ý]\ÈOOH[YHÂÛÛÝÝ]\ÈBÛÛÙ[Ý]\ÈOOH\]Z\YÈÛÛÙ[Ü\]Z\YÛÛÙ[Ý]\ÈOOH[]Z[XHÈ[]\Z[]HÛXÞWØØÚÙYÂÛÛÝX\ÛÛBÛÛÙ[Ý]\ÈOOH\]Z\YÈÓÓÑSÔTURTQÛÛÙ[Ý]\ÈOOH[]Z[XHÈÓÓÑSÑUQSÑWÕSURSPHÓÓÑSÓÕÕSQÂ]\\Ë\ÜÝYSÛÜ[
-\]Y\Ý[Ú\[Ý]\ËX\ÛÛÛXÞKÛXÞWÝ\Ú[ÛNÂB]Y[ÙTYË\Ú
-ÛÛÙ[]Y[ÙWÜYNÂBY
-ÛXÞK[[ÝWÙ\ØÛÜÝ\WÜ\]Z\Y
-HÂÛÛÝ\ØÛÜÝ\HH]ØZ]\ËÜË[[ÝQ\ØÛÜÝ\K\YJ\]Y\Ý[Ú\[
-NÂY
-\ØÛÜÝ\KÝ]\ÈOOH[YHÂÛÛÝÝ]\ÈH\ØÛÜÝ\KÝ]\ÈOOH[]Z[XHÈ[]\Z[]HÛXÞWØØÚÙYÂÛÛÝX\ÛÛB\ØÛÜÝ\KÝ]\ÈOOH[]Z[XHÈSSÕWÑTÐÓÔÕTWÑUQSÑWÕSURSPHSSÕWÑTÐÓÔÕTWÓÕÐUUÔVQÂ]\\Ë\ÜÝYSÛÜ[
-\]Y\Ý[Ú\[Ý]\ËX\ÛÛÛXÞKÛXÞWÝ\Ú[ÛNÂB]Y[ÙTYË\Ú
-\ØÛÜÝ\K]Y[ÙWÜYNÂBY
-ÛXÞK]]WÜ\Z\ÜÚ[ÛÜ\]Z\Y
-HÂÛÛÝ]]HH]ØZ]\ËÜË]]T\Z\ÜÚ[ÛË\YJ\]Y\Ý[Ú\[
-NÂY
-]]KÝ]\ÈOOHÜ[YHÂÛÛÝÝ]\ÈB]]KÝ]\ÈOOH\]Z\Y]]KÝ]\ÈOOH[YYÈ]ÜWÜ\Z\ÜÚ[ÛÜ\]Z\Y[]\Z[]HÂÛÛÝX\ÛÛB]]KÝ]\ÈOOH[]Z[XHÈUUWÔTRTÔÒSÓÕSURSPHUUWÔTRTÔÒSÓÔTURTQÂ]\\Ë\ÜÝYSÛÜ[
-\]Y\Ý[Ú\[Ý]\ËX\ÛÛÛXÞKÛXÞWÝ\Ú[ÛNÂBY
-]]KÝ]\ÈOOHÜ[Y	]]K]Y[ÙWÜYB]Y[ÙTYË\Ú
-]]K]Y[ÙWÜYNÂBÛÛÝ\ÜÝYY]H\ËÝÊ
-NÂÛÛÝ\]Y\ÝYB\]Y\Ý\]Y\ÝYÙ\][ÛÚ[OOHÙXÛÛÈÈ\]Y\Ý\]Y\ÝYÙ\][ÛÙXÛÛÂPVÑÔSÕÔÑPÓÓÎÂÛÛÝÙXÛÛÈHX]Z[\]Y\ÝYPVÑÔSÕÔÑPÓÓËX]ÛÜØ\X[]HKX[Y\Ý^XÝ][ÛÜÛXÞK[Y[Ý]Û\ÈÈL
-K
-NÂY
-ÙXÛÛÈJB]\\Ë\ÜÝYSÛÜ[
-\]Y\Ý[Ú\[ÛXÞWØØÚÙYSSQÐÐTPSUWÕSQSÕUÛXÞKÛXÞWÝ\Ú[Û
-NÂÛÛÝ^[ØY\Z\ÜÚ[ÛXÚ\Ú[ÛHÂØÚ[XWÝ\Ú[ÛKXÚ\Ú[ÛÚY\ËÜX]RY
-
-K\]Y\ÝÚY\]Y\Ý\]Y\ÝÚYÝ]\ÎÜ[YÝXXÝ\]Y\ÝÝXXÝØ\X[]WÚY\]Y\ÝØ\X[]WÚY\Z\ÜÚ[ÛÚY\]Y\Ý\Z\ÜÚ[ÛÚY\ÝYÜØÛÜN\]Y\Ý\ÛÝ\ÙWÜØÛÜK\ÜÙN\]Y\Ý\ÜÙK^XÝ][ÛÛ[ÙN\]Y\Ý^XÝ][ÛÛ[ÙK\ÜÝYYØ]\ÜÝYY]ÒTÓÔÝ[Ê
-K^\\×Ø]]È]J\ÜÝYY]Ù][YJ
-H
-ÈÙXÛÛÈ
-L
-KÒTÓÔÝ[Ê
-KÚ[ÛWÝ\ÙNYKÛXÞWÝ\Ú[ÛÛXÞKÛXÞWÝ\Ú[Û]Y[ÙWÜYÎ]Y[ÙTYËX\ÛÛØÛÙNUUÔVQNÂ]\\Ë\ÜÝYJ^[ØY\]Y\Ý[Ú\[
-NÂHØ]ÚÂ]\ÈÝ]\ÎZXÝYX\ÛÛØÛÙNSSQWÑTSSÖWÕSURSPHNÂBB\Þ[È\YQÜ^XÝ][ÛXÚ\Ú[ÛYÝ[Ë]Ô\]Y\Ý[ÛÝÛ]]ÛÛ^[ÛÝÛ
-NÛZ\ÙO^XÝ][Û\YXØ][Û\Ý[ÂÛÛÝ\ÙYH\Z\ÜÚ[Û\]Y\ÝØÚ[XKØYT\ÙJ]Ô\]Y\Ý
-NÂY
-\\ÙYÝXØÙ\ÜÈ^Ý[Ê
-K]ZY
-
-KØYT\ÙJXÚ\Ú[ÛY
-KÝXØÙ\ÜÊB]\È[YÚXN[ÙKX\ÛÛØÛÙNSSQÑVPÕUSÓÐÓÓVNÂÛÛÝ\]Y\ÝH\ÙY]NÂHÂÛÛÝ[Ú\[H]ØZ]\ËÜË]][XØ]Ü]][XØ]J]]ÛÛ^
-NÂY
-\[Ú\[\Ø[YT[Ú\[
-[Ú\[\]Y\ÝÝXXÝ
-JB]\È[YÚXN[ÙKX\ÛÛØÛÙNÕPPÕÕSUUSPÐUQNÂÛÛÝØ\X[]HH]ØZ]\ËÜËYÚ\ÝK\ÛÛJ\]Y\ÝØ\X[]WÚY
-NÂÛÛÝYÚ\ÝQZ[\HH[Y]TYÚ\ÝPØ\X[]JØ\X[]K\]Y\Ý
-NÂY
-YÚ\ÝQZ[\JH]\È[YÚXN[ÙKX\ÛÛØÛÙNYÚ\ÝQZ[\HNÂÛÛÝÛXÞHH]ØZ]\ËÜËÛXÞK][X]J\]Y\ÝØ\X[]HJNÂY
-\ÛXÞK[ÝÙY
-B]\È[YÚXN[ÙKX\ÛÛØÛÙNØYTX\ÛÛÛXÞKX\ÛÛØÛÙKÓPÖWÐÐÒÑQHNÂY
-ÛXÞKÛÛÙ[Ü\]Z\Y
-HÂÛÛÝÛÛÙ[H]ØZ]\ËÜËÛÛÙ[\YJ\]Y\Ý[Ú\[
-NÂY
-ÛÛÙ[Ý]\ÈOOH[YB]\È[YÚXN[ÙKX\ÛÛØÛÙNÓÓÑSÓÕÕSQNÂBY
-ÛXÞK[[ÝWÙ\ØÛÜÝ\WÜ\]Z\Y
-HÂÛÛÝ\ØÛÜÝ\HH]ØZ]\ËÜË[[ÝQ\ØÛÜÝ\K\YJ\]Y\Ý[Ú\[
-NÂY
-\ØÛÜÝ\KÝ]\ÈOOH[YB]\È[YÚXN[ÙKX\ÛÛØÛÙNSSÕWÑTÐÓÔÕTWÓÕÐUUÔVQNÂBY
-ÛXÞK]]WÜ\Z\ÜÚ[ÛÜ\]Z\Y
-HÂÛÛÝ]]HH]ØZ]\ËÜË]]T\Z\ÜÚ[ÛË\YJ\]Y\Ý[Ú\[
-NÂY
-]]KÝ]\ÈOOHÜ[YB]\È[YÚXN[ÙKX\ÛÛØÛÙNUUWÔTRTÔÒSÓÓÕÕSQNÂBËÈ\È\ÝYÜ\][Û]\Ý]ÛZXØ[HÚXÚÈ]ØØ][ÛÙ^\KØ[[ÂËÈ[ÛÛÝ[YHHÛK][YHXÚ\Ú[ÛXY][XÛÛÝ[YH\È\^XXKÛÛÝ\YXØ][ÛH]ØZ]\ËÜËXÚ\Ú[Û]]Ü]K\YP[ÛÛÝ[YJÂXÚ\Ú[ÛY\]Y\Ý[Ú\[JNÂY
-\YXØ][ÛOOH[YB]\È[YÚXN[ÙKX\ÛÛØÛÙNPÒTÒSÓÈ
-È\YXØ][ÛÕ\\Ø\ÙJ
-HNÂ]ØZ]\ËÜË]Y]XÛÜ
-Â][Ý\N^XÝ][ÛÝ\YXØ][Û\]Y\ÝÚY\]Y\Ý\]Y\ÝÚYXÚ\Ú[ÛÚYXÚ\Ú[ÛYÝXXÝÜY[Ú\[[Ú\[ÚYØ\X[]WÚY\]Y\ÝØ\X[]WÚY\Z\ÜÚ[ÛÚY\]Y\Ý\Z\ÜÚ[ÛÚYÝ]\Î[YÚXHX\ÛÛØÛÙNTQQQÐSÐÓÓÕSQQÛXÞWÝ\Ú[ÛÛXÞKÛXÞWÝ\Ú[ÛØØÝ\YØ]\ËÝÊ
-KÒTÓÔÝ[Ê
-KJNÂ]\È[YÚXNYKXÚ\Ú[ÛÚYXÚ\Ú[ÛYNÂHØ]ÚÂ]\È[YÚXN[ÙKX\ÛÛØÛÙNSSQWÑTSSÖWÕSURSPHNÂBB]]H\Þ[È\ÜÝYSÛÜ[
-\]Y\Ý\Z\ÜÚ[Û\]Y\Ý[Ú\[]][XØ]Y[Ú\[Ý]\Î^ÛYOXÚ\Ú[ÛÝ]\ËÜ[YX\ÛÛÛÙNÝ[ËÛXÞU\Ú[ÛÝ[Ë
-NÛZ\ÙO][X][Û\Ý[ÂÛÛÝ\ÜÝYY]H\ËÝÊ
-NÂÛÛÝ^[ØY\Z\ÜÚ[ÛXÚ\Ú[ÛHÂØÚ[XWÝ\Ú[ÛKXÚ\Ú[ÛÚY\ËÜX]RY
-
-K\]Y\ÝÚY\]Y\Ý\]Y\ÝÚYÝ]\ËÝXXÝ\]Y\ÝÝXXÝØ\X[]WÚY\]Y\ÝØ\X[]WÚY\Z\ÜÚ[ÛÚY\]Y\Ý\Z\ÜÚ[ÛÚY\ÜÙN\]Y\Ý\ÜÙK^XÝ][ÛÛ[ÙN\]Y\Ý^XÝ][ÛÛ[ÙK\ÜÝYYØ]\ÜÝYY]ÒTÓÔÝ[Ê
-KÛXÞWÝ\Ú[ÛÛXÞU\Ú[ÛX\ÛÛØÛÙNØYTX\ÛÛX\ÛÛÛÙKÓPÖWÐÐÒÑQKNÂ]\\Ë\ÜÝYJ^[ØY\]Y\Ý[Ú\[
-NÂB]]H\Þ[È\ÜÝYJ^[ØY\Z\ÜÚ[ÛXÚ\Ú[Û\]Y\Ý\Z\ÜÚ[Û\]Y\Ý[Ú\[]][XØ]Y[Ú\[
-NÛZ\ÙO][X][Û\Ý[ÂÛÛÝ[Y]YH\Z\ÜÚ[ÛXÚ\Ú[ÛØÚ[XKØYT\ÙJ^[ØY
-NÂY
-][Y]YÝXØÙ\ÜÊH]\ÈÝ]\ÎZXÝYX\ÛÛØÛÙNPÒTÒSÓÐÓÓPÕÒSSQNÂHÂ]ØZ]\ËÜË]Y]XÛÜ
-Â][Ý\NXÚ\Ú[ÛÚ\ÜÝX[ÙWÜ\]Y\ÝY\]Y\ÝÚY\]Y\Ý\]Y\ÝÚYXÚ\Ú[ÛÚY^[ØYXÚ\Ú[ÛÚYÝXXÝÜY[Ú\[[Ú\[ÚYØ\X[]WÚY\]Y\ÝØ\X[]WÚY\Z\ÜÚ[ÛÚY\]Y\Ý\Z\ÜÚ[ÛÚYÝ]\Î^[ØYÝ]\ËX\ÛÛØÛÙN^[ØYX\ÛÛØÛÙKÛXÞWÝ\Ú[Û^[ØYÛXÞWÝ\Ú[ÛØØÝ\YØ]\ËÝÊ
-KÒTÓÔÝ[Ê
-KJNÂÛÛÝ\ÜÝYYH\Z\ÜÚ[ÛXÚ\Ú[ÛØÚ[XKØYT\ÙJ]ØZ]\ËÜËXÚ\Ú[Û]]Ü]K\ÜÝYJ[Y]Y]JK
-NÂY
-Z\ÜÝYYÝXØÙ\ÜÈ\Ø[YQXÚ\Ú[Û[[Ê[Y]Y]K\ÜÝYY]JJB]\ÈÝ]\ÎZXÝYX\ÛÛØÛÙNPÒTÒSÓÐUUÔUWÕSTQPPHNÂ]\ÈÝ]\Î\ÜÝYYXÚ\Ú[Û\ÜÝYY]HNÂHØ]ÚÂ]\ÈÝ]\ÎZXÝYX\ÛÛØÛÙNSSQWÑTSSÖWÕSURSPHNÂBBB[Ý[ÛØ[YT[Ú\[
-[Ú\[[Ú\[\]Y\ÝY[Ú\[
-NÛÛX[Â]\
-[Ú\[[Ú\[Ý\HOOH\]Y\ÝY[Ú\[Ý\H	[Ú\[[Ú\[ÚYOOH\]Y\ÝY[Ú\[ÚY	
-[Ú\[Ù\ÜÚ[ÛÚYÏÈ[
-HOOH
-\]Y\ÝYÙ\ÜÚ[ÛÚYÏÈ[
-B
-NÂB[Ý[Û[Y]TYÚ\ÝPØ\X[]JØ\X[]NYÚ\Ý\YØ\X[]H[\]Y\Ý\Z\ÜÚ[Û\]Y\ÝNÝ[È[ÂY
-XØ\X[]HXØ\X[]KYÚ\Ý\Y
-H]\ÐTPSUWÓÕÔQÒTÕTQÂY
-Ø\X[]K[Y][ÛÜÝ]\ÈOOH\ÜÚ[ÈH]\ÐTPSUWÕSQUSÓÓÕÔTÔÒSÈÂY
-Ø\X[]K]Y]×ÜÝ]\ÈOOH\ÝYH]\ÐTPSUWÔUQU×ÓÕÐTÕQÂY
-Ø\X[]KX[Y\ÝØ\X[]WÚYOOH\]Y\ÝØ\X[]WÚY
-H]\ÐTPSUWÒQÓRTÓPUÒÂY
-Ø\X[]KX[Y\ÝYXÞXÛWÜÝ]\ÈOOH\YYYH]\ÐTPSUWÓÕÕTQQQÂY
-XØ\X[]KX[Y\ÝÙYÙ\Ý
-H]\ÐTPSUWÑQÑTÕÓRTÔÒSÈÂY
-XØ\X[]KX[Y\Ý\Z\ÜÚ[ÛË[ÛY\Ê\]Y\Ý\Z\ÜÚ[ÛÚY
-JB]\TRTÔÒSÓÓÕÑPÓTQÂY
-XØ\X[]KX[Y\Ý\[[ÚY\Ë\Z\ÜÚ[ÛÛÛYJ
-
-HOYOOH\]Y\Ý\Z\ÜÚ[ÛÚY	\]Z\Y
-B
-B]\TRTÔÒSÓÑTSSÖWÓÕÑPÓTQÂY
-XØ\X[]KX[Y\Ý^XÝ][ÛÜÛXÞK^XÝ][ÛÛ[Ù\Ë[ÛY\Ê\]Y\Ý^XÝ][ÛÛ[ÙJJB]\VPÕUSÓÓSÑWÓÕÐSÕÑQÂ]\[ÂB[Ý[ÛØ[YQXÚ\Ú[Û[[Ê^XÝY\Z\ÜÚ[ÛXÚ\Ú[ÛXÝX[\Z\ÜÚ[ÛXÚ\Ú[ÛNÛÛX[Â]\
-XÝX[XÚ\Ú[ÛÚYOOH^XÝYXÚ\Ú[ÛÚY	XÝX[\]Y\ÝÚYOOH^XÝY\]Y\ÝÚY	XÝX[Ý]\ÈOOH^XÝYÝ]\È	Ø[YT[Ú\[
-XÝX[ÝXXÝ^XÝYÝXXÝ
-H	XÝX[Ø\X[]WÚYOOH^XÝYØ\X[]WÚY	XÝX[\Z\ÜÚ[ÛÚYOOH^XÝY\Z\ÜÚ[ÛÚY	XÝX[\ÜÙK\ÜÙWÚYOOH^XÝY\ÜÙK\ÜÙWÚY	XÝX[\ÜÙK\ØÜ\[ÛOOH^XÝY\ÜÙK\ØÜ\[Û	XÝX[^XÝ][ÛÛ[ÙHOOH^XÝY^XÝ][ÛÛ[ÙH	XÝX[\ÜÝYYØ]OOH^XÝY\ÜÝYYØ]	XÝX[^\\×Ø]OOH^XÝY^\\×Ø]	XÝX[Ú[ÛWÝ\ÙHOOH^XÝYÚ[ÛWÝ\ÙH	XÝX[ÛXÞWÝ\Ú[ÛOOH^XÝYÛXÞWÝ\Ú[Û	XÝX[X\ÛÛØÛÙHOOH^XÝYX\ÛÛØÛÙH	Ø[ÛXØ[ÛÛXÝX[\ÝYÜØÛÜJHOOHØ[ÛXØ[ÛÛ^XÝY\ÝYÜØÛÜJH	Ø[ÛXØ[ÛÛXÝX[]Y[ÙWÜYÈÏÈ×JHOOHØ[ÛXØ[ÛÛ^XÝY]Y[ÙWÜYÈÏÈ×JB
-NÂB[Ý[ÛØ[ÛXØ[ÛÛ[YN[ÛÝÛNÝ[ÈÂY
-\^K\Ð\^J[YJJH]\È
-È[YKX\
-Ø[ÛXØ[ÛÛKÚ[H
-ÈHÂY
-[YH	\[Ù[YHOOHØXÝHÂÛÛÝXÛÜH[YH\ÈXÛÜÝ[Ë[ÛÝÛÂ]\
-È
-ÂØXÝÙ^\ÊXÛÜ
-BÛÜ
-
-BX\
-
-Ù^JHOÓÓÝ[ÚYJÙ^JH
-È
-ÈØ[ÛXØ[ÛÛXÛÜÚÙ^WJJBÚ[H
-ÂH
-NÂB]\ÓÓÝ[ÚYJ[YJHÏÈ[Y[YÂB[Ý[ÛØYTX\ÛÛ[YNÝ[Ë[XÚÎÝ[ÊNÝ[ÈÂ]\×ÐKVVÐKVNW×^ÌKÎ_IË\Ý
-[YJHÈ[YH[XÚÎÂB
+function samePrincipal(principal: Principal, requested: Principal): boolean {
+  return (
+    principal.principal_type === requested.principal_type &&
+    principal.principal_id === requested.principal_id &&
+    (principal.session_id ?? null) === (requested.session_id ?? null)
+  );
+}
+function validateRegistryCapability(
+  capability: RegisteredCapability | null,
+  request: PermissionRequest,
+): string | null {
+  if (!capability || !capability.registered) return "CAPABILITY_NOT_REGISTERED";
+  if (capability.validation_status !== "passing") return "CAPABILITY_VALIDATION_NOT_PASSING";
+  if (capability.review_status !== "approved") return "CAPABILITY_REVIEW_NOT_APPROVED";
+  if (capability.manifest.capability_id !== request.capability_id) return "CAPABILITY_ID_MISMATCH";
+  if (capability.manifest.lifecycle_status !== "verified") return "CAPABILITY_NOT_VERIFIED";
+  if (!capability.manifest_digest) return "CAPABILITY_DIGEST_MISSING";
+  if (!capability.manifest.permissions.includes(request.permission_id))
+    return "PERMISSION_NOT_DECLARED";
+  if (
+    !capability.manifest.dependencies.permission.some(
+      (p) => p.id === request.permission_id && p.required,
+    )
+  )
+    return "PERMISSION_DEPENDENCY_NOT_DECLARED";
+  if (!capability.manifest.execution_policy.execution_modes.includes(request.execution_mode))
+    return "EXECUTION_MODE_NOT_ALLOWED";
+  return null;
+}
+function sameDecisionBinding(expected: PermissionDecision, actual: PermissionDecision): boolean {
+  return (
+    actual.decision_id === expected.decision_id &&
+    actual.request_id === expected.request_id &&
+    actual.status === expected.status &&
+    samePrincipal(actual.subject, expected.subject) &&
+    actual.capability_id === expected.capability_id &&
+    actual.permission_id === expected.permission_id &&
+    actual.purpose.purpose_id === expected.purpose.purpose_id &&
+    actual.purpose.description === expected.purpose.description &&
+    actual.execution_mode === expected.execution_mode &&
+    actual.issued_at === expected.issued_at &&
+    actual.expires_at === expected.expires_at &&
+    actual.single_use === expected.single_use &&
+    actual.policy_version === expected.policy_version &&
+    actual.reason_code === expected.reason_code &&
+    canonicalJson(actual.approved_scope) === canonicalJson(expected.approved_scope) &&
+    canonicalJson(actual.evidence_refs ?? []) === canonicalJson(expected.evidence_refs ?? [])
+  );
+}
+function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) return "[" + value.map(canonicalJson).join(",") + "]";
+  if (value && typeof value === "object") {
+    const record = value as Record<string, unknown>;
+    return (
+      "{" +
+      Object.keys(record)
+        .sort()
+        .map((key) => JSON.stringify(key) + ":" + canonicalJson(record[key]))
+        .join(",") +
+      "}"
+    );
+  }
+  return JSON.stringify(value) ?? "undefined";
+}
+function safeReason(value: string, fallback: string): string {
+  return /^[A-Z][A-Z0-9_]{1,79}$/.test(value) ? value : fallback;
+}
