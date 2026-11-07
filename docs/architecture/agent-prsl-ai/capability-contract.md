@@ -5,6 +5,10 @@
 **Ecosystem:** PRSL-AI Ecosystem  
 **Applies to:** Agent capability modules, tool-backed operations, and capability-facing integration adapters
 
+**Machine-readable manifest:** [capability-manifest.schema.json](./schemas/capability-manifest.schema.json)  
+**Registry governance:** [Capability Registry Specification](./registry-specification.md)  
+**Validation:** [Validation instructions](./validation/README.md)
+
 ## 1. Purpose
 
 The Capability Contract defines the minimum information required to register, discover, authorize, route, execute, and observe a capability.
@@ -328,29 +332,9 @@ Execution Policy governs whether and how an operation may run. It is evaluated b
 
 ## 11. Standard capability manifest
 
-The following is the minimum logical manifest. A machine-readable JSON Schema may be published as a separate artifact after the contract is adopted.
+The machine-readable manifest contract is defined in [capability-manifest.schema.json](./schemas/capability-manifest.schema.json). The schema validates the manifest structure and embeds operation-specific JSON Schemas for `input_schema` and `output_schema`.
 
-```json
-{
-  "capability_id": "prsl.agent.<module>.<operation>",
-  "name": "Human-readable operation name",
-  "description": "What this operation does",
-  "module_id": "prsl.agent.<module>",
-  "contract_version": "1.0",
-  "lifecycle_status": "proposed",
-  "owner": "Robert Software Labs",
-  "input_schema": {},
-  "output_schema": {},
-  "permissions": [],
-  "dependencies": {},
-  "availability": {
-    "evaluation": "runtime"
-  },
-  "execution_policy": {}
-}
-```
-
-This is a structural example, not a completed registration for a working runtime.
+See the [validated Vision example](./examples/vision-analyze-image.manifest.json) for a complete representative manifest. It is marked `specified`, not `implemented`.
 
 ## 12. Error model
 
