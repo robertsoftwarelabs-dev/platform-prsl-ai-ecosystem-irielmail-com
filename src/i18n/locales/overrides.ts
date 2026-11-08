@@ -44,7 +44,7 @@ const es: Override = {
     sendRemote: "Enviar pregunta a IA remota", keepLocal: "No enviar",
     localOnly: "No se ha enviado ninguna información. Solo puedo responder con los temas disponibles localmente en esta sesión.",
   },
-  form: { name: "Nombre", email: "Correo", category: "Categoría", message: "Mensaje", submit: "Enviar", thanks: "Gracias. Tu mensaje se registró en esta sesión. Para una respuesta inmediata, abre Agent PRSL-AI.", categories: ["Sugerencia", "Accesibilidad", "Informe de error", "Idioma / traducción", "Otro"], required: "Obligatorio" },
+  form: { name: "Nombre", email: "Correo", category: "Categoría", message: "Mensaje", submit: "Enviar", unavailable: "Este formulario no está conectado a un servicio de envío. No se envía ni almacena nada. No introduzcas aquí datos personales o sensibles.", categories: ["Sugerencia", "Accesibilidad", "Informe de error", "Idioma / traducción", "Otro"], required: "Obligatorio" },
 };
 
 const ar: Override = {
@@ -87,7 +87,7 @@ const ar: Override = {
     sendRemote: "إرسال السؤال إلى الذكاء الاصطناعي البعيد", keepLocal: "عدم الإرسال",
     localOnly: "لم يتم إرسال أي معلومات. يمكنني الإجابة فقط باستخدام الموضوعات المتاحة محليًا في هذه الجلسة.",
   },
-  form: { name: "الاسم", email: "البريد الإلكتروني", category: "الفئة", message: "الرسالة", submit: "إرسال", thanks: "شكرًا لك. تم تسجيل رسالتك في هذه الجلسة. للحصول على رد فوري، افتح Agent PRSL-AI.", categories: ["اقتراح", "الإتاحة", "بلاغ عن خطأ", "اللغة / الترجمة", "أخرى"], required: "مطلوب" },
+  form: { name: "الاسم", email: "البريد الإلكتروني", category: "الفئة", message: "الرسالة", submit: "إرسال", unavailable: "هذا النموذج غير متصل بخدمة إرسال. لا يتم إرسال أي شيء أو تخزينه. لا تُدخل بيانات شخصية أو حساسة هنا.", categories: ["اقتراح", "الإتاحة", "بلاغ عن خطأ", "اللغة / الترجمة", "أخرى"], required: "مطلوب" },
 };
 
 const ptPT: Override = {
@@ -96,7 +96,7 @@ const ptPT: Override = {
   footer: { contact: "Contacto", feedback: "Opinião", copyright: "Copyright © 2026 Robert Software Labs. Todos os direitos reservados." },
   home: { ctaSecondary: "Falar com o Agent PRSL-AI" },
   agent: { placeholder: "Pergunte ao Agent PRSL-AI…", you: "Você" },
-  form: { email: "Correio eletrónico", thanks: "Obrigado. A sua mensagem foi registada nesta sessão. Para resposta imediata, abra o Agent PRSL-AI.", categories: ["Sugestão", "Acessibilidade", "Relato de erro", "Idioma / tradução", "Outro"] },
+  form: { email: "Correio eletrónico", unavailable: "Este formulário ainda não está ligado a um serviço de envio. Nada é enviado ou armazenado. Não introduza aqui dados pessoais ou sensíveis.", categories: ["Sugestão", "Acessibilidade", "Relato de erro", "Idioma / tradução", "Outro"] },
 };
 
 export const OVERRIDES: Partial<Record<string, Override>> = { "es-ES": es, "es-419": es, ar, "pt-PT": ptPT,
