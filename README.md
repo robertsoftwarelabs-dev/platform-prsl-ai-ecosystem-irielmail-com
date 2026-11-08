@@ -65,8 +65,8 @@ The website and repository contain a mixture of implemented interface elements, 
 | Platform website | Implemented as a Lovable-hosted web application; individual pages and behaviors remain subject to testing |
 | Language registry | 17 BCP 47 locales registered |
 | Translation completeness | en-US and pt-BR have complete core message sets; other locales have partial native UI overrides and fallback content |
-| Agent PRSL-AI console | Known-topic matching is local; unmatched questions require explicit consent before remote inference |
-| Current remote Agent fallback | Lovable AI Gateway, currently configured with OpenAI GPT-6 Astra; this is a provider-specific implementation, not proof of a provider-agnostic runtime |
+| Agent PRSL-AI console | Local topic matching only; unmatched questions receive a local-only notice and are not transmitted to a remote provider |
+| Remote Agent inference | Not enabled in the current console; future remote providers require explicit, provider-neutral adapters and trusted disclosure authorization |
 | PRSL-AI Intelligence Infrastructure | Architecture specified; not implemented as a complete operational infrastructure |
 | Intelligence Router runtime | Architectural responsibility defined; production routing runtime is not verified |
 | Permission Manager | Partial runtime core and contract tests exist; trusted production adapters and deployment are not established |
@@ -75,19 +75,13 @@ The website and repository contain a mixture of implemented interface elements, 
 
 The [Implementation Readiness and Architecture Gap Register](docs/architecture/IMPLEMENTATION-READINESS-AND-GAP-REGISTER.md) is the authoritative record of known production blockers and required evidence. Do not infer operational readiness from a page, diagram, manifest, or passing synthetic test.
 
-## Agent PRSL-AI and remote inference
+## Agent PRSL-AI and execution boundaries
 
-The current Agent console is a knowledge Q&A interface. It does not execute general platform operations or forward messages to the RSL team. Capability execution, human support, and formal security reporting are separate functions and are not provided by this console.
+The current Agent console is a local knowledge Q&A interface. It matches documented topics in the browser and returns a local-only notice when no topic matches. **It does not send questions to a remote model or provider.** It does not execute general platform operations, forward messages to the RSL team, or accept formal security reports.
 
-The current Agent console first checks its local knowledge topics. If it cannot match a topic, it must ask the user before sending the question to the remote AI service.
+Remote inference is intentionally not enabled in this console. Any future remote execution must be introduced through a provider-neutral adapter contract, an approved provider implementation, explicit policy evaluation, trusted recipient- and purpose-bound disclosure authorization, server-side abuse controls, and tests. A user-interface prompt or client-supplied boolean is not a trusted authorization mechanism.
 
-When the user explicitly approves:
-- The question text is sent to the Lovable AI Gateway.
-- The gateway is currently configured to use OpenAI GPT-6 Astra.
-- The current request does not include the user's iRiel profile, personal memory, or conversation history.
-- Declining remote inference keeps the question on the local path.
-
-This is a **UI-level consent step** for the public Agent Q&A flow. The request also carries an explicit consent assertion, but that client-provided value is not a trusted authorization authority and can be bypassed by a direct API caller. It does not replace the production Remote Disclosure Authority tracked as GAP-007. The public gateway also has no verified server-side rate limit, abuse detection, or budget guard (GAP-021); remote fallback must therefore not be treated as production-hardened. Do not send protected or sensitive personal data through this public fallback. The provider-specific gateway must not be described as provider-agnostic until a replaceable adapter contract and implementation are in place.
+The current console does not access an iRiel profile, personal memory, or conversation history.
 
 ## Architecture documentation
 
