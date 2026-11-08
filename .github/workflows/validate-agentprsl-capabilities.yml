@@ -77,7 +77,7 @@ jobs:
         run: bunx tsc --noEmit
       - name: Build the platform application
         run: bun run build
-      - name: Lint server-side Agent gateway
-        run: bunx eslint src/lib/ai/agent.functions.ts src/lib/ai/gateway.server.ts
+      - name: Lint local-only Agent and public API routes
+        run: bunx eslint src/components/site/AgentConsole.tsx src/routes/api/public/v1/inference.ts src/routes/api/public/v1/capabilities.ts
       - name: Lint the Permission Manager implementation
         run: bunx eslint src/lib/permission-manager/*.ts src/test/permission-manager/*.test.ts
