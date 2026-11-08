@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ContentPage } from "@/components/site/ContentPage";
-import { FeedbackForm } from "@/components/site/FeedbackForm";
+import { SubmissionStatus } from "@/components/site/SubmissionStatus";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -13,5 +13,5 @@ export const Route = createFileRoute("/contact")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: () => <ContentPage page="contact"><FeedbackForm /></ContentPage>,
+  component: () => <ContentPage page="contact"><SubmissionStatus /></ContentPage>,
 });
