@@ -67,6 +67,7 @@ The website and repository contain a mixture of implemented interface elements, 
 | Translation completeness | en-US and pt-BR have complete core message sets; other locales have partial native UI overrides and fallback content |
 | Agent PRSL-AI console | Local topic matching only; unmatched questions receive a local-only notice and are not transmitted to a remote provider |
 | Remote Agent inference | Not enabled in the current console; future remote providers require explicit, provider-neutral adapters and trusted disclosure authorization |
+| Public inference API | /api/public/v1/inference returns HTTP 503 with not_enabled; /api/public/v1/capabilities reports inference as not_enabled | Disabled until provider-neutral adapters, policy enforcement, trusted disclosure authorization, and server-side abuse controls are implemented |
 | PRSL-AI Intelligence Infrastructure | Architecture specified; not implemented as a complete operational infrastructure |
 | Intelligence Router runtime | Architectural responsibility defined; production routing runtime is not verified |
 | Permission Manager | Partial runtime core and contract tests exist; trusted production adapters and deployment are not established |
