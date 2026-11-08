@@ -212,7 +212,8 @@
               "DEPENDENCY_CYCLE",
               "UNSUPPORTED_VERSION_CONSTRAINT",
               "RESOLUTION_LIMIT_EXCEEDED",
-              "MODEL_PROVIDER_CONSTRAINT_CONFLICT"
+              "MODEL_PROVIDER_CONSTRAINT_CONFLICT",
+              "ROOT_CAPABILITY_ID_MISMATCH"
             ]
           },
           "dependency_type": {
