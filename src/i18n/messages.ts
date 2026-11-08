@@ -36,7 +36,7 @@ export interface Messages {
     eyebrow: string; title: string; poweredBy: string; intro: string; distinctionTitle: string; distinction: string[];
     placeholder: string; send: string; you: string; agentName: string; suggestionsLabel: string;
     status: string; local: string;
-    remoteConsentPrompt: string; remoteDestination: string; sendRemote: string; keepLocal: string; localOnly: string;
+    localOnly: string;
     greeting: string; fallback: string;
     suggestions: { label: string; topic: AgentTopic }[];
     keywords: Record<AgentTopic, string[]>;
@@ -116,9 +116,6 @@ const en: Messages = {
     suggestionsLabel: "Suggested questions",
     status: "Online · Knowledge base v1",
     local: "Known-topic answers are matched locally. Questions outside the local knowledge base are not sent to remote AI unless you explicitly approve the request.",
-    remoteConsentPrompt: "I don't have a local answer for this question. Would you like me to send only the question text to the remote AI service?",
-    remoteDestination: "Destination: Lovable AI Gateway, currently configured with OpenAI GPT-6 Astra. Your profile, memory and conversation history are not included.",
-    sendRemote: "Send question to remote AI", keepLocal: "Do not send",
     localOnly: "No information was sent. I can answer only from the local knowledge topics available in this session.",
     greeting: "Hello. I am Agent PRSL-AI, the platform knowledge specialist for the PRSL-AI Ecosystem. I can explain documented architecture and current implementation status; I do not execute platform operations in this console.",
     fallback: "I'm specialized in the PRSL-AI Ecosystem. Try asking about the Router, iRiel, iApps, privacy, languages or the architectural principles.",
@@ -149,7 +146,7 @@ const en: Messages = {
       routing: "The Intelligence Router selects eligible execution candidates using policy, sensitivity, capability, availability and execution constraints. It does not grant permissions. The Permission Manager separately authorizes protected operations; host operating-system permissions remain independent. The model thinks, the agent executes a specialty, the Router decides, and iRiel orchestrates.",
       iriel: "I am Agent PRSL-AI, the platform specialist. I explain the PRSL-AI Ecosystem and do not act as iRiel. iRiel is a separate PowerFully Intelligence Environment with its own AppWeb. It may consume PRSL-AI capabilities through explicit, governed contracts. That integration is a documented target and must not be described as operational until verified.",
       principles: "The platform is governed by accessibility, inclusion and security by default; privacy and data minimization; local-first execution where suitable; provider-agnostic architecture; explicit consent; and user-controlled continuity. WCAG 2.2 AA is a target, not a conformance claim.",
-      privacy: "Privacy by Default means minimizing data and preferring local processing where suitable. Known Agent topics are answered locally. If no local topic matches, the console asks before sending the question text to the Lovable AI Gateway, currently configured with OpenAI GPT-6 Astra. The current request does not include an iRiel profile, personal memory or conversation history. Do not enter sensitive information into the remote fallback. Security requirements include least privilege and a responsible vulnerability-disclosure process; this description is not a security certification.",
+      privacy: "The current Agent Q&A console uses local topic matching only. Questions that do not match a documented local topic receive a local-only notice; no question is sent to a remote model or provider. The console does not access an iRiel profile, personal memory or conversation history. Security requirements include least privilege and a responsible vulnerability-disclosure process; this description is not a security certification.",
       languages: "The Language Core registers 17 BCP 47 locales: en-US, en-GB, pt-BR, pt-PT, es-ES, es-419, fr-FR, de-DE, it-IT, zh-CN, zh-TW, ja-JP, ko-KR, ar (right-to-left), hi-IN, ru-RU and nl-NL. en-US and pt-BR have complete core message sets. The other locales have partial native UI overrides and use fallback content for missing messages. Registry presence does not mean a complete translation or a verified iRiel integration.",
       iapps: "iApps are a modular application family designed to use PRSL-AI capabilities and connect to iRiel through explicit, permissioned contracts as each integration is implemented and verified.",
       contact: "Robert Software Labs was founded by Robert, a Brazilian software engineer. Agent PRSL-AI answers general platform questions only; it does not execute platform operations or forward messages to the RSL team. The contact form is not connected and no message is sent or stored.",
@@ -338,9 +335,6 @@ const pt: Messages = {
     suggestionsLabel: "Perguntas sugeridas",
     status: "Online · Base de conhecimento v1",
     local: "Tópicos conhecidos são respondidos localmente. Perguntas fora da base local não são enviadas à IA remota sem sua aprovação explícita.",
-    remoteConsentPrompt: "Não encontrei uma resposta local para esta pergunta. Você autoriza enviar somente o texto da pergunta ao serviço de IA remoto?",
-    remoteDestination: "Destino: Lovable AI Gateway, atualmente configurado com OpenAI GPT-6 Astra. Seu perfil, memória e histórico de conversas não serão incluídos.",
-    sendRemote: "Enviar pergunta à IA remota", keepLocal: "Não enviar",
     localOnly: "Nenhuma informação foi enviada. Posso responder apenas com base nos tópicos disponíveis localmente nesta sessão.",
     greeting: "Olá. Eu sou o Agent PRSL-AI, especialista em conhecimento da plataforma PRSL-AI. Posso explicar a arquitetura documentada e o status atual da implementação; não executo operações da plataforma neste console.",
     fallback: "Sou especializado no Ecossistema PRSL-AI. Pergunte sobre o Router, o iRiel, os iApps, privacidade, idiomas ou os princípios arquiteturais.",
@@ -371,7 +365,7 @@ const pt: Messages = {
       routing: "O Intelligence Router seleciona candidatos elegíveis considerando política, sensibilidade, capacidade, disponibilidade e restrições de execução. Ele não concede permissões. O Permission Manager autoriza separadamente operações protegidas; permissões do sistema operacional continuam independentes. O modelo pensa, o agente executa uma especialidade, o Router decide e o iRiel orquestra.",
       iriel: "Eu sou o Agent PRSL-AI, o especialista da plataforma. Explico o Ecossistema PRSL-AI e não substituo o iRiel. O iRiel é um Ambiente de Inteligência Poderosa separado, com seu próprio AppWeb. Ele poderá consumir capacidades PRSL-AI por contratos explícitos e governados. Essa integração é um objetivo documentado e não deve ser descrita como operacional até ser verificada.",
       principles: "A plataforma é regida por acessibilidade, inclusão e segurança por padrão; privacidade e minimização de dados; execução local primeiro quando adequada; arquitetura independente de provedor; consentimento explícito; e continuidade sob controle do usuário. WCAG 2.2 AA é uma meta, não uma declaração de conformidade.",
-      privacy: "Privacidade por Padrão significa minimizar dados e preferir processamento local quando adequado. Tópicos conhecidos do Agent são respondidos localmente. Se nenhum tópico corresponder, o console pede consentimento antes de enviar o texto da pergunta ao Lovable AI Gateway, atualmente configurado com OpenAI GPT-6 Astra. A requisição atual não inclui perfil do iRiel, memória pessoal ou histórico de conversas. Não informe dados sensíveis no fallback remoto. Os requisitos de segurança incluem privilégio mínimo e divulgação responsável de vulnerabilidades; esta descrição não é uma certificação de segurança.",
+      privacy: "O console atual de perguntas e respostas do Agent usa somente correspondência local de tópicos. Perguntas que não correspondem a um tópico local documentado recebem um aviso de resposta exclusivamente local; nenhuma pergunta é enviada a modelo ou provedor remoto. O console não acessa perfil do iRiel, memória pessoal nem histórico de conversas. Os requisitos de segurança incluem privilégio mínimo e divulgação responsável de vulnerabilidades; esta descrição não é uma certificação de segurança.",
       languages: "O Language Core registra 17 locales BCP 47: en-US, en-GB, pt-BR, pt-PT, es-ES, es-419, fr-FR, de-DE, it-IT, zh-CN, zh-TW, ja-JP, ko-KR, ar (direita para esquerda), hi-IN, ru-RU e nl-NL. en-US e pt-BR têm conjuntos centrais completos. Os demais possuem traduções nativas parciais e usam fallback para textos ausentes. A presença no registro não significa tradução completa nem integração verificada com o iRiel.",
       iapps: "Os iApps formam uma família modular projetada para consumir capacidades PRSL-AI e se conectar ao iRiel por contratos explícitos e com permissões, conforme cada integração for implementada e verificada.",
       contact: "A Robert Software Labs foi fundada por Robert, engenheiro de software brasileiro. O Agent PRSL-AI responde apenas a dúvidas gerais sobre a plataforma; não executa operações nem encaminha mensagens à equipe da RSL. O formulário de contato não está conectado e nenhuma mensagem é enviada ou armazenada.",
