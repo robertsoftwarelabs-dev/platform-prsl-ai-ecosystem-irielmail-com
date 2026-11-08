@@ -41,7 +41,7 @@ const es: Override = {
     placeholder: "Pregunta a Agent PRSL-AI…", send: "Enviar", you: "Tú", suggestionsLabel: "Preguntas sugeridas",
     localOnly: "No se ha enviado ninguna información. Solo puedo responder con los temas disponibles localmente en esta sesión.",
   },
-  form: { name: "Nombre", email: "Correo", category: "Categoría", message: "Mensaje", submit: "Enviar", unavailable: "Este formulario no está conectado a un servicio de envío. No se envía ni almacena nada. No introduzcas aquí datos personales o sensibles.", categories: ["Sugerencia", "Accesibilidad", "Informe de error", "Idioma / traducción", "Otro"], required: "Obligatorio" },
+  form: { unavailable: "Este formulario no está conectado a un servicio de envío. No se envía ni almacena nada. No introduzcas aquí datos personales o sensibles." },
 };
 
 const ar: Override = {
@@ -81,7 +81,7 @@ const ar: Override = {
     placeholder: "اسأل Agent PRSL-AI…", send: "إرسال", you: "أنت", suggestionsLabel: "أسئلة مقترحة",
     localOnly: "لم يتم إرسال أي معلومات. يمكنني الإجابة فقط باستخدام الموضوعات المتاحة محليًا في هذه الجلسة.",
   },
-  form: { name: "الاسم", email: "البريد الإلكتروني", category: "الفئة", message: "الرسالة", submit: "إرسال", unavailable: "هذا النموذج غير متصل بخدمة إرسال. لا يتم إرسال أي شيء أو تخزينه. لا تُدخل بيانات شخصية أو حساسة هنا.", categories: ["اقتراح", "الإتاحة", "بلاغ عن خطأ", "اللغة / الترجمة", "أخرى"], required: "مطلوب" },
+  form: { unavailable: "هذا النموذج غير متصل بخدمة إرسال. لا يتم إرسال أي شيء أو تخزينه. لا تُدخل بيانات شخصية أو حساسة هنا." },
 };
 
 const ptPT: Override = {
@@ -90,7 +90,7 @@ const ptPT: Override = {
   footer: { contact: "Contacto", feedback: "Opinião", copyright: "Copyright © 2026 Robert Software Labs. Todos os direitos reservados." },
   home: { ctaSecondary: "Falar com o Agent PRSL-AI" },
   agent: { placeholder: "Pergunte ao Agent PRSL-AI…", you: "Você" },
-  form: { email: "Correio eletrónico", unavailable: "Este formulário ainda não está ligado a um serviço de envio. Nada é enviado ou armazenado. Não introduza aqui dados pessoais ou sensíveis.", categories: ["Sugestão", "Acessibilidade", "Relato de erro", "Idioma / tradução", "Outro"] },
+  form: { unavailable: "Este formulário ainda não está ligado a um serviço de envio. Nada é enviado ou armazenado. Não introduza aqui dados pessoais ou sensíveis." },
 };
 
 export const OVERRIDES: Partial<Record<string, Override>> = { "es-ES": es, "es-419": es, ar, "pt-PT": ptPT,
