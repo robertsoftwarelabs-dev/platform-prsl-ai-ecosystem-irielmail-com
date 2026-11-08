@@ -8,7 +8,7 @@
 
 ## 1. Purpose
 
-The Dependency Resolver evaluates the declared dependencies of a verified root capability against one trusted, immutable registry snapshot. It produces a deterministic dependency graph, a dependency-first dependency-first order, explicit optional omissions, and separate authorization/model requirements.
+The Dependency Resolver evaluates the declared dependencies of a verified root capability against one trusted, immutable registry snapshot. It produces a deterministic dependency graph, a dependency-first order, explicit optional omissions, and separate authorization/model requirements.
 
 The resolver is a planning and validation component. It does not install, download, start, execute, authorize, grant, or provision dependencies. It does not query arbitrary URLs or accept a caller-supplied registry catalog as an authority.
 
@@ -82,7 +82,7 @@ For v1.0, a dependency version selector supports exactly one stable semantic-ver
 
 Versions use MAJOR.MINOR.PATCH with non-negative integers and no leading zeroes except zero itself. Prerelease and build metadata, wildcards, OR expressions, and compound ranges are not supported in v1.0. Unsupported selectors MUST fail closed with UNSUPPORTED_VERSION_CONSTRAINT; they must not be guessed or interpreted permissively.
 
-When no selector is declared, the resolver may choose the highest verified stable version permitted by registry and platform policy.
+When no selector is declared, the resolver chooses the highest eligible stable version in the trusted snapshot. Separate platform policy may still block that candidate.
 
 For a given dependency type and ID, only one version may appear in a resolution graph. If another path imposes a constraint not satisfied by the already selected version, the resolution is blocked with DEPENDENCY_VERSION_CONFLICT. The v1.0 resolver is deliberately conservative and does not perform speculative version backtracking.
 
@@ -112,11 +112,11 @@ The resolver uses deterministic depth-first traversal with:
 - a stable registry-record reference tie-breaker;
 - cycle detection against the active traversal stack;
 - one selected version per dependency type and ID;
-- bounded maximum depth and node count.
+- bounded maximum depth and dependency-node count, excluding the root capability.
 
 A cycle produces DEPENDENCY_CYCLE. Exceeding either configured limit produces RESOLUTION_LIMIT_EXCEEDED. Any blocked result MUST return an empty dependency_order, even if some dependencies were resolved for diagnostic purposes.
 
-The dependency-first order is dependency-first: every resolved dependency appears after its own transitive prerequisites. The result is deterministic for the same root manifest, registry snapshot, and request policy.
+The dependency order is topological: every resolved dependency appears after its own transitive prerequisites. It is a resolution order only and never an instruction to execute or install dependencies. The result is deterministic for the same trusted root record, registry snapshot, and request policy.
 
 ## 8. Result contract
 
@@ -128,7 +128,7 @@ The result includes:
 - optional dependencies omitted with reason codes;
 - authorization requirements, not grants;
 - model requirements and provider constraints, not provider selections;
-- dependency-first dependency-first order;
+- dependency-first order;
 - structured errors.
 
 Statuses:
