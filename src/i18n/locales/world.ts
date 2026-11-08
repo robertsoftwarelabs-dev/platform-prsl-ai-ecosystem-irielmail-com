@@ -11,7 +11,7 @@ interface Pack {
   tag: [string, string, string];
   dep: [string, string, string, string, string];
   agent: [string, string, string, string, string, string, string, string, string, string, string, string]; // eyebrow intro distinction placeholder send you suggestions remote consent prompt destination send keep local local-only response
-  form: [string, string, string, string, string, string, string];
+  form: [string, string, string, string, string, string, string]; // final message explains that submission is not connected
   pages: string[]; // 12 titles
 }
 
@@ -34,7 +34,7 @@ function build(p: Pack): Override {
       dependencyTitle: p.dep[0], dependencyLines: p.dep.slice(1),
     },
     agent: { eyebrow: p.agent[0], poweredBy: "Powered by Robert Software Labs", intro: p.agent[1], distinctionTitle: p.agent[2], placeholder: p.agent[3], send: p.agent[4], you: p.agent[5], suggestionsLabel: p.agent[6], remoteConsentPrompt: p.agent[7], remoteDestination: p.agent[8], sendRemote: p.agent[9], keepLocal: p.agent[10], localOnly: p.agent[11] },
-    form: { name: p.form[0], email: p.form[1], category: p.form[2], message: p.form[3], submit: p.form[4], thanks: p.form[5], required: p.form[6] },
+    form: { name: p.form[0], email: p.form[1], category: p.form[2], message: p.form[3], submit: p.form[4], unavailable: p.form[5], required: p.form[6] },
     pages,
   };
 }
@@ -48,7 +48,7 @@ export const fr = build({
   tag: ["Confidentialité par défaut", "Local d’abord", "Indépendant des fournisseurs"],
   dep: ["Intelligence sans dépendance", "Le modèle pense.", "L’agent exécute.", "Le Router décide.", "iRiel orchestre."],
   agent: ["Spécialiste de la plateforme", "Posez vos questions sur l’écosystème, le Router, iRiel, les iApps, les langues ou nos principes.", "Agent PRSL-AI n’est pas iRiel", "Demandez à Agent PRSL-AI…", "Envoyer", "Vous", "Questions suggérées", "Je n’ai pas de réponse locale à cette question. Autorisez-vous l’envoi du texte de la question au service d’IA distant ?", "Destination : Lovable AI Gateway, actuellement configuré avec OpenAI GPT-6 Astra. Votre profil, votre mémoire et votre historique ne sont pas inclus.", "Envoyer à l’IA distante", "Ne pas envoyer", "Aucune information n’a été envoyée. Je peux répondre uniquement à partir des sujets disponibles localement."],
-  form: ["Nom", "E-mail", "Catégorie", "Message", "Envoyer", "Merci. Votre message a été enregistré pour cette session. Pour une réponse immédiate, ouvrez Agent PRSL-AI.", "Obligatoire"],
+  form: ["Nom", "E-mail", "Catégorie", "Message", "Envoyer", "Ce formulaire n'est pas relié à un service d'envoi. Rien n'est envoyé ni stocké. N'y saisissez aucune donnée personnelle ou sensible.", "Obligatoire"],
   pages: ["À propos de Robert Software Labs", "L’écosystème PRSL-AI", "iRiel AI", "iApps", "Développeurs", "Documentation", "Confidentialité", "Sécurité", "Centre d’aide", "Avis", "Conditions d’utilisation", "Contacter Robert Software Labs"],
 });
 
@@ -61,7 +61,7 @@ export const de = build({
   tag: ["Datenschutz als Standard", "Gerät zuerst", "Anbieterunabhängig"],
   dep: ["Intelligenz ohne Abhängigkeit", "Das Modell denkt.", "Der Agent führt aus.", "Der Router entscheidet.", "iRiel orchestriert."],
   agent: ["Plattformspezialist", "Fragen Sie zum Ökosystem, Router, iRiel, den iApps, Sprachen oder unseren Prinzipien.", "Agent PRSL-AI ist nicht iRiel", "Agent PRSL-AI fragen…", "Senden", "Sie", "Vorgeschlagene Fragen", "Ich habe keine lokale Antwort auf diese Frage. Möchten Sie nur den Fragetext an den entfernten KI-Dienst senden?", "Ziel: Lovable AI Gateway, derzeit mit OpenAI GPT-6 Astra konfiguriert. Profil, Gedächtnis und Gesprächsverlauf werden nicht mitgesendet.", "Frage an entfernte KI senden", "Nicht senden", "Es wurden keine Informationen gesendet. Ich kann nur anhand der lokal verfügbaren Themen antworten."],
-  form: ["Name", "E-Mail", "Kategorie", "Nachricht", "Senden", "Danke. Ihre Nachricht wurde in dieser Sitzung erfasst. Für eine sofortige Antwort öffnen Sie Agent PRSL-AI.", "Pflichtfeld"],
+  form: ["Name", "E-Mail", "Kategorie", "Nachricht", "Senden", "Dieses Formular ist nicht mit einem Übermittlungsdienst verbunden. Es wird nichts gesendet oder gespeichert. Geben Sie hier keine personenbezogenen oder sensiblen Daten ein.", "Pflichtfeld"],
   pages: ["Über Robert Software Labs", "Das PRSL-AI-Ökosystem", "iRiel AI", "iApps", "Entwickler", "Dokumentation", "Datenschutz", "Sicherheit", "Hilfezentrum", "Feedback", "Nutzungsbedingungen", "Kontakt Robert Software Labs"],
 });
 
@@ -74,7 +74,7 @@ export const it = build({
   tag: ["Privacy predefinita", "Prima il dispositivo", "Indipendente dai fornitori"],
   dep: ["Intelligenza senza dipendenza", "Il modello pensa.", "L’agente esegue.", "Il Router decide.", "iRiel orchestra."],
   agent: ["Specialista della piattaforma", "Chiedi dell’ecosistema, del Router, di iRiel, delle iApps, delle lingue o dei nostri principi.", "Agent PRSL-AI non è iRiel", "Chiedi ad Agent PRSL-AI…", "Invia", "Tu", "Domande suggerite", "Non ho una risposta locale a questa domanda. Autorizzi l’invio del solo testo della domanda al servizio IA remoto?", "Destinazione: Lovable AI Gateway, attualmente configurato con OpenAI GPT-6 Astra. Profilo, memoria e cronologia delle conversazioni non saranno inclusi.", "Invia la domanda all’IA remota", "Non inviare", "Non è stata inviata alcuna informazione. Posso rispondere solo usando gli argomenti disponibili localmente."],
-  form: ["Nome", "E-mail", "Categoria", "Messaggio", "Invia", "Grazie. Il tuo messaggio è stato registrato in questa sessione. Per una risposta immediata, apri Agent PRSL-AI.", "Obbligatorio"],
+  form: ["Nome", "E-mail", "Categoria", "Messaggio", "Invia", "Questo modulo non è collegato a un servizio di invio. Non viene inviato né archiviato nulla. Non inserire qui dati personali o sensibili.", "Obbligatorio"],
   pages: ["Chi è Robert Software Labs", "L’ecosistema PRSL-AI", "iRiel AI", "iApps", "Sviluppatori", "Documentazione", "Privacy", "Sicurezza", "Centro assistenza", "Feedback", "Termini di servizio", "Contatta Robert Software Labs"],
 });
 
@@ -87,7 +87,7 @@ export const nl = build({
   tag: ["Privacy als standaard", "Apparaat eerst", "Leveranciersonafhankelijk"],
   dep: ["Intelligentie zonder afhankelijkheid", "Het model denkt.", "De agent voert uit.", "De Router beslist.", "iRiel orkestreert."],
   agent: ["Platformspezialist", "Vraag naar het ecosysteem, de Router, iRiel, de iApps, talen of onze principes.", "Agent PRSL-AI is niet iRiel", "Vraag het Agent PRSL-AI…", "Verzenden", "U", "Voorgestelde vragen", "Ik heb geen lokaal antwoord op deze vraag. Geeft u toestemming om alleen de vraagtekst naar de externe AI-dienst te sturen?", "Bestemming: Lovable AI Gateway, momenteel geconfigureerd met OpenAI GPT-6 Astra. Uw profiel, geheugen en gespreksgeschiedenis worden niet meegestuurd.", "Vraag naar externe AI sturen", "Niet verzenden", "Er is geen informatie verzonden. Ik kan alleen antwoorden op basis van lokaal beschikbare onderwerpen."],
-  form: ["Naam", "E-mail", "Categorie", "Bericht", "Verzenden", "Bedankt. Uw bericht is in deze sessie geregistreerd. Open Agent PRSL-AI voor direct antwoord.", "Verplicht"],
+  form: ["Naam", "E-mail", "Categorie", "Bericht", "Verzenden", "Dit formulier is niet gekoppeld aan een verzenddienst. Er wordt niets verzonden of opgeslagen. Vul hier geen persoonlijke of gevoelige gegevens in.", "Verplicht"],
   pages: ["Over Robert Software Labs", "Het PRSL-AI-ecosysteem", "iRiel AI", "iApps", "Ontwikkelaars", "Documentatie", "Privacy", "Beveiliging", "Helpcentrum", "Feedback", "Servicevoorwaarden", "Contact Robert Software Labs"],
 });
 
@@ -100,7 +100,7 @@ export const ru = build({
   tag: ["Приватность по умолчанию", "Сначала устройство", "Независимость от провайдеров"],
   dep: ["Интеллект без зависимости", "Модель думает.", "Агент исполняет.", "Router решает.", "iRiel оркестрирует."],
   agent: ["Специалист платформы", "Спросите об экосистеме, Router, iRiel, iApps, языках или наших принципах.", "Agent PRSL-AI — это не iRiel", "Спросите Agent PRSL-AI…", "Отправить", "Вы", "Предлагаемые вопросы", "У меня нет локального ответа на этот вопрос. Разрешаете отправить только текст вопроса во внешний ИИ-сервис?", "Назначение: Lovable AI Gateway, сейчас настроенный на OpenAI GPT-6 Astra. Профиль, память и история разговоров не передаются.", "Отправить вопрос во внешний ИИ", "Не отправлять", "Информация не отправлялась. Я могу отвечать только по темам, доступным локально."],
-  form: ["Имя", "Эл. почта", "Категория", "Сообщение", "Отправить", "Спасибо. Ваше сообщение сохранено в этом сеансе. Для немедленного ответа откройте Agent PRSL-AI.", "Обязательно"],
+  form: ["Имя", "Эл. почта", "Категория", "Сообщение", "Отправить", "Эта форма не подключена к службе отправки. Ничего не отправляется и не сохраняется. Не вводите здесь личные или конфиденциальные данные.", "Обязательно"],
   pages: ["О Robert Software Labs", "Экосистема PRSL-AI", "iRiel AI", "iApps", "Разработчикам", "Документация", "Конфиденциальность", "Безопасность", "Центр помощи", "Отзывы", "Условия использования", "Связаться с Robert Software Labs"],
 });
 
@@ -113,7 +113,7 @@ export const zhCN = build({
   tag: ["默认隐私", "设备优先", "不依赖供应商"],
   dep: ["无依赖的智能", "模型负责思考。", "智能体负责执行。", "Router 负责决策。", "iRiel 负责编排。"],
   agent: ["平台专用助手", "询问生态系统、Router、iRiel、iApps、语言或我们的架构原则。", "Agent PRSL-AI 不是 iRiel", "向 Agent PRSL-AI 提问…", "发送", "你", "推荐问题", "本地知识中没有这个问题的答案。是否同意仅将问题文本发送到远程 AI 服务？", "目标：Lovable AI Gateway，目前配置为 OpenAI GPT-6 Astra。不会包含你的个人资料、记忆或对话历史。", "发送问题到远程 AI", "不发送", "没有发送任何信息。我只能根据本次会话中本地可用的主题回答。"],
-  form: ["姓名", "电子邮件", "类别", "消息", "提交", "谢谢。你的消息已在本次会话中记录。如需即时回复，请打开 Agent PRSL-AI。", "必填"],
+  form: ["姓名", "电子邮件", "类别", "消息", "提交", "此表单尚未连接提交服务。不会发送或存储任何内容。请勿在此输入个人或敏感信息。", "必填"],
   pages: ["关于 Robert Software Labs", "PRSL-AI 生态系统", "iRiel AI", "iApps", "开发者", "文档", "隐私", "安全", "帮助中心", "反馈", "服务条款", "联系 Robert Software Labs"],
 });
 
@@ -126,7 +126,7 @@ export const zhTW = build({
   tag: ["預設隱私", "裝置優先", "不依賴供應商"],
   dep: ["無依賴的智慧", "模型負責思考。", "代理負責執行。", "Router 負責決策。", "iRiel 負責編排。"],
   agent: ["平台專用助理", "詢問生態系統、Router、iRiel、iApps、語言或我們的架構原則。", "Agent PRSL-AI 不是 iRiel", "向 Agent PRSL-AI 提問…", "傳送", "你", "建議問題", "本地知識中沒有這個問題的答案。是否同意僅將問題文字傳送到遠端 AI 服務？", "目的地：Lovable AI Gateway，目前設定為 OpenAI GPT-6 Astra。不會包含你的個人資料、記憶或對話紀錄。", "將問題傳送至遠端 AI", "不要傳送", "沒有傳送任何資訊。我只能根據本次工作階段本機可用的主題回答。"],
-  form: ["姓名", "電子郵件", "類別", "訊息", "送出", "謝謝。你的訊息已在本次工作階段中記錄。如需即時回覆，請開啟 Agent PRSL-AI。", "必填"],
+  form: ["姓名", "電子郵件", "類別", "訊息", "送出", "此表單尚未連接提交服務。不會傳送或儲存任何內容。請勿在此輸入個人或敏感資訊。", "必填"],
   pages: ["關於 Robert Software Labs", "PRSL-AI 生態系統", "iRiel AI", "iApps", "開發者", "文件", "隱私", "安全", "說明中心", "意見回饋", "服務條款", "聯絡 Robert Software Labs"],
 });
 
@@ -139,7 +139,7 @@ export const ja = build({
   tag: ["プライバシー標準", "デバイス優先", "プロバイダー非依存"],
   dep: ["依存のない知能", "モデルが考える。", "エージェントが実行する。", "Router が決定する。", "iRiel が統括する。"],
   agent: ["プラットフォーム専門アシスタント", "エコシステム、Router、iRiel、iApps、言語、設計原則について質問できます。", "Agent PRSL-AI は iRiel ではありません", "Agent PRSL-AI に質問…", "送信", "あなた", "おすすめの質問", "この質問へのローカルな回答がありません。質問文のみをリモート AI サービスに送信することを許可しますか？", "送信先：Lovable AI Gateway（現在 OpenAI GPT-6 Astra を設定）。プロフィール、メモリ、会話履歴は含まれません。", "リモート AI に質問を送信", "送信しない", "情報は送信されていません。このセッションでローカルに利用できるトピックのみ回答できます。"],
-  form: ["お名前", "メール", "カテゴリ", "メッセージ", "送信", "ありがとうございます。メッセージはこのセッションに記録されました。すぐに回答が必要な場合は Agent PRSL-AI を開いてください。", "必須"],
+  form: ["お名前", "メール", "カテゴリ", "メッセージ", "送信", "このフォームは送信サービスに接続されていません。何も送信・保存されません。個人情報や機密情報を入力しないでください。", "必須"],
   pages: ["Robert Software Labs について", "PRSL-AI エコシステム", "iRiel AI", "iApps", "開発者", "ドキュメント", "プライバシー", "セキュリティ", "ヘルプセンター", "フィードバック", "利用規約", "Robert Software Labs へのお問い合わせ"],
 });
 
@@ -152,7 +152,7 @@ export const ko = build({
   tag: ["기본 개인정보 보호", "기기 우선", "공급자 독립"],
   dep: ["종속 없는 지능", "모델은 생각합니다.", "에이전트는 실행합니다.", "Router는 결정합니다.", "iRiel은 조율합니다."],
   agent: ["플랫폼 전문 도우미", "생태계, Router, iRiel, iApps, 언어 또는 아키텍처 원칙에 대해 물어보세요.", "Agent PRSL-AI는 iRiel이 아닙니다", "Agent PRSL-AI에게 질문…", "보내기", "나", "추천 질문", "이 질문에 대한 로컬 답변이 없습니다. 질문 텍스트만 원격 AI 서비스로 전송하도록 허용하시겠습니까?", "대상: Lovable AI Gateway, 현재 OpenAI GPT-6 Astra로 구성됨. 프로필, 메모리 및 대화 기록은 포함되지 않습니다.", "원격 AI로 질문 보내기", "보내지 않기", "정보는 전송되지 않았습니다. 이 세션에서 로컬로 사용할 수 있는 주제만 답변할 수 있습니다."],
-  form: ["이름", "이메일", "분류", "메시지", "제출", "감사합니다. 메시지가 이번 세션에 기록되었습니다. 즉시 답변을 원하시면 Agent PRSL-AI를 여세요.", "필수"],
+  form: ["이름", "이메일", "분류", "메시지", "제출", "이 양식은 제출 서비스에 연결되어 있지 않습니다. 어떤 내용도 전송되거나 저장되지 않습니다. 개인 정보나 민감한 정보를 입력하지 마세요.", "필수"],
   pages: ["Robert Software Labs 소개", "PRSL-AI 생태계", "iRiel AI", "iApps", "개발자", "문서", "개인정보 보호", "보안", "도움말 센터", "피드백", "서비스 약관", "Robert Software Labs 문의"],
 });
 
@@ -165,7 +165,7 @@ export const hi = build({
   tag: ["डिफ़ॉल्ट गोपनीयता", "डिवाइस पहले", "प्रदाता-स्वतंत्र"],
   dep: ["निर्भरता रहित बुद्धिमत्ता", "मॉडल सोचता है।", "एजेंट निष्पादित करता है।", "Router निर्णय लेता है।", "iRiel समन्वय करता है।"],
   agent: ["प्लेटफ़ॉर्म विशेषज्ञ", "इकोसिस्टम, Router, iRiel, iApps, भाषाओं या हमारे सिद्धांतों के बारे में पूछें।", "Agent PRSL-AI, iRiel नहीं है", "Agent PRSL-AI से पूछें…", "भेजें", "आप", "सुझाए गए प्रश्न", "मेरे पास इस प्रश्न का स्थानीय उत्तर नहीं है। क्या आप केवल प्रश्न का पाठ दूरस्थ AI सेवा को भेजने की अनुमति देते हैं?", "गंतव्य: Lovable AI Gateway, वर्तमान में OpenAI GPT-6 Astra के साथ कॉन्फ़िगर किया गया। आपकी प्रोफ़ाइल, मेमोरी और बातचीत का इतिहास शामिल नहीं होगा।", "दूरस्थ AI को प्रश्न भेजें", "न भेजें", "कोई जानकारी नहीं भेजी गई। मैं केवल इस सत्र में स्थानीय रूप से उपलब्ध विषयों के आधार पर उत्तर दे सकता हूँ।"],
-  form: ["नाम", "ईमेल", "श्रेणी", "संदेश", "भेजें", "धन्यवाद। आपका संदेश इस सत्र में दर्ज हो गया है। तुरंत उत्तर के लिए Agent PRSL-AI खोलें।", "आवश्यक"],
+  form: ["नाम", "ईमेल", "श्रेणी", "संदेश", "भेजें", "यह फ़ॉर्म किसी सबमिशन सेवा से जुड़ा नहीं है। कुछ भी भेजा या संग्रहीत नहीं होता। यहाँ व्यक्तिगत या संवेदनशील जानकारी दर्ज न करें।", "आवश्यक"],
   pages: ["Robert Software Labs के बारे में", "PRSL-AI इकोसिस्टम", "iRiel AI", "iApps", "डेवलपर्स", "दस्तावेज़ीकरण", "गोपनीयता", "सुरक्षा", "सहायता केंद्र", "प्रतिक्रिया", "सेवा की शर्तें", "Robert Software Labs से संपर्क"],
 });
 
