@@ -158,7 +158,7 @@ Accessibility is structural across interfaces, APIs, capabilities, workflows, do
 |---|---|---|
 | Ecosystem and entity architecture | Canonical architecture and governance documents | Specified; not a claim that every service is deployed. |
 | PRSL-AI Intelligence Infrastructure | Infrastructure taxonomy and architecture document | Specified; document states complete infrastructure is not yet implemented. |
-| Agent PRSL-AI console | Known-topic keyword matching is local; unmatched questions require a UI-level consent step before sending question text to the Lovable AI Gateway, currently configured with OpenAI GPT-6 Astra. | Limited implementation; the consent assertion is not a trusted disclosure authority, and server-side rate limiting/abuse controls are not verified. Not a general autonomous agent runtime or provider-agnostic adapter system. |
+| Agent PRSL-AI console | Browser-local topic matching; unmatched questions receive a local-only notice. No remote model/provider request is enabled. | Limited local Q&A implementation; not a general autonomous agent runtime. Provider adapters and trusted remote-disclosure authorization remain unimplemented. |
 | Seven representative capability manifests | Vision, Voice, Location, Recognizers, Tools, Creative, Reader | Specified examples; not production-registered or dispatch-eligible. |
 | Capability Registry | Registry specification and deterministic contract validation | Specification/validation exists; production registry service is not established. |
 | Dependency Resolver | v1.0 specification, request/result schemas, and deterministic synthetic fixtures | Contract and fixture validator exist; production resolver runtime and trusted Registry adapter are not established. |
