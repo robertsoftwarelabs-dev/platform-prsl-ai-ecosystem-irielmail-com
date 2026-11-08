@@ -36,6 +36,7 @@ export interface Messages {
     eyebrow: string; title: string; poweredBy: string; intro: string; distinctionTitle: string; distinction: string[];
     placeholder: string; send: string; you: string; agentName: string; suggestionsLabel: string;
     status: string; local: string;
+    remoteConsentPrompt: string; remoteDestination: string; sendRemote: string; keepLocal: string; localOnly: string;
     greeting: string; fallback: string;
     suggestions: { label: string; topic: AgentTopic }[];
     keywords: Record<AgentTopic, string[]>;
@@ -115,6 +116,10 @@ const en: Messages = {
     suggestionsLabel: "Suggested questions",
     status: "Online · Knowledge base v1",
     local: "Known-topic answers are matched locally. Questions outside the local knowledge base are not sent to remote AI unless you explicitly approve the request.",
+    remoteConsentPrompt: "I don't have a local answer for this question. Would you like me to send only the question text to the remote AI service?",
+    remoteDestination: "Destination: Lovable AI Gateway, currently configured with OpenAI GPT-6 Astra. Your profile, memory and conversation history are not included.",
+    sendRemote: "Send question to remote AI", keepLocal: "Do not send",
+    localOnly: "No information was sent. I can answer only from the local knowledge topics available in this session.",
     greeting: "Hello. I am Agent PRSL-AI, the platform-specialized assistant for the PRSL-AI Ecosystem. I can explain the platform and guide authorized platform tasks.",
     fallback: "I'm specialized in the PRSL-AI Ecosystem. Try asking about the Router, iRiel, iApps, privacy, languages or the architectural principles.",
     suggestions: [
@@ -333,6 +338,10 @@ const pt: Messages = {
     suggestionsLabel: "Perguntas sugeridas",
     status: "Online · Base de conhecimento v1",
     local: "Tópicos conhecidos são respondidos localmente. Perguntas fora da base local não são enviadas à IA remota sem sua aprovação explícita.",
+    remoteConsentPrompt: "Não encontrei uma resposta local para esta pergunta. Você autoriza enviar somente o texto da pergunta ao serviço de IA remoto?",
+    remoteDestination: "Destino: Lovable AI Gateway, atualmente configurado com OpenAI GPT-6 Astra. Seu perfil, memória e histórico de conversas não serão incluídos.",
+    sendRemote: "Enviar pergunta à IA remota", keepLocal: "Não enviar",
+    localOnly: "Nenhuma informação foi enviada. Posso responder apenas com base nos tópicos disponíveis localmente nesta sessão.",
     greeting: "Olá. Eu sou o Agent PRSL-AI, especialista da plataforma PRSL-AI. Posso explicar a plataforma e orientar tarefas autorizadas.",
     fallback: "Sou especializado no Ecossistema PRSL-AI. Pergunte sobre o Router, o iRiel, os iApps, privacidade, idiomas ou os princípios arquiteturais.",
     suggestions: [
