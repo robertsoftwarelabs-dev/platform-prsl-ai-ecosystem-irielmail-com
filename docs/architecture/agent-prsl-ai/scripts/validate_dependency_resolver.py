@@ -276,7 +276,7 @@ def resolve_fixture(case: dict) -> dict:
             "required": model_required,
             "provider_constraints": sorted(provider_constraints),
         },
-        "execution_order": [] if blocked else order,
+        "dependency_order": [] if blocked else order,
         "errors": errors,
     }
 
@@ -288,7 +288,7 @@ def normalize(actual: dict) -> dict:
         "skipped": sorted([[x["dependency_type"], x["dependency_id"], x["reason_code"]] for x in actual["skipped_optional_dependencies"]]),
         "authorization": sorted([[x["permission_id"], x["required"]] for x in actual["authorization_requirements"]]),
         "model": actual["model_requirement"],
-        "execution_order": actual["execution_order"],
+        "dependency_order": actual["dependency_order"],
         "errors": sorted(x["code"] for x in actual["errors"]),
     }
 
@@ -334,7 +334,7 @@ def main() -> int:
             "skipped": sorted(expected["skipped"]),
             "authorization": sorted(expected["authorization"]),
             "model": expected["model"],
-            "execution_order": expected["execution_order"],
+            "dependency_order": expected["dependency_order"],
             "errors": sorted(expected["errors"]),
         }
         if actual != expected_normalized:
