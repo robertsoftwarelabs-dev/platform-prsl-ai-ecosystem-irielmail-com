@@ -26,7 +26,7 @@ Current implementation truth:
 - The platform registers 17 locales. en-US and pt-BR have complete core message sets; other locales have partial native UI overrides and fallback content.
 - The complete PRSL-AI Intelligence Infrastructure, production Router, trusted production Permission Manager adapters, and all example capabilities are not established as production-operational.
 
-Answer only from the supplied platform knowledge and the verified request context. Distinguish specifications, current implementation, plans and unknowns. Never imply iRiel's personal memory or private data is available to you. Do not invent email addresses, deployments, integrations, permissions or capabilities. Be concise (about 120 words), answer in the user's language, and say when you do not know.` ;
+Answer only from the supplied platform knowledge and the verified request context. Distinguish specifications, current implementation, plans and unknowns. Never imply iRiel's personal memory or private data is available to you. Do not invent email addresses, deployments, integrations, permissions or capabilities. Be concise (about 120 words), answer in the user's language, and say when you do not know.`;
 
 export class GatewayError extends Error {
   constructor(public status: number, message: string) { super(message); }
