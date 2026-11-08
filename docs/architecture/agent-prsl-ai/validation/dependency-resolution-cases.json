@@ -58,7 +58,11 @@
           "version": "1.0.0",
           "registry_record_ref": "registry:runtime:1.0.0",
           "lifecycle_status": "verified",
-          "digest_verified": true
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         },
         {
           "dependency_type": "runtime",
@@ -66,7 +70,11 @@
           "version": "1.2.0",
           "registry_record_ref": "registry:runtime:1.2.0",
           "lifecycle_status": "verified",
-          "digest_verified": true
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         },
         {
           "dependency_type": "capability",
@@ -91,7 +99,11 @@
               "capability": [],
               "permission": []
             }
-          }
+          },
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         }
       ],
       "expected": {
@@ -126,6 +138,15 @@
           "registry:capability:normalizer:1.1.0"
         ],
         "errors": []
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
       }
     },
     {
@@ -182,6 +203,15 @@
         },
         "execution_order": [],
         "errors": []
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
       }
     },
     {
@@ -234,6 +264,15 @@
         "errors": [
           "DEPENDENCY_NOT_FOUND"
         ]
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
       }
     },
     {
@@ -279,7 +318,11 @@
           "version": "1.2.0",
           "registry_record_ref": "registry:runtime:1.2.0",
           "lifecycle_status": "specified",
-          "digest_verified": true
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         }
       ],
       "expected": {
@@ -295,6 +338,15 @@
         "errors": [
           "DEPENDENCY_NOT_VERIFIED"
         ]
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
       }
     },
     {
@@ -340,7 +392,11 @@
           "version": "1.5.0",
           "registry_record_ref": "registry:runtime:1.5.0",
           "lifecycle_status": "verified",
-          "digest_verified": true
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         }
       ],
       "expected": {
@@ -356,6 +412,15 @@
         "errors": [
           "DEPENDENCY_VERSION_UNSATISFIED"
         ]
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
       }
     },
     {
@@ -424,7 +489,11 @@
               ],
               "permission": []
             }
-          }
+          },
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         },
         {
           "dependency_type": "capability",
@@ -455,7 +524,11 @@
               ],
               "permission": []
             }
-          }
+          },
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         }
       ],
       "expected": {
@@ -477,6 +550,15 @@
         "errors": [
           "DEPENDENCY_CYCLE"
         ]
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
       }
     },
     {
@@ -550,7 +632,11 @@
               "capability": [],
               "permission": []
             }
-          }
+          },
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         },
         {
           "dependency_type": "capability",
@@ -581,7 +667,11 @@
               "capability": [],
               "permission": []
             }
-          }
+          },
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         },
         {
           "dependency_type": "runtime",
@@ -589,7 +679,11 @@
           "version": "1.0.0",
           "registry_record_ref": "registry:runtime:1.0.0",
           "lifecycle_status": "verified",
-          "digest_verified": true
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         },
         {
           "dependency_type": "runtime",
@@ -597,7 +691,11 @@
           "version": "2.0.0",
           "registry_record_ref": "registry:runtime:2.0.0",
           "lifecycle_status": "verified",
-          "digest_verified": true
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         }
       ],
       "expected": {
@@ -629,6 +727,15 @@
         "errors": [
           "DEPENDENCY_VERSION_CONFLICT"
         ]
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
       }
     },
     {
@@ -674,7 +781,11 @@
           "version": "1.1.0",
           "registry_record_ref": "registry:runtime:optional-cache:1.1.0",
           "lifecycle_status": "verified",
-          "digest_verified": true
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         }
       ],
       "expected": {
@@ -694,6 +805,15 @@
         },
         "execution_order": [],
         "errors": []
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
       }
     },
     {
@@ -762,7 +882,11 @@
               "capability": [],
               "permission": []
             }
-          }
+          },
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         },
         {
           "dependency_type": "runtime",
@@ -770,7 +894,11 @@
           "version": "1.0.0",
           "registry_record_ref": "registry:runtime:deep-runtime:1.0.0",
           "lifecycle_status": "verified",
-          "digest_verified": true
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         }
       ],
       "expected": {
@@ -792,6 +920,15 @@
         "errors": [
           "RESOLUTION_LIMIT_EXCEEDED"
         ]
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
       }
     },
     {
@@ -837,7 +974,11 @@
           "version": "1.0.0",
           "registry_record_ref": "registry:runtime:one",
           "lifecycle_status": "verified",
-          "digest_verified": true
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         },
         {
           "dependency_type": "runtime",
@@ -845,7 +986,11 @@
           "version": "1.0.0",
           "registry_record_ref": "registry:runtime:two",
           "lifecycle_status": "verified",
-          "digest_verified": true
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
         }
       ],
       "expected": {
@@ -861,6 +1006,271 @@
         "errors": [
           "DEPENDENCY_REGISTRY_AMBIGUOUS"
         ]
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
+      }
+    },
+    {
+      "name": "root Capability ID mismatch is rejected",
+      "request": {
+        "schema_version": "1.0",
+        "resolution_id": "d2d2d2d2-1111-4111-8111-111111111111",
+        "root_capability_id": "prsl.agent.demo.other",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "optional_dependency_policy": "include_available_optional",
+        "limits": {
+          "max_depth": 16,
+          "max_nodes": 128
+        }
+      },
+      "root_manifest": {
+        "capability_id": "prsl.agent.demo.root",
+        "capability_version": "1.0.0",
+        "lifecycle_status": "verified",
+        "dependencies": {
+          "runtime": [
+            {
+              "id": "prsl-agent-runtime",
+              "required": true,
+              "version": ">=1.0.0"
+            }
+          ],
+          "framework": [],
+          "model": {
+            "required": true,
+            "provider_constraints": [
+              "local"
+            ]
+          },
+          "device": [],
+          "service": [],
+          "capability": [
+            {
+              "id": "prsl.agent.demo.normalizer",
+              "required": true,
+              "version": ">=1.0.0"
+            }
+          ],
+          "permission": [
+            {
+              "id": "media.read",
+              "required": true
+            }
+          ]
+        }
+      },
+      "catalog": [
+        {
+          "dependency_type": "runtime",
+          "dependency_id": "prsl-agent-runtime",
+          "version": "1.0.0",
+          "registry_record_ref": "registry:runtime:1.0.0",
+          "lifecycle_status": "verified",
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
+        },
+        {
+          "dependency_type": "runtime",
+          "dependency_id": "prsl-agent-runtime",
+          "version": "1.2.0",
+          "registry_record_ref": "registry:runtime:1.2.0",
+          "lifecycle_status": "verified",
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
+        },
+        {
+          "dependency_type": "capability",
+          "dependency_id": "prsl.agent.demo.normalizer",
+          "version": "1.1.0",
+          "registry_record_ref": "registry:capability:normalizer:1.1.0",
+          "lifecycle_status": "verified",
+          "digest_verified": true,
+          "manifest": {
+            "capability_id": "prsl.agent.demo.normalizer",
+            "capability_version": "1.1.0",
+            "lifecycle_status": "verified",
+            "dependencies": {
+              "runtime": [],
+              "framework": [],
+              "model": {
+                "required": false,
+                "provider_constraints": []
+              },
+              "device": [],
+              "service": [],
+              "capability": [],
+              "permission": []
+            }
+          },
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
+        }
+      ],
+      "expected": {
+        "status": "blocked",
+        "resolved": [],
+        "skipped": [],
+        "authorization": [],
+        "model": {
+          "required": false,
+          "provider_constraints": []
+        },
+        "execution_order": [],
+        "errors": [
+          "ROOT_CAPABILITY_ID_MISMATCH"
+        ]
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": true
+      }
+    },
+    {
+      "name": "root registry record without verified digest is rejected",
+      "request": {
+        "schema_version": "1.0",
+        "resolution_id": "d2d2d2d2-1111-4111-8111-111111111111",
+        "root_capability_id": "prsl.agent.demo.root",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "optional_dependency_policy": "include_available_optional",
+        "limits": {
+          "max_depth": 16,
+          "max_nodes": 128
+        }
+      },
+      "root_manifest": {
+        "capability_id": "prsl.agent.demo.root",
+        "capability_version": "1.0.0",
+        "lifecycle_status": "verified",
+        "dependencies": {
+          "runtime": [
+            {
+              "id": "prsl-agent-runtime",
+              "required": true,
+              "version": ">=1.0.0"
+            }
+          ],
+          "framework": [],
+          "model": {
+            "required": true,
+            "provider_constraints": [
+              "local"
+            ]
+          },
+          "device": [],
+          "service": [],
+          "capability": [
+            {
+              "id": "prsl.agent.demo.normalizer",
+              "required": true,
+              "version": ">=1.0.0"
+            }
+          ],
+          "permission": [
+            {
+              "id": "media.read",
+              "required": true
+            }
+          ]
+        }
+      },
+      "catalog": [
+        {
+          "dependency_type": "runtime",
+          "dependency_id": "prsl-agent-runtime",
+          "version": "1.0.0",
+          "registry_record_ref": "registry:runtime:1.0.0",
+          "lifecycle_status": "verified",
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
+        },
+        {
+          "dependency_type": "runtime",
+          "dependency_id": "prsl-agent-runtime",
+          "version": "1.2.0",
+          "registry_record_ref": "registry:runtime:1.2.0",
+          "lifecycle_status": "verified",
+          "digest_verified": true,
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
+        },
+        {
+          "dependency_type": "capability",
+          "dependency_id": "prsl.agent.demo.normalizer",
+          "version": "1.1.0",
+          "registry_record_ref": "registry:capability:normalizer:1.1.0",
+          "lifecycle_status": "verified",
+          "digest_verified": true,
+          "manifest": {
+            "capability_id": "prsl.agent.demo.normalizer",
+            "capability_version": "1.1.0",
+            "lifecycle_status": "verified",
+            "dependencies": {
+              "runtime": [],
+              "framework": [],
+              "model": {
+                "required": false,
+                "provider_constraints": []
+              },
+              "device": [],
+              "service": [],
+              "capability": [],
+              "permission": []
+            }
+          },
+          "registration_status": "registered",
+          "validation_status": "passed",
+          "review_status": "approved",
+          "registry_snapshot_ref": "snapshot:test-001"
+        }
+      ],
+      "expected": {
+        "status": "blocked",
+        "resolved": [],
+        "skipped": [],
+        "authorization": [],
+        "model": {
+          "required": false,
+          "provider_constraints": []
+        },
+        "execution_order": [],
+        "errors": [
+          "ROOT_CAPABILITY_NOT_VERIFIED"
+        ]
+      },
+      "root_registry": {
+        "registry_record_ref": "registry:root:prsl.agent.demo.root:1.0.0",
+        "registry_snapshot_ref": "snapshot:test-001",
+        "version": "1.0.0",
+        "registration_status": "registered",
+        "validation_status": "passed",
+        "review_status": "approved",
+        "digest_verified": false
       }
     }
   ]
