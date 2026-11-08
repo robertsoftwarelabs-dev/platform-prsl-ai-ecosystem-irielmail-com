@@ -55,7 +55,7 @@ describe("Agent remote-inference consent", () => {
     await waitFor(() => {
       expect(askAgentMock).toHaveBeenCalledTimes(1);
       expect(askAgentMock).toHaveBeenCalledWith({
-        data: { question: "Tell me a bedtime story" },
+        data: { question: "Tell me a bedtime story", consent: true },
       });
     });
     expect(await screen.findByText("Remote answer")).toBeInTheDocument();
