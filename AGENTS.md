@@ -23,7 +23,7 @@ The separate iRiel AppWeb is deployed at https://iriel-prsl-ai-irielmail-com.lov
 - **Robert Software Labs (RSL):** creator and institutional steward.
 - **PRSL-AI Ecosystem:** shared platform architecture, governance, contracts, and capabilities.
 - **PRSL-AI Core:** foundational platform architecture and infrastructure; do not imply complete operational implementation without evidence.
-- **Agent PRSL-AI:** first-party specialist for PRSL-AI platform knowledge and authorized platform tasks.
+- **Agent PRSL-AI:** first-party specialist for PRSL-AI platform knowledge and documented capability guidance. The current console is Q&A-only, not a general autonomous task-execution runtime.
 - **iRiel AI:** separate **PowerFully Intelligence Environment**. Preserve this exact branded wording and capitalization; do not use the historical “Personal Intelligence Environment (PIE)” expansion.
 - **iSpace:** a workspace inside iRiel, not a peer platform or independent top-level product.
 - **iApps:** the modular application family.
@@ -60,6 +60,12 @@ The responsibility statement is: **The model thinks. The agent executes a specia
 - The current server gateway is src/lib/ai/gateway.server.ts. It uses the Lovable AI Gateway and is currently configured with OpenAI GPT-6 Astra. This is a provider-specific implementation; do not claim a provider-agnostic runtime until replaceable provider adapters and contract tests exist.
 - The current remote request sends the question text only. Do not add profile, personal memory, conversation history, secrets, or unrelated context to the remote request.
 - Any change to destination, model, payload, consent UX, or retention behavior requires updates to the privacy copy, tests, and architecture status.
+
+# Public forms and reporting channels
+
+- Contact and Feedback pages are status-only until a real submission backend is implemented and verified.
+- Do not reintroduce name/email/message inputs that appear to submit without a connected delivery service.
+- No dedicated human-contact or secure vulnerability-reporting channel is currently verified. Do not route security reports through the public Agent.
 
 # Security and configuration
 
