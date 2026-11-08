@@ -46,4 +46,9 @@ describe("Language Core", () => {
       expect(agent.localOnly.trim(), locale.code).not.toBe("");
     }
   });
+  it("clearly states that contact and feedback submission is unavailable in every locale", () => {
+    for (const locale of LOCALES) {
+      expect(messagesFor(locale.code).form.unavailable.trim(), locale.code).not.toBe("");
+    }
+  });
 });
