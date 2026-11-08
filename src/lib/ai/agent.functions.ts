@@ -8,6 +8,9 @@ export const askAgent = createServerFn({ method: "POST" })
     try {
       return { ok: true as const, text: await generateAnswer(data.question, AGENT_INSTRUCTIONS) };
     } catch (e) {
-      return { ok: false as const, error: e instanceof GatewayError ? e.message : "The AI could not answer right now." };
+      return {
+        ok: false as const,
+        error: e instanceof GatewayError ? e.message : "The AI could not answer right now.",
+      };
     }
   });
