@@ -8,7 +8,7 @@
 
 ## 1. Purpose
 
-The Dependency Resolver evaluates the declared dependencies of a verified root capability against one trusted, immutable registry snapshot. It produces a deterministic dependency graph, a dependency-first execution order, explicit optional omissions, and separate authorization/model requirements.
+The Dependency Resolver evaluates the declared dependencies of a verified root capability against one trusted, immutable registry snapshot. It produces a deterministic dependency graph, a dependency-first dependency-first order, explicit optional omissions, and separate authorization/model requirements.
 
 The resolver is a planning and validation component. It does not install, download, start, execute, authorize, grant, or provision dependencies. It does not query arbitrary URLs or accept a caller-supplied registry catalog as an authority.
 
@@ -49,7 +49,7 @@ A request identifies:
 
 The registry snapshot reference is an opaque handle resolved through a trusted Registry adapter. Clients MUST NOT submit arbitrary manifest records or registry contents as trusted input.
 
-The root capability MUST be registered, digest-verified, schema-validated, policy-reviewed, and have lifecycle status verified. Otherwise the resolution is blocked.
+The trusted root registry record MUST match the requested Capability ID and snapshot reference, be registered, schema-validated, policy-reviewed, digest-verified, and have lifecycle status verified. The registry record version must match the root manifest version. Otherwise the resolution is blocked.
 
 ## 4. Dependency model
 
@@ -89,13 +89,17 @@ For a given dependency type and ID, only one version may appear in a resolution 
 ## 6. Candidate eligibility and deterministic selection
 
 A candidate is eligible only when:
-1. its dependency type and ID exactly match the requested reference;
-2. its version is a valid stable MAJOR.MINOR.PATCH version;
-3. its lifecycle status is verified;
-4. its registry record and manifest integrity have been verified by the trusted Registry adapter;
-5. for a capability dependency, the embedded manifest Capability ID and capability version match the registry record.
+1. its registry snapshot reference exactly matches the request snapshot;
+2. its registration status is registered;
+3. its validation status is passed;
+4. its policy review status is approved;
+5. its dependency type and ID exactly match the requested reference;
+6. its version is a valid stable MAJOR.MINOR.PATCH version;
+7. its lifecycle status is verified;
+8. its registry record and manifest integrity have been verified by the trusted Registry adapter;
+9. for a capability dependency, the embedded manifest Capability ID and capability version match the registry record.
 
-The resolver chooses the highest eligible version satisfying the declared selector. If multiple eligible records have the same highest version, the result is blocked with DEPENDENCY_REGISTRY_AMBIGUOUS. The resolver must not choose one arbitrarily.
+The resolver chooses the highest eligible version in the trusted snapshot satisfying the declared selector. The root record and every candidate must be registered, schema-validated, policy-reviewed, digest-verified, and lifecycle-verified within the same snapshot. If multiple eligible records have the same highest version, the result is blocked with DEPENDENCY_REGISTRY_AMBIGUOUS. The resolver must not choose one arbitrarily.
 
 A missing or unverified required dependency blocks the graph. A missing, unverified, or version-incompatible optional dependency may be omitted and produces a degraded result. When the request uses required_only, all optional dependencies are omitted even if candidates exist.
 
@@ -110,9 +114,9 @@ The resolver uses deterministic depth-first traversal with:
 - one selected version per dependency type and ID;
 - bounded maximum depth and node count.
 
-A cycle produces DEPENDENCY_CYCLE. Exceeding either configured limit produces RESOLUTION_LIMIT_EXCEEDED. Any blocked result MUST return an empty execution_order, even if some dependencies were resolved for diagnostic purposes.
+A cycle produces DEPENDENCY_CYCLE. Exceeding either configured limit produces RESOLUTION_LIMIT_EXCEEDED. Any blocked result MUST return an empty dependency_order, even if some dependencies were resolved for diagnostic purposes.
 
-The execution order is dependency-first: every resolved dependency appears after its own transitive prerequisites. The result is deterministic for the same root manifest, registry snapshot, and request policy.
+The dependency-first order is dependency-first: every resolved dependency appears after its own transitive prerequisites. The result is deterministic for the same root manifest, registry snapshot, and request policy.
 
 ## 8. Result contract
 
@@ -124,7 +128,7 @@ The result includes:
 - optional dependencies omitted with reason codes;
 - authorization requirements, not grants;
 - model requirements and provider constraints, not provider selections;
-- dependency-first execution order;
+- dependency-first dependency-first order;
 - structured errors.
 
 Statuses:
@@ -139,6 +143,7 @@ A blocked result is never dispatch-eligible. A resolved or degraded result is on
 | Code | Meaning |
 |---|---|
 | ROOT_CAPABILITY_NOT_VERIFIED | Root record is not verified and trusted. |
+| ROOT_CAPABILITY_ID_MISMATCH | Root registry record does not match the requested Capability ID. |
 | ROOT_VERSION_UNSATISFIED | Root version does not satisfy the request. |
 | DEPENDENCY_NOT_FOUND | Required dependency has no registry record. |
 | DEPENDENCY_NOT_VERIFIED | Candidate records exist but none is trusted and verified. |
@@ -168,7 +173,7 @@ Acceptance criteria:
 6. Depth and node limits are enforced.
 7. Permission dependencies are returned only as authorization requirements.
 8. Model requirements are returned to routing without provider selection.
-9. Blocked results have an empty execution order.
+9. Blocked results have an empty dependency-first order.
 10. No test fixture is represented as a production registry entry or runtime.
 
 ## 11. Implementation boundary
