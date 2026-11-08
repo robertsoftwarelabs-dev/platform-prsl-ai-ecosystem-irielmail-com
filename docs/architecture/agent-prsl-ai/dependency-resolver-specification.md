@@ -109,8 +109,7 @@ The resolver uses deterministic depth-first traversal with:
 - a fixed dependency-category order;
 - lexicographic ordering of dependency IDs within each category;
 - descending semantic-version candidate ordering;
-- a stable registry-record reference tie-breaker;
-- cycle detection against the active traversal stack;
+- - cycle detection against the active traversal stack;
 - one selected version per dependency type and ID;
 - bounded maximum depth and dependency-node count, excluding the root capability.
 
