@@ -47,6 +47,7 @@ A status applies only to the exact component and scope stated. A passing synthet
 | GAP-018 | Observability and incident response | Minimized audit requirements are documented; end-to-end production monitoring and incident procedures are not established. | Redacted telemetry, security alerting, incident playbooks, access review, retention controls, tested recovery. | Not verified |
 | GAP-019 | iRiel platform integration | Platform integration contract exists; RFC-007 is referenced as a next-build specification. | Versioned API/client integration, authentication, authorization, contract tests, consent UX, cross-repository CI, release evidence. | Specified; implementation not verified |
 | GAP-020 | Accessibility conformance | Accessibility is a structural requirement; conformance cannot be inferred from the architecture text. | Automated and manual assistive-technology testing, WCAG 2.2 AA assessment where applicable, documented exceptions and remediation. | Not verified |
+| GAP-021 | Public Agent gateway abuse controls | The public Agent server function validates question length and a client-provided consent assertion, but no server-side rate limiting, abuse detection, or budget guard is established. | Server-side rate limits, abuse telemetry, quota/budget controls, fail-closed behavior, adversarial tests, and an incident-response procedure. | Not verified |
 
 ## 4. Security invariants — mandatory release gates
 
