@@ -43,7 +43,7 @@ export interface Messages {
     answers: Record<AgentTopic, string>;
   };
   pages: Record<PageKey, PageContent>;
-  form: { name: string; email: string; category: string; message: string; submit: string; thanks: string; categories: string[]; required: string };
+  form: { name: string; email: string; category: string; message: string; submit: string; unavailable: string; categories: string[]; required: string };
 }
 
 const en: Messages = {
@@ -76,7 +76,7 @@ const en: Messages = {
     entities: [
       { name: "PRSL-AI Core", role: "Foundation", desc: "The platform's foundational architecture. Its target design includes language, routing, policy and runtime components; the complete infrastructure is not yet operational." },
       { name: "iRiel AI", role: "PowerFully Intelligence Environment", desc: "A separate environment for personal intelligence orchestration. It coordinates intent, authorized context and continuity through explicit integrations; it is not the PRSL-AI platform." },
-      { name: "iApps", role: "Modular Family", desc: "Focused, interoperable applications — mail, notes, calendar, files — that plug into iRiel and share one accessible design language." },
+      { name: "iApps", role: "Modular Family", desc: "A modular application family designed to consume PRSL-AI capabilities and connect to iRiel through explicit interfaces as each integration is implemented." },
       { name: "Agent PRSL-AI", role: "Platform Specialist", desc: "The platform-specialized agent that explains PRSL-AI architecture and guides authorized platform tasks. Its current console combines local topic matching with a remote AI fallback that requires explicit consent." },
     ],
     principlesTitle: "Architectural Principles",
@@ -151,7 +151,7 @@ const en: Messages = {
       principles: "The platform is governed by accessibility, inclusion and security by default; privacy and data minimization; local-first execution where suitable; provider-agnostic architecture; explicit consent; and user-controlled continuity. WCAG 2.2 AA is a target, not a conformance claim.",
       privacy: "Privacy by Default means minimizing data and preferring local processing where suitable. Known Agent topics are answered locally. If no local topic matches, the console asks before sending the question text to the Lovable AI Gateway, currently configured with OpenAI GPT-6 Astra. The current request does not include an iRiel profile, personal memory or conversation history. Do not enter sensitive information into the remote fallback. Security requirements include least privilege and a responsible vulnerability-disclosure process; this description is not a security certification.",
       languages: "The Language Core registers 17 BCP 47 locales: en-US, en-GB, pt-BR, pt-PT, es-ES, es-419, fr-FR, de-DE, it-IT, zh-CN, zh-TW, ja-JP, ko-KR, ar (right-to-left), hi-IN, ru-RU and nl-NL. en-US and pt-BR have complete core message sets. The other locales have partial native UI overrides and use fallback content for missing messages. Registry presence does not mean a complete translation or a verified iRiel integration.",
-      iapps: "iApps are focused modular applications — such as mail, notes, calendar and files — that share one accessible design language and plug into iRiel for orchestration.",
+      iapps: "iApps are a modular application family designed to use PRSL-AI capabilities and connect to iRiel through explicit, permissioned contracts as each integration is implemented and verified.",
       contact: "Robert Software Labs was founded by Robert, a Brazilian software engineer. For any question, talk to Agent PRSL-AI, the official guide of the platform.",
       framework: "The PRSL-AI framework has five layers: Human intention, Application, Capability, Execution, and Governance & observability. Execution is strictly on demand — nothing runs without a request — and every capability is reached through an explicit capability contract. PRSL-AI is the governed intelligence infrastructure; iRiel is the authorized consumer, connected by explicit contracts with no hidden coupling.",
       exposure: "Capability Exposure defines what can be accessed. Capability Execution determines how the capability is performed. UsageAlternativeTolls is the exposure API (contracts, operations, access points); Tolls_Intelligence is the execution API that performs the specialized work. This reusable pattern lets me offer new specialties without embedding all execution logic in each exposure API.",
@@ -159,7 +159,7 @@ const en: Messages = {
       tools: "I can call specialized intelligences: Vision, Audio, Voice, Location, Recognizers, Tools, Creative, Reader and CLI. Each is a separate capability with its own contract and permissions, invoked only on demand and under human authority.",
     },
   },
-  form: { name: "Name", email: "Email", category: "Category", message: "Message", submit: "Send", thanks: "Thank you. Your message was received in this session. For a direct answer, open Agent PRSL-AI.", categories: ["Suggestion", "Accessibility", "Bug report", "Language / translation", "Other"], required: "Required" },
+  form: { name: "Name", email: "Email", category: "Category", message: "Message", submit: "Send", unavailable: "This form is not connected to a submission service. Nothing is sent or stored. Do not enter personal or sensitive information here.", categories: ["Suggestion", "Accessibility", "Bug report", "Language / translation", "Other"], required: "Required" },
   pages: {
     about: {
       eyebrow: "About", title: "Robert Software Labs",
@@ -177,7 +177,7 @@ const en: Messages = {
       sections: [
         { id: "core", h: "PRSL-AI Core", body: ["The platform's foundational architecture. The target design includes language, routing, policy, secure-storage and local-runtime components; the complete infrastructure is not yet operational."], items: ["Language Core — 17 registered BCP 47 locales; translation completeness varies", "Intelligence Router — candidate selection under policy; production runtime not verified", "Permission Manager — authorization boundary for protected operations; production adapters remain incomplete", "Local runtime — intended on-device execution path; operational availability must be verified"] },
         { id: "iriel", h: "iRiel — PowerFully Intelligence Environment", body: ["iRiel is a separate PowerFully Intelligence Environment with its own AppWeb. It coordinates personal intent, authorized context and continuity. Its integration with PRSL-AI is governed by explicit contracts and remains subject to implementation evidence."] },
-        { id: "iapps", h: "iApps — Modular Family", body: ["Independent applications that each do one thing well and share a single accessible interface language."], items: ["iMail", "iNotes", "iCalendar", "iFiles", "iSpace"] },
+        { id: "iapps", h: "iApps — Modular Family", body: ["A planned family of independent applications, each with a focused responsibility and a shared accessibility standard."], items: ["iMail", "iNotes", "iCalendar", "iFiles"] },
         { h: "Agent PRSL-AI", body: ["The first-party platform specialist that explains PRSL-AI architecture and guides authorized platform tasks. It is distinct from iRiel and must not access personal data without a defined purpose and authorization."] },
         { id: "hierarchy", h: "Responsibility hierarchy", body: ["Accessibility, Inclusion, and Security by Default. Your continuity is your right. The machine adapts to you."], items: ["Robert Software Labs — creator and institutional steward", "PRSL-AI Ecosystem — shared platform architecture, governance, contracts and capabilities", "PRSL-AI Core — foundational platform architecture and infrastructure", "Agent PRSL-AI — first-party specialist for platform knowledge and authorized platform tasks", "iRiel — separate PowerFully Intelligence Environment; iSpace is inside iRiel", "iApps — modular application family"] },
         { id: "iriel-connection", h: "iRiel ↔ Platform: planned integration boundary", body: ["The iRiel AppWeb is a separate application and deployment. A future integration may allow it to discover PRSL-AI capabilities and request authorized inference through versioned contracts. This integration is specified architecturally but is not established as operational by this page. The 17-locale registry is available in the platform code; only en-US and pt-BR have complete core message sets, with partial native UI overrides and fallback content for other locales.", "iRiel retains responsibility for its identity, personal context, memory consent and user experience. PRSL-AI retains responsibility for shared platform contracts, policy and protected-operation authorization. Provider credentials must remain server-side and must never be embedded in the iRiel client."], items: ["Health — planned service availability contract", "Capabilities — planned discovery of registered capability metadata", "Inference — planned policy-evaluated request through the Intelligence Router and Permission Manager", "Local fallback — remains the responsibility of the iRiel client and must be verified separately"] },
@@ -185,20 +185,20 @@ const en: Messages = {
       ],
     },
     iriel: {
-      eyebrow: "Platform", title: "iRiel",
+      eyebrow: "Separate environment", title: "iRiel",
       intro: "A separate PowerFully Intelligence Environment designed to coordinate personal intent, authorized context and continuity.",
       sections: [
-        { h: "What iRiel does", items: ["Ask or search across all your iApps", "Remember context with your permission", "Orchestrate agents to complete tasks", "Adapt to your language, abilities and rhythm"] },
-        { h: "Where it runs", body: ["On your phone, tablet and desktop, on-device first. Remote models are used only when the Router's policy and your consent allow it."] },
+        { h: "Designed capabilities", items: ["Ask and search across authorized iApps as integrations become available", "Preserve context with explicit user permission", "Coordinate specialized agents through authorized capabilities", "Adapt to language, accessibility needs and user preferences"] },
+        { h: "Target execution model", body: ["Designed for phone, tablet and desktop, with local-first execution where supported. Remote inference requires explicit user consent and applicable policy approval. Actual availability depends on the separate iRiel release and device support."] },
         { h: "Planned PRSL-AI integration", body: ["The iRiel AppWeb is deployed separately. Its integration with PRSL-AI is defined by a cross-project contract; platform capability discovery and inference must not be described as available until the corresponding services and authorization gates are implemented and verified."] },
       ],
     },
     iapps: {
       eyebrow: "Platform", title: "iApps",
-      intro: "A modular family of focused applications built on PRSL-AI Core.",
+      intro: "A modular family of focused applications designed to consume PRSL-AI Core capabilities through explicit contracts.",
       sections: [
-        { h: "Design", body: ["Every iApp shares the same accessible components, keyboard model and language support, so learning one means knowing them all."] },
-        { h: "Interoperability", body: ["iApps expose capabilities to iRiel through permissioned interfaces, never by sharing raw data."] },
+        { h: "Design target", body: ["Each iApp is intended to share accessible components, keyboard behavior and language conventions. Conformance and consistency must be verified as individual apps are implemented."] },
+        { h: "Interoperability target", body: ["iApps are intended to expose capabilities to iRiel through permissioned interfaces, never by sharing raw data. Each integration must be implemented and verified before being described as available."] },
       ],
     },
     developers: {
@@ -208,7 +208,7 @@ const en: Messages = {
         { id: "architecture", h: "Architecture specification", items: ["Model layer — interchangeable reasoning engines", "Agent layer — permissioned executors", "Router — policy-driven placement (local / remote)", "Orchestration — iRiel coordinates context and tasks"] },
         { id: "sdk", h: "SDK & API concepts", body: ["The SDK exposes capabilities, not providers. You request a capability (e.g. summarize, translate) and the Router selects how to fulfil it."] },
         { id: "integrations", h: "Provider-agnostic integration", items: ["Never hard-code a vendor; register providers as adapters", "Declare data sensitivity on every request", "Respect user locale and direction from the Language Core", "Fail gracefully to on-device capabilities"] },
-        { id: "resources", h: "Developer resources", items: ["Language Core specification", "Accessibility checklist (WCAG 2.2 AA)", "Security disclosure policy", "Contact: Agent PRSL-AI (floating button)"] },
+        { id: "resources", h: "Developer resources", items: ["Language Core specification", "Accessibility checklist (WCAG 2.2 AA target)", "Security disclosure status — no dedicated reporting channel verified", "General platform Q&A: Agent PRSL-AI (not a human contact or security-reporting channel)"] },
       ],
     },
     docs: {
@@ -217,7 +217,7 @@ const en: Messages = {
       sections: [
         { h: "Architectural principles", items: ["Local-first execution", "Provider agnosticism", "Accessible by construction", "Language as infrastructure", "Explicit consent", "Continuity"] },
         { id: "language-core", h: "Language Core specification", body: ["Each locale is described by a typed record: BCP 47 code, native name, region, script (ISO 15924), text direction and fallback locale. The interface sets the document lang and dir attributes dynamically, so right-to-left scripts such as Arabic mirror the whole layout."], items: ["17 locales registered", "Complete core message sets: en-US, pt-BR", "Other locales: partial native UI overrides with fallback for missing content", "RTL: ar"] },
-        { h: "Technical guides", items: ["Getting started with the SDK", "Registering a provider adapter", "Writing accessible iApp interfaces", "Router policy authoring"] },
+        { h: "Planned technical guides", items: ["SDK getting-started guide (planned)", "Provider-adapter registration guide (planned)", "Accessible iApp implementation guide (planned)", "Router policy authoring guide (planned)"] },
       ],
     },
     privacy: {
@@ -234,7 +234,7 @@ const en: Messages = {
       intro: "Protection is built in from the first line of code.",
       sections: [
         { h: "Principles", items: ["Least privilege for protected operations", "Secrets and service-role credentials kept server-side", "Input validation and explicit authorization boundaries", "Security controls verified through tests and operational review"] },
-        { h: "Vulnerability disclosure", body: ["Found a vulnerability? Report it through Agent PRSL-AI with details and steps to reproduce. We acknowledge reports and work with researchers in good faith."] },
+        { h: "Vulnerability disclosure", body: ["No dedicated secure vulnerability-reporting channel is currently verified. Do not submit exploit details, credentials or sensitive data through the public Agent or this website. A dedicated reporting route must be published before this site can accept vulnerability reports."] },
       ],
     },
     support: {
@@ -248,7 +248,7 @@ const en: Messages = {
     },
     feedback: {
       eyebrow: "Community", title: "Feedback",
-      intro: "Your suggestions shape the ecosystem. Tell us what works and what does not.",
+      intro: "Feedback submission is not connected yet. This page currently displays status only; nothing is transmitted or stored.",
       sections: [],
     },
     terms: {
@@ -257,13 +257,13 @@ const en: Messages = {
       sections: [
         { h: "Use of this site", body: ["Content is provided for information about the PRSL-AI Ecosystem. Brand names and visual assets belong to Robert Software Labs."] },
         { h: "No warranty", body: ["Information is provided as is and may change as the ecosystem evolves."] },
-        { h: "Contact", body: ["Questions about these terms: ask Agent PRSL-AI."] },
+        { h: "Contact", body: ["The public Agent can answer general platform questions, but it does not accept formal legal notices or forward messages to the RSL team. No dedicated legal-contact route is currently verified."] },
       ],
     },
     contact: {
       eyebrow: "Contact", title: "Contact Robert Software Labs",
-      intro: "Institutional contact for partnerships, press, security and general enquiries.",
-      sections: [{ h: "Agent PRSL-AI", body: ["Agent PRSL-AI is the official point of contact for the platform. Open it with the floating button at the bottom of any page."] }],
+      intro: "This site does not yet provide a connected submission service or a verified direct human-contact channel.",
+      sections: [{ h: "Agent PRSL-AI", body: ["Agent PRSL-AI can answer general platform questions, but it does not forward messages to the Robert Software Labs team. The contact form is not connected; no message is sent or stored."] }],
     },
   },
 };
@@ -373,7 +373,7 @@ const pt: Messages = {
       principles: "A plataforma é regida por acessibilidade, inclusão e segurança por padrão; privacidade e minimização de dados; execução local primeiro quando adequada; arquitetura independente de provedor; consentimento explícito; e continuidade sob controle do usuário. WCAG 2.2 AA é uma meta, não uma declaração de conformidade.",
       privacy: "Privacidade por Padrão significa minimizar dados e preferir processamento local quando adequado. Tópicos conhecidos do Agent são respondidos localmente. Se nenhum tópico corresponder, o console pede consentimento antes de enviar o texto da pergunta ao Lovable AI Gateway, atualmente configurado com OpenAI GPT-6 Astra. A requisição atual não inclui perfil do iRiel, memória pessoal ou histórico de conversas. Não informe dados sensíveis no fallback remoto. Os requisitos de segurança incluem privilégio mínimo e divulgação responsável de vulnerabilidades; esta descrição não é uma certificação de segurança.",
       languages: "O Language Core registra 17 locales BCP 47: en-US, en-GB, pt-BR, pt-PT, es-ES, es-419, fr-FR, de-DE, it-IT, zh-CN, zh-TW, ja-JP, ko-KR, ar (direita para esquerda), hi-IN, ru-RU e nl-NL. en-US e pt-BR têm conjuntos centrais completos. Os demais possuem traduções nativas parciais e usam fallback para textos ausentes. A presença no registro não significa tradução completa nem integração verificada com o iRiel.",
-      iapps: "Os iApps são aplicativos modulares focados — como e-mail, notas, agenda e arquivos — que compartilham uma linguagem de design acessível e se conectam ao iRiel para orquestração.",
+      iapps: "Os iApps formam uma família modular projetada para consumir capacidades PRSL-AI e se conectar ao iRiel por contratos explícitos e com permissões, conforme cada integração for implementada e verificada.",
       contact: "A Robert Software Labs foi fundada por Robert, engenheiro de software brasileiro. Para qualquer dúvida, fale com o Agent PRSL-AI, o guia oficial da plataforma.",
       framework: "O framework PRSL-AI tem cinco camadas: Intenção humana, Aplicação, Capacidade, Execução, e Governança e observabilidade. A execução é estritamente sob demanda — nada roda sem um pedido — e toda capacidade é acessada por um contrato de capacidade explícito. O PRSL-AI é a infraestrutura de inteligência governada; o iRiel é o consumidor autorizado, conectados por contratos explícitos, sem acoplamento oculto.",
       exposure: "Capability Exposure defines what can be accessed. Capability Execution determines how the capability is performed. O UsageAlternativeTolls é a API de exposição (contratos, operações, pontos de acesso); o Tolls_Intelligence é a API de execução que realiza o trabalho especializado. Esse padrão reutilizável me permite oferecer novas especialidades sem embutir toda a lógica de execução em cada API de exposição.",
@@ -381,7 +381,7 @@ const pt: Messages = {
       tools: "Posso acionar inteligências especializadas: Vision, Audio, Voice, Location, Recognizers, Tools, Creative, Reader e CLI. Cada uma é uma capacidade separada, com contrato e permissões próprios, acionada apenas sob demanda e sob autoridade humana.",
     },
   },
-  form: { name: "Nome", email: "E-mail", category: "Categoria", message: "Mensagem", submit: "Enviar", thanks: "Obrigado. Sua mensagem foi registrada nesta sessão. Para resposta imediata, abra o Agent PRSL-AI.", categories: ["Sugestão", "Acessibilidade", "Relato de erro", "Idioma / tradução", "Outro"], required: "Obrigatório" },
+  form: { name: "Nome", email: "E-mail", category: "Categoria", message: "Mensagem", submit: "Enviar", unavailable: "Este formulário ainda não está conectado a um serviço de envio. Nada é transmitido ou armazenado. Não informe dados pessoais ou sensíveis aqui.", categories: ["Sugestão", "Acessibilidade", "Relato de erro", "Idioma / tradução", "Outro"], required: "Obrigatório" },
   pages: {
     about: {
       eyebrow: "Sobre", title: "Robert Software Labs",
@@ -399,7 +399,7 @@ const pt: Messages = {
       sections: [
         { id: "core", h: "PRSL-AI Core", body: ["A arquitetura fundacional da plataforma. O desenho-alvo inclui componentes de idioma, roteamento, políticas, armazenamento seguro e runtime local; a infraestrutura completa ainda não está operacional."], items: ["Language Core — 17 locales BCP 47 registrados; a completude das traduções varia", "Intelligence Router — seleção de candidatos sob política; runtime de produção não verificado", "Permission Manager — fronteira de autorização para operações protegidas; adaptadores de produção ainda incompletos", "Runtime local — caminho previsto para execução no dispositivo; disponibilidade operacional precisa ser verificada"] },
         { id: "iriel", h: "iRiel — Ambiente de Inteligência Poderosa", body: ["O iRiel é um Ambiente de Inteligência Poderosa separado, com seu próprio AppWeb. Ele coordena intenção pessoal, contexto autorizado e continuidade. Sua integração com o PRSL-AI é regida por contratos explícitos e depende de evidências de implementação."] },
-        { id: "iapps", h: "iApps — Família Modular", body: ["Aplicativos independentes que fazem uma coisa bem e compartilham uma única linguagem de interface acessível."], items: ["iMail", "iNotes", "iCalendar", "iFiles", "iSpace"] },
+        { id: "iapps", h: "iApps — Família Modular", body: ["Uma família planejada de aplicativos independentes, cada um com responsabilidade focada e um padrão compartilhado de acessibilidade."], items: ["iMail", "iNotes", "iCalendar", "iFiles"] },
         { h: "Agent PRSL-AI", body: ["O especialista de primeira parte da plataforma, que explica a arquitetura PRSL-AI e orienta tarefas autorizadas. É distinto do iRiel e não deve acessar dados pessoais sem finalidade definida e autorização."] },
         { id: "hierarchy", h: "Hierarquia de responsabilidades", body: ["Acessibilidade, Inclusão e Segurança por Padrão. Sua continuidade é seu direito. A máquina se adapta a você."], items: ["Robert Software Labs — criadora e guardiã institucional", "PRSL-AI Ecosystem — arquitetura compartilhada da plataforma, governança, contratos e capacidades", "PRSL-AI Core — arquitetura fundacional e infraestrutura da plataforma", "Agent PRSL-AI — especialista de primeira parte em conhecimento e tarefas autorizadas da plataforma", "iRiel — Ambiente de Inteligência Poderosa separado; iSpace está dentro do iRiel", "iApps — família modular de aplicativos"] },
         { id: "iriel-connection", h: "iRiel ↔ Plataforma: fronteira de integração planejada", body: ["O iRiel AppWeb é um aplicativo e uma implantação separados. Uma integração futura poderá permitir que ele descubra capacidades PRSL-AI e solicite inferência autorizada por contratos versionados. Essa integração está especificada arquiteturalmente, mas esta página não comprova que esteja operacional. O registro da plataforma contém 17 locales; somente en-US e pt-BR têm conjuntos centrais completos, enquanto os demais possuem traduções parciais e fallback.", "O iRiel mantém a responsabilidade por sua identidade, contexto pessoal, consentimento de memória e experiência do usuário. O PRSL-AI mantém a responsabilidade pelos contratos compartilhados da plataforma, políticas e autorização de operações protegidas. Credenciais de provedores devem permanecer no servidor e nunca ser incorporadas ao cliente iRiel."], items: ["Health — contrato planejado de disponibilidade de serviço", "Capabilities — descoberta planejada de metadados de capacidades registradas", "Inference — solicitação planejada avaliada por política através do Intelligence Router e Permission Manager", "Fallback local — responsabilidade do cliente iRiel, a ser verificada separadamente"] },
@@ -407,20 +407,20 @@ const pt: Messages = {
       ],
     },
     iriel: {
-      eyebrow: "Plataforma", title: "iRiel",
+      eyebrow: "Ambiente separado", title: "iRiel",
       intro: "Um Ambiente de Inteligência Poderosa separado, projetado para coordenar intenção pessoal, contexto autorizado e continuidade.",
       sections: [
-        { h: "O que o iRiel faz", items: ["Perguntar ou pesquisar em todos os seus iApps", "Lembrar contexto com sua permissão", "Orquestrar agentes para concluir tarefas", "Adaptar-se ao seu idioma, habilidades e ritmo"] },
-        { h: "Onde roda", body: ["No celular, tablet e desktop, no dispositivo primeiro. Modelos remotos só são usados quando a política do Router e o seu consentimento permitem."] },
+        { h: "Capacidades projetadas", items: ["Perguntar e pesquisar em iApps autorizados conforme as integrações forem disponibilizadas", "Preservar contexto com permissão explícita do usuário", "Coordenar agentes especializados por capacidades autorizadas", "Adaptar-se ao idioma, às necessidades de acessibilidade e às preferências do usuário"] },
+        { h: "Modelo de execução previsto", body: ["Projetado para celular, tablet e desktop, com execução local primeiro quando houver suporte. Inferência remota exige consentimento explícito e aprovação das políticas aplicáveis. A disponibilidade real depende da versão separada do iRiel e do suporte do dispositivo."] },
         { h: "Integração planejada com PRSL-AI", body: ["O iRiel AppWeb é implantado separadamente. Sua integração com o PRSL-AI é definida por um contrato entre projetos; descoberta de capacidades e inferência da plataforma não devem ser descritas como disponíveis até que os serviços e as barreiras de autorização correspondentes sejam implementados e verificados."] },
       ],
     },
     iapps: {
       eyebrow: "Plataforma", title: "iApps",
-      intro: "Uma família modular de aplicativos focados, construídos sobre o PRSL-AI Core.",
+      intro: "Uma família modular de aplicativos focados, projetada para consumir capacidades do PRSL-AI Core por contratos explícitos.",
       sections: [
-        { h: "Design", body: ["Todo iApp compartilha os mesmos componentes acessíveis, modelo de teclado e suporte a idiomas — aprender um é conhecer todos."] },
-        { h: "Interoperabilidade", body: ["Os iApps expõem capacidades ao iRiel por interfaces com permissão, nunca compartilhando dados brutos."] },
+        { h: "Meta de design", body: ["Cada iApp deverá compartilhar componentes acessíveis, comportamento de teclado e convenções de idioma. A conformidade e a consistência precisam ser verificadas conforme cada aplicativo for implementado."] },
+        { h: "Meta de interoperabilidade", body: ["Os iApps deverão expor capacidades ao iRiel por interfaces com permissões, nunca compartilhando dados brutos. Cada integração precisa ser implementada e verificada antes de ser apresentada como disponível."] },
       ],
     },
     developers: {
@@ -430,7 +430,7 @@ const pt: Messages = {
         { id: "architecture", h: "Especificação de arquitetura", items: ["Camada de modelo — motores de raciocínio intercambiáveis", "Camada de agente — executores com permissão", "Router — alocação por política (local / remoto)", "Orquestração — o iRiel coordena contexto e tarefas"] },
         { id: "sdk", h: "Conceitos de SDK e API", body: ["O SDK expõe capacidades, não provedores. Você solicita uma capacidade (ex.: resumir, traduzir) e o Router escolhe como atendê-la."] },
         { id: "integrations", h: "Integração independente de provedor", items: ["Nunca fixe um fornecedor; registre provedores como adaptadores", "Declare a sensibilidade dos dados em cada requisição", "Respeite o locale e a direção do usuário via Language Core", "Recorra às capacidades no dispositivo em caso de falha"] },
-        { id: "resources", h: "Recursos para desenvolvedores", items: ["Especificação do Language Core", "Checklist de acessibilidade (WCAG 2.2 AA)", "Política de divulgação de segurança", "Contato: Agent PRSL-AI (botão flutuante)"] },
+        { id: "resources", h: "Recursos para desenvolvedores", items: ["Especificação do Language Core", "Checklist de acessibilidade (meta WCAG 2.2 AA)", "Status de divulgação de segurança — nenhum canal dedicado verificado", "Dúvidas gerais sobre a plataforma: Agent PRSL-AI (não é contato humano nem canal de denúncias)"] },
       ],
     },
     docs: {
@@ -439,7 +439,7 @@ const pt: Messages = {
       sections: [
         { h: "Princípios arquiteturais", items: ["Execução local primeiro", "Independência de provedor", "Acessível por construção", "Idioma como infraestrutura", "Consentimento explícito", "Continuidade"] },
         { id: "language-core", h: "Especificação do Language Core", body: ["Cada locale é descrito por um registro tipado: código BCP 47, nome nativo, região, escrita (ISO 15924), direção do texto e locale de fallback. A interface define dinamicamente os atributos lang e dir do documento, de modo que escritas da direita para a esquerda, como o árabe, espelham todo o layout."], items: ["17 locales registrados", "Conjuntos centrais completos: en-US, pt-BR", "Demais locales: traduções nativas parciais com fallback para conteúdo ausente", "RTL: ar"] },
-        { h: "Guias técnicos", items: ["Primeiros passos com o SDK", "Registrando um adaptador de provedor", "Escrevendo interfaces acessíveis para iApps", "Criando políticas do Router"] },
+        { h: "Guias técnicos planejados", items: ["Guia inicial do SDK (planejado)", "Guia de registro de adaptadores de provedores (planejado)", "Guia de implementação de iApps acessíveis (planejado)", "Guia de autoria de políticas do Router (planejado)"] },
       ],
     },
     privacy: {
@@ -456,7 +456,7 @@ const pt: Messages = {
       intro: "A proteção é incorporada desde a primeira linha de código.",
       sections: [
         { h: "Princípios", items: ["Privilégio mínimo para operações protegidas", "Segredos e credenciais de service role mantidos no servidor", "Validação de entrada e fronteiras explícitas de autorização", "Controles de segurança verificados por testes e revisão operacional"] },
-        { h: "Divulgação de vulnerabilidades", body: ["Encontrou uma vulnerabilidade? Relate pelo Agent PRSL-AI com detalhes e passos para reproduzir. Confirmamos os relatos e trabalhamos com pesquisadores de boa-fé."] },
+        { h: "Divulgação de vulnerabilidades", body: ["No momento, não há um canal seguro e dedicado de denúncia de vulnerabilidades cuja operação esteja verificada. Não envie detalhes de exploração, credenciais ou dados sensíveis pelo Agent público ou por este site. Um canal dedicado precisa ser publicado antes que o site possa receber denúncias."] },
       ],
     },
     support: {
@@ -470,7 +470,7 @@ const pt: Messages = {
     },
     feedback: {
       eyebrow: "Comunidade", title: "Feedback",
-      intro: "Suas sugestões moldam o ecossistema. Conte o que funciona e o que não funciona.",
+      intro: "O envio de feedback ainda não está conectado. Esta página exibe apenas o status; nada é transmitido ou armazenado.",
       sections: [],
     },
     terms: {
@@ -479,13 +479,13 @@ const pt: Messages = {
       sections: [
         { h: "Uso deste site", body: ["O conteúdo é fornecido para informação sobre o Ecossistema PRSL-AI. Marcas e ativos visuais pertencem à Robert Software Labs."] },
         { h: "Sem garantia", body: ["As informações são fornecidas como estão e podem mudar conforme o ecossistema evolui."] },
-        { h: "Contato", body: ["Dúvidas sobre estes termos: pergunte ao Agent PRSL-AI."] },
+        { h: "Contato", body: ["O Agent público pode responder a dúvidas gerais sobre a plataforma, mas não recebe notificações legais formais nem encaminha mensagens à equipe da RSL. Nenhum canal dedicado de contato jurídico está verificado no momento."] },
       ],
     },
     contact: {
       eyebrow: "Contato", title: "Contato Robert Software Labs",
-      intro: "Contato institucional para parcerias, imprensa, segurança e assuntos gerais.",
-      sections: [{ h: "Agent PRSL-AI", body: ["O Agent PRSL-AI é o ponto de contato oficial da plataforma. Abra-o pelo botão flutuante no canto de qualquer página."] }],
+      intro: "Este site ainda não oferece um serviço de envio conectado nem um canal direto de contato humano cuja operação esteja verificada.",
+      sections: [{ h: "Agent PRSL-AI", body: ["O Agent PRSL-AI pode responder a dúvidas gerais sobre a plataforma, mas não encaminha mensagens à equipe da Robert Software Labs. O formulário de contato não está conectado; nenhuma mensagem é enviada ou armazenada."] }],
     },
   },
 };
