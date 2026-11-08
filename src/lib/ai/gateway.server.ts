@@ -29,18 +29,32 @@ Current implementation truth:
 Answer only from the supplied platform knowledge and the verified request context. Distinguish specifications, current implementation, plans and unknowns. Never imply iRiel's personal memory or private data is available to you. Do not invent email addresses, deployments, integrations, permissions or capabilities. Be concise (about 120 words), answer in the user's language, and say when you do not know.`;
 
 export class GatewayError extends Error {
-  constructor(public status: number, message: string) { super(message); }
+  constructor(
+    public status: number,
+    message: string,
+  ) {
+    super(message);
+  }
 }
 
 /** Streams a gateway response server-side and returns the final text. */
-export async function generateAnswer(prompt: string, instructions: string, signal?: AbortSignal): Promise<string> {
-  const apiKey = process.env['LOVABLE_API_KEY'];
+export async function generateAnswer(
+  prompt: string,
+  instructions: string,
+  signal?: AbortSignal,
+): Promise<string> {
+  const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) throw new GatewayError(500, "AI is not configured.");
+
   const provider = createOpenAI({
     baseURL: "https://ai.gateway.lovable.dev/v1",
     apiKey,
-    headers: { "Lovable-API-Key": apiKey, "X-Lovable-AIG-SDK": "vercel-ai-sdk" },
+    headers: {
+      "Lovable-API-Key": apiKey,
+      "X-Lovable-AIG-SDK": "vercel-ai-sdk",
+    },
   });
+
   let failure: unknown;
   const result = streamText({
     model: provider.responses(MODEL),
@@ -48,15 +62,30 @@ export async function generateAnswer(prompt: string, instructions: string, signa
     messages: [{ role: "user", content: prompt }],
     ...(signal ? { abortSignal: signal } : {}),
     maxRetries: 1,
-    onError: ({ error }) => { failure = error; },
+    onError: ({ error }) => {
+      failure = error;
+    },
     providerOptions: {
-      openai: { forceReasoning: true, reasoningEffort: "low", store: false, include: ["reasoning.encrypted_content"] },
+      openai: {
+        forceReasoning: true,
+        reasoningEffort: "low",
+        store: false,
+        include: ["reasoning.encrypted_content"],
+      },
     },
   });
+
   const text = (await result.text).trim();
   if (failure || !text) {
     const status = (failure as { statusCode?: number })?.statusCode ?? 502;
-    throw new GatewayError(status, status === 402 ? "AI credits are exhausted." : status === 429 ? "Too many requests, try again shortly." : "The AI could not answer right now.");
+    const message =
+      status === 402
+        ? "AI credits are exhausted."
+        : status === 429
+          ? "Too many requests, try again shortly."
+          : "The AI could not answer right now.";
+    throw new GatewayError(status, message);
   }
+
   return text;
 }
