@@ -36,14 +36,9 @@ describe("Language Core", () => {
   it("agent routes an iRiel question to the distinction answer", () => {
     expect(matchTopic("How is iRiel different?", messagesFor("en-US").agent.keywords)).toBe("iriel");
   });
-  it("provides explicit remote-inference consent copy for all 17 locales", () => {
+  it("provides a local-only response in all 17 locales", () => {
     for (const locale of LOCALES) {
-      const agent = messagesFor(locale.code).agent;
-      expect(agent.remoteConsentPrompt.trim(), locale.code).not.toBe("");
-      expect(agent.remoteDestination.trim(), locale.code).not.toBe("");
-      expect(agent.sendRemote.trim(), locale.code).not.toBe("");
-      expect(agent.keepLocal.trim(), locale.code).not.toBe("");
-      expect(agent.localOnly.trim(), locale.code).not.toBe("");
+      expect(messagesFor(locale.code).agent.localOnly.trim(), locale.code).not.toBe("");
     }
   });
   it("clearly states that contact and feedback submission is unavailable in every locale", () => {
