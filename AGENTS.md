@@ -50,16 +50,17 @@ The responsibility statement is: **The model thinks. The agent executes a specia
 - The registry contains 17 BCP 47 locales. Only en-US and pt-BR have complete core message sets; the other locales have partial native UI overrides and use fallback content for missing messages.
 - Do not describe all 17 locales as fully translated. Preserve RTL behavior and verify locale-specific text before marking a locale complete.
 
-# Agent console and remote inference
+# Agent console and execution boundaries
 
 - Local topic matching is implemented in src/lib/agent.ts.
-- Known-topic answers are resolved locally.
-- Unmatched questions must **not** be transmitted automatically. The UI must obtain explicit user approval before calling askAgent in src/lib/ai/agent.functions.ts, and the request schema requires an explicit consent assertion.
-- The consent assertion is client-provided and is not a trusted authorization authority. Never treat it as permission to disclose protected data or execute protected platform capabilities. The production Remote Disclosure Authority remains an open gap (GAP-007).
-- The public Agent gateway has no verified server-side rate limit, abuse detection, or budget guard (GAP-021). Do not claim that the public fallback is production-hardened; do not add sensitive data to its request.
-- The current server gateway is src/lib/ai/gateway.server.ts. It uses the Lovable AI Gateway and is currently configured with OpenAI GPT-6 Astra. This is a provider-specific implementation; do not claim a provider-agnostic runtime until replaceable provider adapters and contract tests exist.
-- The current remote request sends the question text only. Do not add profile, personal memory, conversation history, secrets, or unrelated context to the remote request.
-- Any change to destination, model, payload, consent UX, or retention behavior requires updates to the privacy copy, tests, and architecture status.
+- The current Agent console is local-only. Known-topic answers are resolved in the browser; unmatched questions receive the localized local-only notice.
+- Do not add a remote model or provider call to the public Agent console.
+- Do not add provider-specific SDKs, model identifiers, or gateway credentials to the Agent console. Future remote execution requires an approved provider-neutral adapter contract, policy evaluation, trusted disclosure authorization, server-side abuse controls, and conformance tests.
+- A UI confirmation or client-supplied boolean is not a trusted authorization authority and must never authorize protected data disclosure or platform capability execution.
+- The production Remote Disclosure Authority and provider adapter runtime remain open architecture gaps (GAP-007 and GAP-016). Future remote execution must also satisfy abuse-control requirements (GAP-021).
+- The Agent console does not access iRiel profile data, personal memory, conversation history, secrets, or other private context.
+
+
 
 # Public forms and reporting channels
 
