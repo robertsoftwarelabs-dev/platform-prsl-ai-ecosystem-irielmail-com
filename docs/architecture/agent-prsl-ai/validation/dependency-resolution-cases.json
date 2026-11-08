@@ -2017,10 +2017,17 @@
           ]
         ],
         "skipped": [],
-        "authorization": [],
+        "authorization": [
+          [
+            "media.read",
+            true
+          ]
+        ],
         "model": {
-          "required": false,
-          "provider_constraints": []
+          "required": true,
+          "provider_constraints": [
+            "local"
+          ]
         },
         "dependency_order": [],
         "errors": [
