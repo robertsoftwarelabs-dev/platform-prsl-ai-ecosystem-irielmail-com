@@ -4,7 +4,7 @@
 **Platform:** PRSL-AI Ecosystem  
 **Baseline:** 2026  
 **Status:** Active engineering register; evidence-based  
-**Related:** [Canonical Architecture Overview](./PRSL-AI-ECOSYSTEM-ARCHITECTURE-OVERVIEW.md)
+**Related:** [Canonical Architecture Overview](./PRSL-AI-ECOSYSTEM-ARCHITECTURE-OVERVIEW.md) · [Dependency Resolver Specification v1.0](./agent-prsl-ai/dependency-resolver-specification.md)
 
 ## 1. Purpose
 
