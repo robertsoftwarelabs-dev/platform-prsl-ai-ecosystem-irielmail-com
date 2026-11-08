@@ -2,7 +2,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 export const askAgent = createServerFn({ method: "POST" })
-  .validator((d: unknown) => z.object({ question: z.string().trim().min(1).max(1000), consent: z.literal(true) }).parse(d))
+  .validator((d: unknown) =>
+    z.object({ question: z.string().trim().min(1).max(1000), consent: z.literal(true) }).parse(d),
+  )
   .handler(async ({ data }) => {
     const { generateAnswer, AGENT_INSTRUCTIONS, GatewayError } = await import("./gateway.server");
     try {
