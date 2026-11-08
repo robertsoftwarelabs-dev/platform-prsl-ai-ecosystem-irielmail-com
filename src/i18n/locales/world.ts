@@ -10,7 +10,7 @@ interface Pack {
   home: [string, string, string, string, string, string, string]; // title manifesto ctaPrimary ctaSecondary manifestoTitle entitiesTitle principlesTitle
   tag: [string, string, string];
   dep: [string, string, string, string, string];
-  agent: [string, string, string, string, string, string, string, string, string, string, string, string]; // eyebrow intro distinction placeholder send you suggestions remote consent prompt destination send keep local local-only response
+  agent: [string, string, string, string, string, string, string, string]; // eyebrow intro distinction placeholder send you suggestions local-only response
   form: [string, string, string, string, string, string, string]; // final message explains that submission is not connected
   pages: string[]; // 12 titles
 }
@@ -33,7 +33,7 @@ function build(p: Pack): Override {
       manifestoTitle: p.home[4], entitiesTitle: p.home[5], principlesTitle: p.home[6],
       dependencyTitle: p.dep[0], dependencyLines: p.dep.slice(1),
     },
-    agent: { eyebrow: p.agent[0], poweredBy: "Powered by Robert Software Labs", intro: p.agent[1], distinctionTitle: p.agent[2], placeholder: p.agent[3], send: p.agent[4], you: p.agent[5], suggestionsLabel: p.agent[6], remoteConsentPrompt: p.agent[7], remoteDestination: p.agent[8], sendRemote: p.agent[9], keepLocal: p.agent[10], localOnly: p.agent[11] },
+    agent: { eyebrow: p.agent[0], poweredBy: "Powered by Robert Software Labs", intro: p.agent[1], distinctionTitle: p.agent[2], placeholder: p.agent[3], send: p.agent[4], you: p.agent[5], suggestionsLabel: p.agent[6], localOnly: p.agent[7] },
     form: { name: p.form[0], email: p.form[1], category: p.form[2], message: p.form[3], submit: p.form[4], unavailable: p.form[5], required: p.form[6] },
     pages,
   };
