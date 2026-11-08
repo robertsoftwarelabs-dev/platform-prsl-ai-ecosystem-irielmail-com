@@ -213,6 +213,7 @@
               "UNSUPPORTED_VERSION_CONSTRAINT",
               "RESOLUTION_LIMIT_EXCEEDED",
               "MODEL_PROVIDER_CONSTRAINT_CONFLICT",
+              "ROOT_CAPABILITY_ID_MISMATCH",
               "ROOT_CAPABILITY_ID_MISMATCH"
             ]
           },
