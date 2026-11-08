@@ -28,7 +28,7 @@ The platform and iRiel are separate projects and deployments. This repository is
 | **PRSL-AI Core** | Foundational platform architecture and infrastructure | A model or independent product identity |
 | **Intelligence Router** | Selects eligible execution candidates under policy constraints | An authorization authority |
 | **Permission Manager** | Issues authorization decisions for protected PRSL-AI operations | A model router or UI toggle |
-| **Agent PRSL-AI** | First-party specialist for PRSL-AI platform knowledge and authorized platform tasks | iRiel or the platform itself |
+| **Agent PRSL-AI** | First-party specialist for PRSL-AI platform knowledge and documented capability guidance | iRiel, the platform itself, or a general autonomous task-execution runtime |
 | **iRiel AI** | Separate **PowerFully Intelligence Environment** that coordinates a person's broader intelligence experience | An AI model, the PRSL-AI platform, or Agent PRSL-AI |
 | **iSpace** | Personal workspace within iRiel | A peer platform or separate top-level product |
 | **iApps** | Modular application family | A replacement name for the platform or its agents |
@@ -76,6 +76,8 @@ The website and repository contain a mixture of implemented interface elements, 
 The [Implementation Readiness and Architecture Gap Register](docs/architecture/IMPLEMENTATION-READINESS-AND-GAP-REGISTER.md) is the authoritative record of known production blockers and required evidence. Do not infer operational readiness from a page, diagram, manifest, or passing synthetic test.
 
 ## Agent PRSL-AI and remote inference
+
+The current Agent console is a knowledge Q&A interface. It does not execute general platform operations or forward messages to the RSL team. Capability execution, human support, and formal security reporting are separate functions and are not provided by this console.
 
 The current Agent console first checks its local knowledge topics. If it cannot match a topic, it must ask the user before sending the question to the remote AI service.
 
@@ -136,6 +138,10 @@ python docs/architecture/agent-prsl-ai/scripts/validate_dependency_resolver.py
 ~~~
 
 GitHub Actions runs the architecture-link, capability-manifest, Permission Manager, execution-contract, Dependency Resolver, application-test, and type-check validations for the configured change paths. Run the relevant checks locally before opening a pull request.
+
+## Contact, feedback, and security reporting status
+
+The Contact and Feedback pages are status-only. Their previous form controls did not connect to a delivery service; they have been removed. No message is transmitted or stored by those pages. A direct human-contact channel and a dedicated secure vulnerability-reporting channel are not currently verified. Do not submit sensitive information, exploit details, credentials, or formal notices through the public Agent.
 
 ## Repository change rules
 
