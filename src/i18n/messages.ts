@@ -43,7 +43,7 @@ export interface Messages {
     answers: Record<AgentTopic, string>;
   };
   pages: Record<PageKey, PageContent>;
-  form: { name: string; email: string; category: string; message: string; submit: string; unavailable: string; categories: string[]; required: string };
+  form: { unavailable: string };
 }
 
 const en: Messages = {
@@ -156,7 +156,7 @@ const en: Messages = {
       tools: "The platform architecture defines specialized capability domains such as Vision, Audio, Voice, Location, Recognizers, Creative, Reader and CLI. These are architectural capability areas; they are not all implemented or callable from the current Agent Q&A console.",
     },
   },
-  form: { name: "Name", email: "Email", category: "Category", message: "Message", submit: "Send", unavailable: "This form is not connected to a submission service. Nothing is sent or stored. Do not enter personal or sensitive information here.", categories: ["Suggestion", "Accessibility", "Bug report", "Language / translation", "Other"], required: "Required" },
+  form: { unavailable: "This form is not connected to a submission service. Nothing is sent or stored. Do not enter personal or sensitive information here." },
   pages: {
     about: {
       eyebrow: "About", title: "Robert Software Labs",
@@ -375,7 +375,7 @@ const pt: Messages = {
       tools: "A arquitetura da plataforma define domínios de capacidades especializadas como Vision, Audio, Voice, Location, Recognizers, Creative, Reader e CLI. Essas são áreas de capacidade arquitetural; nem todas estão implementadas ou podem ser acionadas pelo console atual de perguntas e respostas do Agent.",
     },
   },
-  form: { name: "Nome", email: "E-mail", category: "Categoria", message: "Mensagem", submit: "Enviar", unavailable: "Este formulário ainda não está conectado a um serviço de envio. Nada é transmitido ou armazenado. Não informe dados pessoais ou sensíveis aqui.", categories: ["Sugestão", "Acessibilidade", "Relato de erro", "Idioma / tradução", "Outro"], required: "Obrigatório" },
+  form: { unavailable: "Este formulário ainda não está conectado a um serviço de envio. Nada é transmitido ou armazenado. Não informe dados pessoais ou sensíveis aqui." },
   pages: {
     about: {
       eyebrow: "Sobre", title: "Robert Software Labs",
