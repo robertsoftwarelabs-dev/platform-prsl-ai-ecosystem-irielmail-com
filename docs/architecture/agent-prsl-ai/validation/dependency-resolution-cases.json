@@ -1834,7 +1834,7 @@
           "registration_status": "registered",
           "validation_status": "passed",
           "review_status": "approved",
-          "registry_snapshot_ref": "snapshot:test-001"
+          "registry_snapshot_ref": "snapshot:other"
         },
         {
           "dependency_type": "capability",
