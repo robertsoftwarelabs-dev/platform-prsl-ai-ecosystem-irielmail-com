@@ -85,12 +85,12 @@ const en: Messages = {
       { h: "Provider agnosticism", p: "No lock-in to a single model or vendor. Models are interchangeable components." },
       { h: "Accessible by construction", p: "WCAG 2.2 AA is the conformance target. Keyboard, screen-reader and alternative-input support must be verified for each relevant interface." },
       { h: "Language as infrastructure", p: "17 locales are registered. en-US and pt-BR have complete core translations; other locales currently use partial native UI overrides and fallback content." },
-      { h: "Explicit consent", p: "Remote disclosure requires a clear, purpose-specific and revocable user decision. Local processing and remote processing must never be conflated." },
+      { h: "Explicit consent", p: "Any future remote disclosure requires a clear, purpose-specific and revocable user decision. Remote processing is not enabled in the current public Agent console." },
       { h: "Continuity", p: "The architecture is designed to preserve user-controlled context across model and provider changes, subject to consent, supported storage and verified integrations." },
     ],
     dependencyTitle: "Intelligence Without Dependency",
     dependencyLines: ["The model thinks.", "The agent executes.", "The Router decides.", "iRiel orchestrates."],
-    dependencyBody: "Each role is separated by design. Models are reasoning engines that can be swapped. Agents act within explicit permissions. The Router chooses where each task runs — locally or remotely — by policy. iRiel coordinates it all on your behalf.",
+    dependencyBody: "Each role is separated by design. Models are replaceable reasoning engines. Agents operate within explicit permissions. The architecture assigns the Router responsibility for policy-based execution placement; actual local or remote routes are available only when implemented and enabled. iRiel coordinates the authorized experience.",
     crestTitle: "The PRSL-AI Crest & Shield",
     crestBody: "Forged in brushed emerald metal, the shield carries the interlocked PRSL monogram — a symbol of protection, privacy by default and on-device first.",
     irielTitle: "iRiel — PowerFully Intelligence Environment",
@@ -115,7 +115,7 @@ const en: Messages = {
     agentName: "Agent PRSL-AI",
     suggestionsLabel: "Suggested questions",
     status: "Online · Knowledge base v1",
-    local: "Known-topic answers are matched locally. Questions outside the local knowledge base are not sent to remote AI unless you explicitly approve the request.",
+    local: "Known-topic answers are matched locally. Questions outside the local knowledge base receive a local-only notice and are not sent to remote AI or any external provider.",
     localOnly: "No information was sent. I can answer only from the local knowledge topics available in this session.",
     greeting: "Hello. I am Agent PRSL-AI, the platform knowledge specialist for the PRSL-AI Ecosystem. I can explain documented architecture and current implementation status; I do not execute platform operations in this console.",
     fallback: "I'm specialized in the PRSL-AI Ecosystem. Try asking about the Router, iRiel, iApps, privacy, languages or the architectural principles.",
@@ -202,7 +202,7 @@ const en: Messages = {
       eyebrow: "Developers", title: "Build with PRSL-AI",
       intro: "Architecture specifications, SDK concepts and provider-agnostic integration guidelines.",
       sections: [
-        { id: "architecture", h: "Architecture specification", items: ["Model layer — interchangeable reasoning engines", "Agent layer — permissioned executors", "Router — policy-driven placement (local / remote)", "Orchestration — iRiel coordinates context and tasks"] },
+        { id: "architecture", h: "Architecture specification", items: ["Model layer — interchangeable reasoning engines", "Agent layer — permissioned executors", "Router — policy-driven placement (local / remote; route availability depends on implementation)", "Orchestration — iRiel coordinates context and tasks"] },
         { id: "sdk", h: "SDK & API concepts", body: ["The SDK exposes capabilities, not providers. You request a capability (e.g. summarize, translate) and the Router selects how to fulfil it."] },
         { id: "integrations", h: "Provider-agnostic integration", items: ["Never hard-code a vendor; register providers as adapters", "Declare data sensitivity on every request", "Respect user locale and direction from the Language Core", "Fail gracefully to on-device capabilities"] },
         { id: "resources", h: "Developer resources", items: ["Language Core specification", "Accessibility checklist (WCAG 2.2 AA target)", "Security disclosure status — no dedicated reporting channel verified", "General platform Q&A: Agent PRSL-AI (not a human contact or security-reporting channel)"] },
@@ -223,7 +223,7 @@ const en: Messages = {
       sections: [
         { h: "On-device execution", body: ["Whenever possible, processing happens locally on your device."] },
         { h: "Zero unauthorized transmission", body: ["No personal data is transmitted without explicit, informed and revocable consent."] },
-        { h: "This website and Agent console", body: ["The site stores the selected language in browser localStorage. Known Agent topics are matched locally. If no local topic matches, the console asks for consent before sending the question text to the Lovable AI Gateway, currently configured with OpenAI GPT-6 Astra. The current request does not include an iRiel profile, personal memory or conversation history. If you decline, no remote request is made. Do not enter sensitive information into the remote fallback."] },
+        { h: "This website and Agent console", body: ["The site stores the selected language in browser localStorage. Agent topics are matched locally. Unmatched questions receive a local-only notice; no question text is sent to a remote model or provider. The console does not access an iRiel profile, personal memory or conversation history."] },
       ],
     },
     security: {
@@ -239,7 +239,7 @@ const en: Messages = {
       intro: "Getting started, answers and help.",
       sections: [
         { h: "Getting started", items: ["Choose your language in the top navigation", "Explore the Ecosystem page", "Ask Agent PRSL-AI about documented platform architecture and current implementation status"] },
-        { h: "FAQ", items: ["Is iRiel the same as Agent PRSL-AI? — No. iRiel is a separate PowerFully Intelligence Environment; Agent PRSL-AI is the PRSL-AI platform specialist.", "Does PRSL-AI need the cloud? — The architecture is local-first and provider-agnostic, but the complete local infrastructure is not yet operational. The current Agent fallback uses a remote gateway only after explicit consent.", "Which languages are supported? — 17 locales are registered. en-US and pt-BR have complete core message sets; other locales have partial native UI overrides and fallback content. Arabic is registered as RTL."] },
+        { h: "FAQ", items: ["Is iRiel the same as Agent PRSL-AI? — No. iRiel is a separate PowerFully Intelligence Environment; Agent PRSL-AI is the PRSL-AI platform specialist.", "Does PRSL-AI need the cloud? — The architecture is local-first and provider-agnostic, but the complete local infrastructure is not yet operational. The current public Agent console is local-only and has no remote provider configured.", "Which languages are supported? — 17 locales are registered. en-US and pt-BR have complete core message sets; other locales have partial native UI overrides and fallback content. Arabic is registered as RTL."] },
         { h: "Still need help?", body: ["Open Agent PRSL-AI using the floating button at the bottom of any page."] },
       ],
     },
@@ -296,7 +296,7 @@ const pt: Messages = {
       { name: "PRSL-AI Core", role: "Fundação", desc: "A arquitetura fundacional da plataforma. O desenho-alvo inclui componentes de idioma, roteamento, políticas e runtime; a infraestrutura completa ainda não está operacional." },
       { name: "iRiel AI", role: "Ambiente de Inteligência Poderosa", desc: "Um ambiente separado para orquestração de inteligência pessoal. Coordena intenção, contexto autorizado e continuidade por integrações explícitas; não é a plataforma PRSL-AI." },
       { name: "iApps", role: "Família Modular", desc: "Aplicativos focados e interoperáveis — e-mail, notas, agenda, arquivos — que se conectam ao iRiel e compartilham uma linguagem de design acessível." },
-      { name: "Agent PRSL-AI", role: "Especialista da Plataforma", desc: "O agente especializado em PRSL-AI que explica a arquitetura e orienta tarefas autorizadas. O console atual combina correspondência local de tópicos com fallback remoto de IA somente após consentimento explícito." },
+      { name: "Agent PRSL-AI", role: "Especialista da Plataforma", desc: "O especialista em PRSL-AI que explica a arquitetura e as capacidades documentadas. O console público atual usa apenas conhecimento local; perguntas sem correspondência recebem um aviso local e não são enviadas a provedores remotos." },
     ],
     principlesTitle: "Princípios Arquiteturais",
     principles: [
@@ -304,7 +304,7 @@ const pt: Messages = {
       { h: "Independência de provedor", p: "Sem aprisionamento a um único modelo ou fornecedor. Modelos são componentes intercambiáveis." },
       { h: "Acessível por construção", p: "WCAG 2.2 AA é a meta de conformidade. O suporte a teclado, leitores de tela e entradas alternativas precisa ser verificado em cada interface relevante." },
       { h: "Idioma como infraestrutura", p: "Há 17 locales registrados. en-US e pt-BR têm conjuntos centrais completos; os demais possuem traduções nativas parciais e usam fallback para textos ausentes." },
-      { h: "Consentimento explícito", p: "O envio remoto exige uma decisão humana clara, específica para a finalidade e revogável. Processamento local e remoto nunca devem ser confundidos." },
+      { h: "Consentimento explícito", p: "Qualquer divulgação remota futura exigirá uma decisão humana clara, específica para a finalidade e revogável. O console público atual do Agent não habilita processamento remoto." },
       { h: "Continuidade", p: "A arquitetura foi projetada para preservar o contexto sob controle do usuário entre modelos e provedores, conforme consentimento, armazenamento disponível e integrações verificadas." },
     ],
     dependencyTitle: "Inteligência Sem Dependência",
@@ -421,7 +421,7 @@ const pt: Messages = {
       eyebrow: "Desenvolvedores", title: "Construa com PRSL-AI",
       intro: "Especificações de arquitetura, conceitos de SDK e diretrizes de integração independentes de provedor.",
       sections: [
-        { id: "architecture", h: "Especificação de arquitetura", items: ["Camada de modelo — motores de raciocínio intercambiáveis", "Camada de agente — executores com permissão", "Router — alocação por política (local / remoto)", "Orquestração — o iRiel coordena contexto e tarefas"] },
+        { id: "architecture", h: "Especificação de arquitetura", items: ["Camada de modelo — motores de raciocínio intercambiáveis", "Camada de agente — executores com permissão", "Router — alocação por política (local / remoto; disponibilidade depende da implementação)", "Orquestração — o iRiel coordena contexto e tarefas"] },
         { id: "sdk", h: "Conceitos de SDK e API", body: ["O SDK expõe capacidades, não provedores. Você solicita uma capacidade (ex.: resumir, traduzir) e o Router escolhe como atendê-la."] },
         { id: "integrations", h: "Integração independente de provedor", items: ["Nunca fixe um fornecedor; registre provedores como adaptadores", "Declare a sensibilidade dos dados em cada requisição", "Respeite o locale e a direção do usuário via Language Core", "Recorra às capacidades no dispositivo em caso de falha"] },
         { id: "resources", h: "Recursos para desenvolvedores", items: ["Especificação do Language Core", "Checklist de acessibilidade (meta WCAG 2.2 AA)", "Status de divulgação de segurança — nenhum canal dedicado verificado", "Dúvidas gerais sobre a plataforma: Agent PRSL-AI (não é contato humano nem canal de denúncias)"] },
@@ -442,7 +442,7 @@ const pt: Messages = {
       sections: [
         { h: "Execução no dispositivo", body: ["Sempre que possível, o processamento acontece localmente no seu dispositivo."] },
         { h: "Zero transmissão não autorizada", body: ["Nenhum dado pessoal é transmitido sem consentimento explícito, informado e revogável."] },
-        { h: "Este site e o console Agent", body: ["O site armazena o idioma selecionado no localStorage do navegador. Tópicos conhecidos do Agent são identificados localmente. Se nenhum tópico corresponder, o console pede consentimento antes de enviar o texto da pergunta ao Lovable AI Gateway, atualmente configurado com OpenAI GPT-6 Astra. A requisição atual não inclui perfil do iRiel, memória pessoal ou histórico de conversas. Se você recusar, nenhuma requisição remota será feita. Não informe dados sensíveis no fallback remoto."] },
+        { h: "Este site e o console Agent", body: ["O site armazena o idioma selecionado no localStorage do navegador. Os tópicos do Agent são identificados localmente. Perguntas sem correspondência recebem um aviso de resposta exclusivamente local; nenhum texto é enviado a modelos ou provedores remotos. O console não acessa perfil do iRiel, memória pessoal nem histórico de conversas."] },
       ],
     },
     security: {
@@ -458,7 +458,7 @@ const pt: Messages = {
       intro: "Primeiros passos, respostas e ajuda.",
       sections: [
         { h: "Primeiros passos", items: ["Escolha seu idioma na navegação superior", "Explore a página do Ecossistema", "Pergunte ao Agent PRSL-AI sobre a arquitetura documentada e o status atual de implementação"] },
-        { h: "Perguntas frequentes", items: ["O iRiel é o mesmo que o Agent PRSL-AI? — Não. O iRiel é um Ambiente de Inteligência Poderosa separado; o Agent PRSL-AI é o especialista da plataforma.", "O PRSL-AI precisa da nuvem? — A arquitetura prioriza execução local e independência de provedor, mas a infraestrutura local completa ainda não está operacional. O fallback atual do Agent usa um gateway remoto somente após consentimento explícito.", "Quais idiomas são suportados? — 17 locales estão registrados. en-US e pt-BR têm conjuntos centrais completos; os demais possuem traduções parciais e fallback. O árabe está registrado com RTL."] },
+        { h: "Perguntas frequentes", items: ["O iRiel é o mesmo que o Agent PRSL-AI? — Não. O iRiel é um Ambiente de Inteligência Poderosa separado; o Agent PRSL-AI é o especialista da plataforma.", "O PRSL-AI precisa da nuvem? — A arquitetura prioriza execução local e independência de provedor, mas a infraestrutura local completa ainda não está operacional. O console público atual do Agent é exclusivamente local e não tem provedor remoto configurado.", "Quais idiomas são suportados? — 17 locales estão registrados. en-US e pt-BR têm conjuntos centrais completos; os demais possuem traduções parciais e fallback. O árabe está registrado com RTL."] },
         { h: "Ainda precisa de ajuda?", body: ["Abra o Agent PRSL-AI pelo botão flutuante no canto de qualquer página."] },
       ],
     },
