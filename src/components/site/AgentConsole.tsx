@@ -39,7 +39,7 @@ export function AgentConsole({ compact = false }: { compact?: boolean }) {
   const askRemote = (question: string) => {
     setPendingRemoteQuestion(null);
     setThinking(true);
-    askAgent({ data: { question } })
+    askAgent({ data: { question, consent: true } })
       .then((r) => setMsgs((m) => [...m, r.ok ? { from: "agent", text: r.text } : { from: "agent", topic: "fallback" }]))
       .catch(() => setMsgs((m) => [...m, { from: "agent", topic: "fallback" }]))
       .finally(() => setThinking(false));
