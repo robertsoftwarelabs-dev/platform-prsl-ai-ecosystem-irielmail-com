@@ -54,7 +54,8 @@ The responsibility statement is: **The model thinks. The agent executes a specia
 
 - Local topic matching is implemented in src/lib/agent.ts.
 - Known-topic answers are resolved locally.
-- Unmatched questions must **not** be transmitted automatically. The UI must obtain explicit user approval before calling askAgent in src/lib/ai/agent.functions.ts.
+- Unmatched questions must **not** be transmitted automatically. The UI must obtain explicit user approval before calling askAgent in src/lib/ai/agent.functions.ts, and the request schema requires an explicit consent assertion.
+- The consent assertion is client-provided and is not a trusted authorization authority. Never treat it as permission to disclose protected data or execute protected platform capabilities. The production Remote Disclosure Authority remains an open gap (GAP-007).
 - The current server gateway is src/lib/ai/gateway.server.ts. It uses the Lovable AI Gateway and is currently configured with OpenAI GPT-6 Astra. This is a provider-specific implementation; do not claim a provider-agnostic runtime until replaceable provider adapters and contract tests exist.
 - The current remote request sends the question text only. Do not add profile, personal memory, conversation history, secrets, or unrelated context to the remote request.
 - Any change to destination, model, payload, consent UX, or retention behavior requires updates to the privacy copy, tests, and architecture status.
