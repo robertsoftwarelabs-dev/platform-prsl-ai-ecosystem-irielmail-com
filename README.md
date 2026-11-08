@@ -85,7 +85,7 @@ When the user explicitly approves:
 - The current request does not include the user's iRiel profile, personal memory, or conversation history.
 - Declining remote inference keeps the question on the local path.
 
-Do not enter sensitive personal information into the remote fallback. The provider-specific gateway must not be described as provider-agnostic until a replaceable adapter contract and implementation are in place.
+This is a **UI-level consent step** for the public Agent Q&A flow. The request also carries an explicit consent assertion, but that client-provided value is not a trusted authorization authority and can be bypassed by a direct API caller. It does not replace the production Remote Disclosure Authority tracked as GAP-007. Do not send protected or sensitive personal data through this public fallback. The provider-specific gateway must not be described as provider-agnostic until a replaceable adapter contract and implementation are in place.
 
 ## Architecture documentation
 
