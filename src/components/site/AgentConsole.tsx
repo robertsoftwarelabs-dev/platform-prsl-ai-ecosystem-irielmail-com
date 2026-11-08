@@ -6,7 +6,11 @@ import { matchTopic } from "@/lib/agent";
 import { brand } from "@/lib/brand";
 import { askAgent } from "@/lib/ai/agent.functions";
 
-type Msg = { from: "agent" | "user"; text?: string; topic?: AgentTopic | "greeting" | "fallback" };
+type Msg = {
+  from: "agent" | "user";
+  text?: string;
+  topic?: AgentTopic | "greeting" | "fallback" | "remoteConsent" | "localOnly";
+};
 
 export function AuraVisualizer({ active }: { active: boolean }) {
   return (
@@ -25,30 +29,62 @@ export function AgentConsole({ compact = false }: { compact?: boolean }) {
   const [msgs, setMsgs] = useState<Msg[]>([{ from: "agent", topic: "greeting" }]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
+  const [pendingRemoteQuestion, setPendingRemoteQuestion] = useState<string | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" }); }, [msgs, thinking]);
+  useEffect(() => {
+    logRef.current?.scrollTo?.({ top: logRef.current.scrollHeight, behavior: "smooth" });
+  }, [msgs, thinking]);
 
-  const ask = (text: string, topic?: AgentTopic) => {
-    if (!text.trim()) return;
-    setMsgs((m) => [...m, { from: "user", text }]);
-    setInput("");
+  const askRemote = (question: string) => {
+    setPendingRemoteQuestion(null);
     setThinking(true);
-    const found = topic ?? matchTopic(text, a.keywords);
-    if (found) {
-      setTimeout(() => { setMsgs((m) => [...m, { from: "agent", topic: found }]); setThinking(false); }, 550);
-      return;
-    }
-    askAgent({ data: { question: text } })
+    askAgent({ data: { question } })
       .then((r) => setMsgs((m) => [...m, r.ok ? { from: "agent", text: r.text } : { from: "agent", topic: "fallback" }]))
       .catch(() => setMsgs((m) => [...m, { from: "agent", topic: "fallback" }]))
       .finally(() => setThinking(false));
   };
 
-  const render = (m: Msg) =>
-    m.text ? m.text : m.topic === "greeting" ? a.greeting : m.topic === "fallback" ? a.fallback : a.answers[m.topic as AgentTopic];
+  const keepLocal = () => {
+    setPendingRemoteQuestion(null);
+    setMsgs((m) => [...m, { from: "agent", topic: "localOnly" }]);
+  };
 
-  const onSubmit = (e: FormEvent) => { e.preventDefault(); ask(input); };
+  const ask = (text: string, topic?: AgentTopic) => {
+    const question = text.trim();
+    if (!question) return;
+
+    setMsgs((m) => [...m, { from: "user", text: question }]);
+    setInput("");
+    setPendingRemoteQuestion(null);
+
+    const found = topic ?? matchTopic(question, a.keywords);
+    if (found) {
+      setThinking(true);
+      setTimeout(() => {
+        setMsgs((m) => [...m, { from: "agent", topic: found }]);
+        setThinking(false);
+      }, 350);
+      return;
+    }
+
+    // Unknown questions stay local until the user explicitly approves remote inference.
+    setMsgs((m) => [...m, { from: "agent", topic: "remoteConsent" }]);
+    setPendingRemoteQuestion(question);
+  };
+
+  const render = (m: Msg) =>
+    m.text ? m.text
+      : m.topic === "greeting" ? a.greeting
+      : m.topic === "fallback" ? a.fallback
+      : m.topic === "remoteConsent" ? a.remoteConsentPrompt
+      : m.topic === "localOnly" ? a.localOnly
+      : a.answers[m.topic as AgentTopic];
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    ask(input);
+  };
 
   return (
     <div className={compact ? "flex flex-col overflow-hidden" : "panel grid overflow-hidden md:grid-cols-[18rem_1fr]"}>
@@ -68,6 +104,19 @@ export function AgentConsole({ compact = false }: { compact?: boolean }) {
               <div className={m.from === "user" ? "max-w-[85%] rounded-lg bg-primary px-4 py-2 text-primary-foreground" : "max-w-[90%] border-s-2 border-telemetry ps-4 text-foreground"}>
                 <p className="mb-1 font-mono text-[11px] uppercase tracking-widest opacity-80">{m.from === "user" ? a.you : a.agentName}</p>
                 <p className="leading-relaxed">{render(m)}</p>
+                {m.topic === "remoteConsent" && pendingRemoteQuestion && i === msgs.length - 1 && (
+                  <div role="group" aria-label={a.remoteDestination} className="mt-3 space-y-3">
+                    <p className="text-xs leading-relaxed text-muted-foreground">{a.remoteDestination}</p>
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" disabled={thinking} onClick={() => askRemote(pendingRemoteQuestion)} className="min-h-11 rounded-md bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50">
+                        {a.sendRemote}
+                      </button>
+                      <button type="button" disabled={thinking} onClick={keepLocal} className="min-h-11 rounded-md border border-border px-3 py-2 text-sm font-medium text-foreground disabled:opacity-50">
+                        {a.keepLocal}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           ))}
