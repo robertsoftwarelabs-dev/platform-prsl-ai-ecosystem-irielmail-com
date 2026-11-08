@@ -8,9 +8,9 @@ export const Route = createFileRoute("/agent")({
   head: () => ({
     meta: [
       { title: "Agent PRSL-AI Console — Robert Software Labs" },
-      { name: "description", content: "Ask Agent PRSL-AI, the institutional ambassador, about the ecosystem, routing, iRiel and architectural principles." },
+      { name: "description", content: "Ask Agent PRSL-AI, the PRSL-AI platform specialist. Known topics are answered locally; unmatched questions require consent before remote inference." },
       { property: "og:title", content: "Agent PRSL-AI Console" },
-      { property: "og:description", content: "The institutional knowledge ambassador of the PRSL-AI Ecosystem." },
+      { property: "og:description", content: "The platform-specialized Agent PRSL-AI. Remote AI inference is optional and requires explicit consent." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
