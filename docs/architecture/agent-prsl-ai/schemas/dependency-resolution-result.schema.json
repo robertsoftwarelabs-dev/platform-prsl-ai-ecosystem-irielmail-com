@@ -14,7 +14,7 @@
     "skipped_optional_dependencies",
     "authorization_requirements",
     "model_requirement",
-    "execution_order",
+    "dependency_order",
     "errors"
   ],
   "properties": {
@@ -176,16 +176,6 @@
         }
       }
     },
-    "execution_order": {
-      "type": "array",
-      "maxItems": 1000,
-      "uniqueItems": true,
-      "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 256
-      }
-    },
     "errors": {
       "type": "array",
       "maxItems": 1000,
@@ -240,6 +230,16 @@
           }
         }
       }
+    },
+    "dependency_order": {
+      "type": "array",
+      "maxItems": 1000,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      }
     }
   },
   "allOf": [
@@ -253,7 +253,7 @@
       },
       "then": {
         "properties": {
-          "execution_order": {
+          "dependency_order": {
             "maxItems": 0
           }
         }
