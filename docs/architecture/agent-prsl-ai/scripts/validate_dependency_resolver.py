@@ -76,9 +76,21 @@ def resolve_fixture(case: dict) -> dict:
     model_constraint_sets: list[set[str]] = []
 
     root_id = root.get("capability_id")
-    if root.get("lifecycle_status") != "verified":
+    root_registry = case.get("root_registry", {})
+    if root_id != request.get("root_capability_id"):
+        errors.append({"code": "ROOT_CAPABILITY_ID_MISMATCH", "dependency_type": "capability", "dependency_id": root_id, "parent_id": None})
+    if (
+        root.get("lifecycle_status") != "verified"
+        or root_registry.get("registration_status") != "registered"
+        or root_registry.get("validation_status") != "passed"
+        or root_registry.get("review_status") != "approved"
+        or root_registry.get("digest_verified") is not True
+        or root_registry.get("registry_snapshot_ref") != request.get("registry_snapshot_ref")
+        or not root_registry.get("registry_record_ref")
+        or root_registry.get("version") != root.get("capability_version")
+    ):
         errors.append({"code": "ROOT_CAPABILITY_NOT_VERIFIED", "dependency_type": "capability", "dependency_id": root_id, "parent_id": None})
-    root_version = root.get("capability_version")
+    root_version = root_registry.get("version")
     requested_root_selector = request.get("root_version_constraint")
     try:
         if root_version is None or (requested_root_selector and not satisfies(parse_version(root_version), requested_root_selector)):
@@ -159,7 +171,14 @@ def resolve_fixture(case: dict) -> dict:
 
         verified = [
             record for record in records
-            if record.get("lifecycle_status") == "verified" and record.get("digest_verified") is True
+            if (
+                record.get("lifecycle_status") == "verified"
+                and record.get("registration_status") == "registered"
+                and record.get("validation_status") == "passed"
+                and record.get("review_status") == "approved"
+                and record.get("digest_verified") is True
+                and record.get("registry_snapshot_ref") == request.get("registry_snapshot_ref")
+            )
         ]
         if not verified:
             if required:
