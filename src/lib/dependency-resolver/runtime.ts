@@ -104,7 +104,9 @@ function parseVersion(value: string): [number, number, number] | null {
 
 function compareVersions(a: [number, number, number], b: [number, number, number]): number {
   for (let index = 0; index < 3; index += 1) {
-    const left = a[index] ?? 0;\n    const right = b[index] ?? 0;\n    if (left !== right) return left - right;
+    const left = a[index] ?? 0;
+    const right = b[index] ?? 0;
+    if (left !== right) return left - right;
   }
   return 0;
 }
