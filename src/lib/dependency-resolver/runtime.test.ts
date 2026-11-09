@@ -120,3 +120,31 @@ describe("trusted-snapshot dependency resolver", () => {
     expect(result.errors[0]?.code).toBe("INVALID_REQUEST");
   });
 });
+
+describe("registry failure handling", () => {
+  it("blocks instead of degrading when the registry adapter is unavailable", async () => {
+    const root = record({
+      manifest: manifest(request.root_capability_id, {
+        service: [{ id: "optional-cache", required: false }],
+      }),
+    });
+    const unavailableRegistry: TrustedDependencyRegistry = {
+      getRootCapability: async () => root,
+      findCandidates: async () => { throw new Error("registry unavailable"); },
+    };
+    const result = await resolveDependencies(request, unavailableRegistry);
+    expect(result.status).toBe("blocked");
+    expect(result.errors[0]?.code).toBe("REGISTRY_UNAVAILABLE");
+    expect(result.dependency_order).toEqual([]);
+  });
+
+  it("distinguishes an unavailable root registry from an unverified root", async () => {
+    const unavailableRegistry: TrustedDependencyRegistry = {
+      getRootCapability: async () => { throw new Error("registry unavailable"); },
+      findCandidates: async () => [],
+    };
+    const result = await resolveDependencies(request, unavailableRegistry);
+    expect(result.status).toBe("blocked");
+    expect(result.errors[0]?.code).toBe("REGISTRY_UNAVAILABLE");
+  });
+});
