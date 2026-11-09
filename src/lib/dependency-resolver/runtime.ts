@@ -318,7 +318,7 @@ export async function resolveDependencies(
     active.pop();
   }
 
-  let providerConstraints = modelConstraintSets.length > 0
+  const providerConstraints = modelConstraintSets.length > 0
     ? [...modelConstraintSets[0]!].filter((provider) => modelConstraintSets.every((set) => set.has(provider))).sort()
     : [];
   if (modelRequired && modelConstraintSets.length > 0 && providerConstraints.length === 0) {
