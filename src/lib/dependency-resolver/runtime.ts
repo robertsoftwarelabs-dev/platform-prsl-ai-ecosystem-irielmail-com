@@ -157,10 +157,13 @@ export async function resolveDependencies(
   const parsedRequest = dependencyResolutionRequestSchema.safeParse(rawRequest);
   if (!parsedRequest.success) {
     const fallback = rawRequest && typeof rawRequest === "object" ? rawRequest as Record<string, unknown> : {};
+    const fallbackResolutionId = z.string().uuid().safeParse(fallback["resolution_id"]);
+    const fallbackCapabilityId = capabilityIdSchema.safeParse(fallback["root_capability_id"]);
+    const fallbackSnapshotRef = z.string().min(1).max(256).safeParse(fallback["registry_snapshot_ref"]);
     return blockedResult(
-      typeof fallback["resolution_id"] === "string" ? fallback["resolution_id"] : "00000000-0000-4000-8000-000000000000",
-      typeof fallback["root_capability_id"] === "string" ? fallback["root_capability_id"] : "prsl.agent.invalid.root",
-      typeof fallback["registry_snapshot_ref"] === "string" ? fallback["registry_snapshot_ref"] : "invalid",
+      fallbackResolutionId.success ? fallbackResolutionId.data : "00000000-0000-4000-8000-000000000000",
+      fallbackCapabilityId.success ? fallbackCapabilityId.data : "prsl.agent.invalid.root",
+      fallbackSnapshotRef.success ? fallbackSnapshotRef.data : "invalid",
       "INVALID_REQUEST",
       null,
       null,
@@ -192,14 +195,18 @@ export async function resolveDependencies(
   };
 
   let rootRecord: TrustedRegistryRecord | null;
+  let rootRegistryUnavailable = false;
   try {
     rootRecord = await registry.getRootCapability({ capabilityId: request.root_capability_id, snapshotRef: request.registry_snapshot_ref });
   } catch {
     rootRecord = null;
+    rootRegistryUnavailable = true;
   }
 
   const rootManifest = rootRecord ? isManifest(rootRecord.manifest) : null;
-  if (!rootRecord || !isEligible(rootRecord, request.registry_snapshot_ref) || rootRecord.dependency_type !== "root" || !rootManifest) {
+  if (rootRegistryUnavailable) {
+    addError("REGISTRY_UNAVAILABLE", "capability", request.root_capability_id, null);
+  } else if (!rootRecord || !isEligible(rootRecord, request.registry_snapshot_ref) || rootRecord.dependency_type !== "root" || !rootManifest) {
     addError("ROOT_CAPABILITY_NOT_VERIFIED", "capability", request.root_capability_id, null);
   } else if (
     rootRecord.dependency_id !== request.root_capability_id ||
@@ -251,7 +258,8 @@ export async function resolveDependencies(
     try {
       candidates = await registry.findCandidates({ dependencyType: type, dependencyId: dependency.id, snapshotRef: request.registry_snapshot_ref });
     } catch {
-      candidates = [];
+      addError("REGISTRY_UNAVAILABLE", type, dependency.id, parentId);
+      return;
     }
 
     if (!dependency.required && request.optional_dependency_policy === "required_only" && candidates.length > 0) {
