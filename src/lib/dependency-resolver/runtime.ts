@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { z } from "zod";
 
 const capabilityIdSchema = z.string().regex(/^prsl\.(agent|integration)\.[a-z0-9]+(?:-[a-z0-9]+)*(?:\.[a-z0-9]+(?:-[a-z0-9]+)*)+$/);
