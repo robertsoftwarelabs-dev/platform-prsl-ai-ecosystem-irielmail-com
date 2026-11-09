@@ -16,6 +16,8 @@ on:
       - "src/test/**"
       - "package.json"
       - "bun.lock"
+      - "vite.config.ts"
+      - "nitro.config.ts"
       - ".github/workflows/validate-agentprsl-capabilities.yml"
   push:
     branches: [main]
