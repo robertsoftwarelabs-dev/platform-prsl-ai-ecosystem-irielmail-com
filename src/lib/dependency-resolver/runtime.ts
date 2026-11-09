@@ -157,9 +157,9 @@ export async function resolveDependencies(
   if (!parsedRequest.success) {
     const fallback = rawRequest && typeof rawRequest === "object" ? rawRequest as Record<string, unknown> : {};
     return blockedResult(
-      typeof fallback["resolution_id"] === "string" ? fallback.resolution_id : "00000000-0000-4000-8000-000000000000",
-      typeof fallback["root_capability_id"] === "string" ? fallback.root_capability_id : "prsl.agent.invalid.root",
-      typeof fallback["registry_snapshot_ref"] === "string" ? fallback.registry_snapshot_ref : "invalid",
+      typeof fallback["resolution_id"] === "string" ? fallback["resolution_id"] : "00000000-0000-4000-8000-000000000000",
+      typeof fallback["root_capability_id"] === "string" ? fallback["root_capability_id"] : "prsl.agent.invalid.root",
+      typeof fallback["registry_snapshot_ref"] === "string" ? fallback["registry_snapshot_ref"] : "invalid",
       "INVALID_REQUEST",
       null,
       null,
