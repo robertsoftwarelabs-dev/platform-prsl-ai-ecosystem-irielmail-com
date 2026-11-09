@@ -104,7 +104,7 @@ function parseVersion(value: string): [number, number, number] | null {
 
 function compareVersions(a: [number, number, number], b: [number, number, number]): number {
   for (let index = 0; index < 3; index += 1) {
-    if (a[index] !== b[index]) return a[index] - b[index];
+    const left = a[index] ?? 0;\n    const right = b[index] ?? 0;\n    if (left !== right) return left - right;
   }
   return 0;
 }
@@ -155,9 +155,9 @@ export async function resolveDependencies(
   if (!parsedRequest.success) {
     const fallback = rawRequest && typeof rawRequest === "object" ? rawRequest as Record<string, unknown> : {};
     return blockedResult(
-      typeof fallback.resolution_id === "string" ? fallback.resolution_id : "00000000-0000-4000-8000-000000000000",
-      typeof fallback.root_capability_id === "string" ? fallback.root_capability_id : "prsl.agent.invalid.root",
-      typeof fallback.registry_snapshot_ref === "string" ? fallback.registry_snapshot_ref : "invalid",
+      typeof fallback["resolution_id"] === "string" ? fallback.resolution_id : "00000000-0000-4000-8000-000000000000",
+      typeof fallback["root_capability_id"] === "string" ? fallback.root_capability_id : "prsl.agent.invalid.root",
+      typeof fallback["registry_snapshot_ref"] === "string" ? fallback.registry_snapshot_ref : "invalid",
       "INVALID_REQUEST",
       null,
       null,
