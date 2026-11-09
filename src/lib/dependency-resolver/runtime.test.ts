@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { describe, expect, it } from "vitest";
 import { resolveDependencies, type TrustedDependencyRegistry, type TrustedRegistryRecord } from "./runtime";
 
