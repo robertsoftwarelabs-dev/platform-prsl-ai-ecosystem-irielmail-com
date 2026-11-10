@@ -294,6 +294,7 @@ Each component must be classified separately as specified, implemented, tested, 
 - [Agent PRSL-AI Capability Contract](./agent-prsl-ai/capability-contract.md)
 - [iRiel Siri AI Interaction Contract — Apple Integration](./IRIEL-SIRI-AI-APPLE-INTEGRATION.md)
 - [iRiel Operational State Contract — Apple Shortcuts Adapter](./IRIEL-OPERATIONAL-STATE-APPLE-SHORTCUTS.md)
+- [iRiel Intelligence Server Contract](./IRIEL-INTELLIGENCE-SERVER-CONTRACT.md)
 
 ---
 
