@@ -122,6 +122,8 @@ A provider sign-in is not a PRSL-AI capability grant. A provider connection does
 
 ## 8. Contracts and extensibility
 
+The Apple Shortcuts integration has separate, composable contracts for the canonical iRiel entity projection, intent representation, minimum Personal Intelligence interface, and operational execution state. These contracts preserve iRiel as the authority while treating Shortcuts as an optional execution adapter. See the [Entity Contract](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md), [Intents Contract](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md), [Personal Intelligence Contract](./IRIEL-PERSONAL-INTELLIGENCE-SHORTCUTS-CONTRACT.md), and [Operational State Contract](./IRIEL-OPERATIONAL-STATE-APPLE-SHORTCUTS.md).
+
 The platform evolves through independently versioned:
 
 - APIs and service interfaces;
