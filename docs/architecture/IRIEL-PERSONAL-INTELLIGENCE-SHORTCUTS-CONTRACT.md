@@ -155,6 +155,8 @@ This document specifies the intended interface. It does not prove that an Apple 
 Each component must be reported according to independent evidence: specified, implemented, tested, deployed, and verified. Documentation alone is not evidence of runtime availability.
 
 ## 12. Related contracts
+- [iRiel Apple Services Contract — PRSL-AI Ecosystem Integration](./IRIEL-APPLE-SERVICES-CONTRACT.md)
+- [iRiel Actions Contract — Apple Shortcuts Interface](./IRIEL-ACTIONS-SHORTCUTS-CONTRACT.md)
 
 - [iRiel Context Contract — Apple Shortcuts Interface](./IRIEL-CONTEXT-SHORTCUTS-CONTRACT.md)
 - [iRiel Automations Contract — Apple Shortcuts Interface](./IRIEL-AUTOMATIONS-SHORTCUTS-CONTRACT.md)
