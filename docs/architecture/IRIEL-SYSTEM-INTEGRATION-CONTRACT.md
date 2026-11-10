@@ -277,7 +277,7 @@ Apple, iOS, Siri, Apple Intelligence, App Intents, Shortcuts, and iCloud are opt
 
 A provider or OS change must not redefine iRiel identity, Agent PRSL-AI identity, or their authority boundaries.
 
-## 15. Failure, availability, and replaceability
+## 16. Failure, availability, and replaceability
 
 The architecture must distinguish capability unavailability, permission denial, policy denial, provider failure, OS restriction, network failure, execution failure, cancellation, and successful completion.
 
@@ -285,7 +285,7 @@ Failure of an optional system adapter must not invalidate iRiel identity or cont
 
 Adapters and providers may be replaced without redefining the entities that consume them.
 
-## 16. Implementation-status discipline
+## 17. Implementation-status discipline
 
 Every capability must be reported as one of:
 
@@ -301,7 +301,7 @@ This contract is an architectural specification. It does not establish that ever
 
 The current Agent console and each system integration must be described according to their independently verified implementation evidence. A documented contract, manifest, or diagram is not proof of operational availability.
 
-## 17. Canonical invariants
+## 18. Canonical invariants
 
 1. iRiel remains the canonical authority over its identity and personal continuity.
 2. PRSL-AI Ecosystem remains the shared platform architecture and governance layer.
@@ -314,7 +314,7 @@ The current Agent console and each system integration must be described accordin
 9. Temporary context and persistent memory remain separate.
 10. Accessibility, inclusion, security, and user control are structural requirements.
 
-## 18. Canonical statement
+## 19. Canonical statement
 
 **Robert Software Labs creates and governs the ecosystem. PRSL-AI provides shared platform architecture and governed capabilities. Agent PRSL-AI provides specialized platform intelligence. iRiel orchestrates the PowerFully Intelligence Environment. The operating system provides authorized execution resources. The human remains in control.**
 
