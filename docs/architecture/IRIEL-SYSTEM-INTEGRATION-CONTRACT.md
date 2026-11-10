@@ -243,7 +243,7 @@ iRiel Resonance preserves coherence across devices, integrations, and execution 
 
 ## 11. Operational state and Apple Shortcuts
 
-The Apple Shortcuts integration uses a dedicated operational-state contract. That contract defines a minimized, versioned projection for individual operations; it does not transfer canonical authority to Shortcuts, a `State.md` file, iCloud Drive, or another storage provider.
+The Apple Shortcuts integration is governed by the [iRiel Personal Intelligence Contract — Apple Shortcuts Interface](./IRIEL-PERSONAL-INTELLIGENCE-SHORTCUTS-CONTRACT.md), which defines the minimum identity and operational information exposed to Shortcuts, and by a dedicated operational-state contract. That contract defines a minimized, versioned projection for individual operations; it does not transfer canonical authority to Shortcuts, a `State.md` file, iCloud Drive, or another storage provider.
 
 The [iRiel Operational State Contract — Apple Shortcuts Adapter](./IRIEL-OPERATIONAL-STATE-APPLE-SHORTCUTS.md) governs operation identifiers, lifecycle transitions, expiry, stale-result handling, idempotency, storage/transport independence, and reconciliation through iRiel Resonance. It is an adapter-specific contract and remains subordinate to this system-integration boundary.
 
