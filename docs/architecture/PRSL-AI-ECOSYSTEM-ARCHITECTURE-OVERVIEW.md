@@ -120,7 +120,7 @@ Apple Integration is a canonical extension boundary, documented in Apple Integra
 
 A provider sign-in is not a PRSL-AI capability grant. A provider connection does not authorize every operation, remote disclosure, retention, or unrelated access.
 
-## 7. Contracts and extensibility
+## 8. Contracts and extensibility
 
 The platform evolves through independently versioned:
 
@@ -135,7 +135,7 @@ The platform evolves through independently versioned:
 
 Every capability must declare its stable ID, input schema, output schema, permissions, dependencies, availability, and execution policy. A capability declaration is not proof of implementation. A registered capability is not automatically verified or dispatch-eligible.
 
-## 8. Security, privacy, and data lifecycle
+## 9. Security, privacy, and data lifecycle
 
 The architecture requires explicit separation of the following authorities:
 
@@ -154,7 +154,7 @@ Remote disclosure and non-ephemeral retention are separate permissions. Remote d
 
 The Permission Manager runtime core currently provides dependency-injected orchestration and contract checks. Production authenticators, registry/policy/consent/native-permission/remote-disclosure adapters, cryptographic decision authority, atomic replay/revocation storage, durable audit storage, and deployment are not established by that code. It must not be exposed to browser code as an authorization authority.
 
-## 9. Accessibility and institutional principles
+## 10. Accessibility and institutional principles
 
 The platform's governing institutional principle is:
 
@@ -162,7 +162,7 @@ The platform's governing institutional principle is:
 
 Accessibility is structural across interfaces, APIs, capabilities, workflows, documentation, and execution outcomes. The platform must support assistive technologies, adaptable interaction modalities, localization, and user-controlled preferences. WCAG 2.2 AA is a target where applicable; conformance must be tested rather than assumed.
 
-## 10. Implementation status — evidence-based baseline
+## 11. Implementation status — evidence-based baseline
 
 | Component / artifact | Current evidence | Status and limitation |
 |---|---|---|
@@ -182,7 +182,7 @@ Accessibility is structural across interfaces, APIs, capabilities, workflows, do
 
 Statuses must be updated only with source, test, configuration, deployment, and operational evidence. “Specified,” “Implemented,” “Verified,” and “Available” are different claims.
 
-## 11. Canonical references
+## 12. Canonical references
 
 - [Platform, Agent, and Repository Governance](./PLATFORM-AGENT-REPOSITORY-GOVERNANCE.md)
 - [PRSL-AI Intelligence Infrastructure](./PRSL-AI-INTELLIGENCE-INFRASTRUCTURE.md)
@@ -199,7 +199,7 @@ Statuses must be updated only with source, test, configuration, deployment, and 
 - [Permission Manager Runtime Core and implementation boundary](../../src/lib/permission-manager/README.md)
 - [Implementation Readiness and Architecture Gap Register](./IMPLEMENTATION-READINESS-AND-GAP-REGISTER.md)
 
-## 12. Governing statement
+## 13. Governing statement
 
 PRSL-AI Ecosystem provides the shared platform and governed capabilities. PRSL-AI Core provides its foundational infrastructure. Agent PRSL-AI performs bounded specialist work. The Intelligence Router selects eligible candidates. The Permission Manager authorizes protected PRSL-AI operations. Trusted execution boundaries enforce those decisions. iRiel AI coordinates the person's PowerFully Intelligence Environment. iSpace remains inside iRiel. iApps extend the ecosystem through independent applications. Providers remain replaceable.
 
