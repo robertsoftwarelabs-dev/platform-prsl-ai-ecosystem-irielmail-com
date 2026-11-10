@@ -40,6 +40,8 @@ Conceptual flow:
 
 Client → iRiel Intelligence Server → authenticated caller and validated request → iRiel intent/context mediation → policy and authorization gates → PRSL-AI Intelligence Router → eligible capability/provider/tool → trusted execution boundary → validated result → iRiel reconciliation → Server response → authorized client.
 
+The [iRiel Intents Contract — Apple Shortcuts Interface](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md) governs how desired outcomes are represented and validated before an executable action is created. The [iRiel Entity Contract — Apple Shortcuts Interface](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md) defines the canonical identity boundary; the Server is only a service interface.
+
 The exact deployment topology may place steps in separate trusted services. A network hop or server process must not collapse their authority boundaries.
 
 The Server must not independently invent provider-selection logic when the canonical Intelligence Router is responsible for routing. It may select among server replicas or transport endpoints for availability, but it must not replace capability/provider routing policy.
