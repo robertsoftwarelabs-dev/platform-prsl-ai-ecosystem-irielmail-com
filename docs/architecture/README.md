@@ -17,6 +17,7 @@ This directory contains the canonical architecture definitions and technical spe
 | **PRSL-AI Intelligence Infrastructure** | Shared platform foundation for governed capabilities, contracts, integrations, and execution infrastructure | [Infrastructure architecture](./PRSL-AI-INTELLIGENCE-INFRASTRUCTURE.md) |
 
 - [iRiel AppWeb — PRSL-AI Platform Integration Contract](./IRIEL-APPWEB-INTEGRATION.md) — canonical responsibility boundary, request flow, provider-connection separation, capability-contract alignment, and cross-repository change control.
+- [iRiel System Integration Contract](./IRIEL-SYSTEM-INTEGRATION-CONTRACT.md) — system adapter boundary, Agent PRSL-AI invocation, operating-system authority, privacy, storage independence, and continuity.
 
 ## Platform and repository governance
 
