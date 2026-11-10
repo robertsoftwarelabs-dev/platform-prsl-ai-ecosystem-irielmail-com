@@ -22,7 +22,7 @@ This directory contains the canonical architecture definitions and technical spe
 - [iRiel AppWeb — PRSL-AI Platform Integration Contract](./IRIEL-APPWEB-INTEGRATION.md) — **platform-owned cross-repository contract** defining the responsibility split, request flow, shared capability alignment, and change control.
 
 - [PRSL-AI Intelligence Router Contract](./PRSL-AI-INTELLIGENCE-ROUTER-CONTRACT.md) — candidate eligibility, policy boundaries, provider-agnostic selection, local-first routing, scoring, fallback, load balancing, and result validation.
-- [iRiel Intelligence Server Contract](./IRIEL-INTELLIGENCE-SERVER-CONTRACT.md) — authenticated API/MCP service boundary, client authorization, Router delegation, trusted execution, multi-client continuity, and deployment independence.
+- [iRiel Intelligence Server Contract](https://github.com/iRiel-AI-Environment/https-iriel-ai-by-robert-software-labs.lovable.app/blob/main/docs/architecture/IRIEL-INTELLIGENCE-SERVER-CONTRACT.md) — authenticated API/MCP service boundary, client authorization, Router delegation, trusted execution, multi-client continuity, and deployment independence.
 
 ## Platform and repository governance
 
