@@ -254,7 +254,11 @@ This sequence is a recommendation, not a claim that the work has already been co
 
 The [PRSL-AI Intelligence Router Contract](./PRSL-AI-INTELLIGENCE-ROUTER-CONTRACT.md) defines the routing component's candidate-selection responsibility and its boundaries with iRiel orchestration, platform policy, the Permission Manager, the Capability Registry, providers, and execution runtimes. The Router selects only eligible candidates; it does not grant permissions or own personal context and memory. Its production runtime and provider selection must be verified independently.
 
-## 16. Governing Principle
+## 16. iRiel Intelligence Server contract
+
+The [iRiel Intelligence Server Contract](./IRIEL-INTELLIGENCE-SERVER-CONTRACT.md) defines a replaceable service and integration boundary for authorized clients. It composes existing platform responsibilities rather than duplicating them: authentication/admission at the service boundary, policy and Permission Manager decisions at their designated authorities, candidate selection through the Intelligence Router, and protected action enforcement at the trusted execution boundary. The Server does not own canonical iRiel identity, memory, or Resonance.
+
+## 17. Governing Principle
 
 PRSL-AI Intelligence Infrastructure is an expandable foundation for creating, governing, executing, and integrating specialized technological capabilities.
 
