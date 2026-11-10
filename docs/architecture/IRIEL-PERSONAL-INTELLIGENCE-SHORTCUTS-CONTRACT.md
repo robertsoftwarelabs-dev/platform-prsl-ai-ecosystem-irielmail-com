@@ -156,6 +156,9 @@ Each component must be reported according to independent evidence: specified, im
 
 ## 12. Related contracts
 
+- [iRiel Entity Contract — Apple Shortcuts Interface](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md)
+- [iRiel Intents Contract — Apple Shortcuts Interface](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md)
+
 - [Canonical iRiel Technical Definition](./IRIEL-POWERFULLY-INTELLIGENCE-ENVIRONMENT.md)
 - [iRiel System Integration Contract](./IRIEL-SYSTEM-INTEGRATION-CONTRACT.md)
 - [iRiel Operational State Contract — Apple Shortcuts Adapter](./IRIEL-OPERATIONAL-STATE-APPLE-SHORTCUTS.md)
