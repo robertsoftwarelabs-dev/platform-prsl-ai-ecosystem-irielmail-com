@@ -250,7 +250,11 @@ This sequence is a recommendation, not a claim that the work has already been co
 - Do not initiate Cloudflare deployment or configuration.
 - Report completed, partially completed, planned, and blocked work separately.
 
-## 15. Governing Principle
+## 15. Intelligence Router contract
+
+The [PRSL-AI Intelligence Router Contract](./PRSL-AI-INTELLIGENCE-ROUTER-CONTRACT.md) defines the routing component's candidate-selection responsibility and its boundaries with iRiel orchestration, platform policy, the Permission Manager, the Capability Registry, providers, and execution runtimes. The Router selects only eligible candidates; it does not grant permissions or own personal context and memory. Its production runtime and provider selection must be verified independently.
+
+## 16. Governing Principle
 
 PRSL-AI Intelligence Infrastructure is an expandable foundation for creating, governing, executing, and integrating specialized technological capabilities.
 
