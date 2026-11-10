@@ -314,7 +314,7 @@ The current Agent console and each system integration must be described accordin
 9. Temporary context and persistent memory remain separate.
 10. Accessibility, inclusion, security, and user control are structural requirements.
 
-## 19. Canonical statement
+## 20. Canonical statement
 
 **Robert Software Labs creates and governs the ecosystem. PRSL-AI provides shared platform architecture and governed capabilities. Agent PRSL-AI provides specialized platform intelligence. iRiel orchestrates the PowerFully Intelligence Environment. The operating system provides authorized execution resources. The human remains in control.**
 
