@@ -154,7 +154,7 @@ Every status report must distinguish:
 - **Deployed:** a deployment record proves the target environment contains the implementation.
 - **Verified:** evidence supports the exact operational claim being made.
 
-## 9. Change ownership and release rules
+## 10. Change ownership and release rules
 
 - Shared platform contracts, schemas, permission identifiers, registry rules, platform policies, and reusable runtime services are changed in the PRSL-AI platform repository.
 - AppWeb routes, interaction design, client state, provider connection UX, and client-specific adapters are changed in the iRiel AppWeb repository.
@@ -164,7 +164,7 @@ Every status report must distinguish:
 - Do not change production DNS, nameservers, mail records, Cloudflare settings, or deploy infrastructure as part of documentation integration.
 - Lovable-connected published history must be preserved; use branches and pull requests rather than force-push or history rewriting.
 
-## 10. Source of truth
+## 11. Source of truth
 
 | Artifact | Source of truth |
 |---|---|
@@ -175,7 +175,7 @@ Every status report must distinguish:
 | Agent PRSL-AI identity and specialist implementation | PRSL-AI platform repository |
 | Platform policies, shared schemas, execution contracts and infrastructure | PRSL-AI platform repository |
 
-## 11. Acceptance criteria for future integration changes
+## 12. Acceptance criteria for future integration changes
 
 A cross-repository integration change is ready to merge only when:
 
