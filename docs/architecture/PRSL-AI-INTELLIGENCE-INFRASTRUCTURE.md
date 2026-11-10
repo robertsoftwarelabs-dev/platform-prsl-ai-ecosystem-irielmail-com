@@ -262,6 +262,10 @@ The [iRiel Intelligence Server Contract](./IRIEL-INTELLIGENCE-SERVER-CONTRACT.md
 
 The Apple integration contract family defines separate, composable boundaries for the canonical iRiel entity, intent representation, temporary context projection, automation definitions, Personal Intelligence interface, operational state, and Siri interaction. These specifications preserve iRiel authority while treating Apple Shortcuts and iCloud Drive as replaceable/optional adapters. See the [Entity](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md), [Intents](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md), [Context](./IRIEL-CONTEXT-SHORTCUTS-CONTRACT.md), [Automations](./IRIEL-AUTOMATIONS-SHORTCUTS-CONTRACT.md), [Personal Intelligence](./IRIEL-PERSONAL-INTELLIGENCE-SHORTCUTS-CONTRACT.md), and [Operational State](./IRIEL-OPERATIONAL-STATE-APPLE-SHORTCUTS.md) contracts.
 
+### Apple platform service and action contracts
+
+The [iRiel Apple Services Contract](./IRIEL-APPLE-SERVICES-CONTRACT.md) defines Apple as an external, replaceable platform boundary. The [iRiel Actions Contract](./IRIEL-ACTIONS-SHORTCUTS-CONTRACT.md) defines bounded executable operations independently from intents and automation workflows. Neither contract transfers iRiel identity, context, memory, or authorization authority to Apple services or Shortcuts.
+
 ## 18. Governing Principle
 
 PRSL-AI Intelligence Infrastructure is an expandable foundation for creating, governing, executing, and integrating specialized technological capabilities.
