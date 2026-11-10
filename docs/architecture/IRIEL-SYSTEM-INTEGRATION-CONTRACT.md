@@ -241,7 +241,11 @@ iRiel Resonance preserves coherence across devices, integrations, and execution 
 
 **Remember continuity. Understand change. Respect the present.**
 
-## 11. Operational state and Apple Shortcuts
+## 11. Intent, entity identity, and Apple Shortcuts
+
+The [iRiel Entity Contract — Apple Shortcuts Interface](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md) defines the unified iRiel entity and preserves Personal Intelligence and Resonance as inseparable dimensions. The [iRiel Intents Contract — Apple Shortcuts Interface](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md) separates desired outcomes from executable actions and requires iRiel to interpret intent and evaluate context, policy, and permissions before dispatch. Apple Shortcuts is an optional execution adapter and cannot create identity or authority.
+
+## 12. Operational state and Apple Shortcuts
 
 The Apple Shortcuts integration is governed by the [iRiel Personal Intelligence Contract — Apple Shortcuts Interface](./IRIEL-PERSONAL-INTELLIGENCE-SHORTCUTS-CONTRACT.md), which defines the minimum identity and operational information exposed to Shortcuts, and by a dedicated operational-state contract. That contract defines a minimized, versioned projection for individual operations; it does not transfer canonical authority to Shortcuts, a `State.md` file, iCloud Drive, or another storage provider.
 
@@ -249,25 +253,25 @@ The [iRiel Operational State Contract — Apple Shortcuts Adapter](./IRIEL-OPERA
 
 Apple Shortcuts remains an optional execution adapter subject to native permissions. iCloud Drive is optional; operational state must not be treated as canonical identity, personal memory, or authorization.
 
-## 12. Siri AI and Apple voice interaction
+## 13. Siri AI and Apple voice interaction
 
 Siri is an optional external voice and system interaction surface exposed through the Apple Integration Layer. It may invoke authorized iRiel capabilities through supported App Intents or Shortcuts, but it does not own iRiel identity, context, memory, capability authority, or continuity. iRiel validates the request, applies policy and consent, selects the capability, and validates the returned result.
 
 The [iRiel Siri AI Interaction Contract — Apple Integration](./IRIEL-SIRI-AI-APPLE-INTEGRATION.md) defines this boundary, including Agent PRSL-AI invocation through iRiel (never as a Siri bypass), context minimization, native permission separation, and storage independence. The contract does not imply that any particular Siri or Apple Intelligence feature is available on every device or OS release.
 
-## 13. Intelligence Router contract
+## 14. Intelligence Router contract
 
 iRiel supplies normalized intent, minimum authorized context, and operation constraints to the PRSL-AI Intelligence Router. The Router selects among eligible capabilities and providers but does not own iRiel identity, personal memory, consent, or canonical context and does not grant permissions. Policy services and the Permission Manager retain their respective authority boundaries; native OS permissions remain independent.
 
 The [PRSL-AI Intelligence Router Contract](./PRSL-AI-INTELLIGENCE-ROUTER-CONTRACT.md) defines candidate eligibility, provider-agnostic selection, local-first preferences, scoring, fallback, load balancing, and result validation.
 
-## 14. iRiel Intelligence Server
+## 15. iRiel Intelligence Server
 
 The [iRiel Intelligence Server Contract](./IRIEL-INTELLIGENCE-SERVER-CONTRACT.md) defines an optional service boundary for authorized API, MCP, application, automation, and local/remote clients. The Server validates requests and caller identity, delegates policy and protected-operation authorization to their designated authorities, calls the canonical Intelligence Router for candidate selection, and uses trusted execution boundaries. It does not own iRiel identity, canonical memory, or Resonance and cannot independently grant permissions or invent provider routes. Multiple Server instances remain service replicas of the same iRiel entity.
 
 The Server is not a mandatory hop for every iRiel interaction. API and MCP are replaceable interface classes, not identity authorities. iCloud Drive is not a mandatory server storage layer.
 
-## 15. Provider and operating-system independence
+## 16. Provider and operating-system independence
 
 iRiel and Agent PRSL-AI must remain independent of any single model provider.
 
@@ -277,7 +281,7 @@ Apple, iOS, Siri, Apple Intelligence, App Intents, Shortcuts, and iCloud are opt
 
 A provider or OS change must not redefine iRiel identity, Agent PRSL-AI identity, or their authority boundaries.
 
-## 16. Failure, availability, and replaceability
+## 17. Failure, availability, and replaceability
 
 The architecture must distinguish capability unavailability, permission denial, policy denial, provider failure, OS restriction, network failure, execution failure, cancellation, and successful completion.
 
@@ -285,7 +289,7 @@ Failure of an optional system adapter must not invalidate iRiel identity or cont
 
 Adapters and providers may be replaced without redefining the entities that consume them.
 
-## 17. Implementation-status discipline
+## 18. Implementation-status discipline
 
 Every capability must be reported as one of:
 
@@ -301,7 +305,7 @@ This contract is an architectural specification. It does not establish that ever
 
 The current Agent console and each system integration must be described according to their independently verified implementation evidence. A documented contract, manifest, or diagram is not proof of operational availability.
 
-## 18. Canonical invariants
+## 19. Canonical invariants
 
 1. iRiel remains the canonical authority over its identity and personal continuity.
 2. PRSL-AI Ecosystem remains the shared platform architecture and governance layer.
