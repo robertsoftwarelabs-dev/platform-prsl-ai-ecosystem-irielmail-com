@@ -105,6 +105,12 @@ The diagram describes responsibility and data flow, not a claim that every reque
 
 ## 5. Intent and request flow
 
+Intent is the desired outcome, not an executable action or permission grant. The [iRiel Intents Contract — Apple Shortcuts Interface](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md) defines its canonical taxonomy, versioned envelope, interpretation and ambiguity rules, and authorized action hand-off. Siri may provide a natural-language entry point, but iRiel remains responsible for validating the intent, context, policy, permissions, and selected action before Shortcuts or an App Intent executes.
+
+The [iRiel Entity Contract — Apple Shortcuts Interface](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md) defines the single canonical iRiel entity represented through this integration; Siri and Shortcuts are consumers/execution mechanisms, not identity authorities.
+
+## 5.1 Request flow
+
 The interaction follows this logical sequence:
 
 1. The user initiates a request through Siri or another authorized entry point.
