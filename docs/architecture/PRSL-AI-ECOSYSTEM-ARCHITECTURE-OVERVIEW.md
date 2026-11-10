@@ -104,7 +104,13 @@ iApps is the modular application family associated with the ecosystem. Applicati
 
 Automation is an execution concern governed by capability contracts, policy, permissions, and the trusted execution boundary. The current canonical evidence does not establish a separate, fully operational ecosystem-wide Automation Engine. Do not present Apple Shortcuts, App Intents, scheduled tasks, or other automation targets as universally available services without implementation evidence.
 
-## 6. Provider and integration model
+## 6. iRiel Intelligence Server and service interfaces
+
+The iRiel Intelligence Server is an optional integration and execution boundary for authorized API, MCP, application, automation, and local/remote clients. It validates caller and request envelopes, delegates policy and authorization to their designated authorities, invokes the canonical Intelligence Router for route selection, and dispatches only through trusted execution boundaries. It is not iRiel identity, memory, or Resonance, and multiple server instances do not create multiple iRiel entities. See the [iRiel Intelligence Server Contract](./IRIEL-INTELLIGENCE-SERVER-CONTRACT.md).
+
+The Server is a replaceable service interface, not a mandatory intermediary for every iRiel interaction. API and MCP exposure do not imply that a production endpoint is implemented or deployed.
+
+## 7. Provider and integration model
 
 Providers are replaceable sources of inference. Supported categories may include platform-hosted local models, on-device models, Apple-provided intelligence surfaces, and optional external providers such as OpenAI, Anthropic, Google, and Qwen.
 
