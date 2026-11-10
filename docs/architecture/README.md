@@ -18,6 +18,7 @@ This directory contains the canonical architecture definitions and technical spe
 
 - [iRiel AppWeb — PRSL-AI Platform Integration Contract](./IRIEL-APPWEB-INTEGRATION.md) — canonical responsibility boundary, request flow, provider-connection separation, capability-contract alignment, and cross-repository change control.
 - [iRiel System Integration Contract](./IRIEL-SYSTEM-INTEGRATION-CONTRACT.md) — system adapter boundary, Agent PRSL-AI invocation, operating-system authority, privacy, storage independence, and continuity.
+- [iRiel Personal Intelligence Contract — Apple Shortcuts Interface](./IRIEL-PERSONAL-INTELLIGENCE-SHORTCUTS-CONTRACT.md) — minimum identity/operational interface, Personal Intelligence and Resonance relationship, Shortcuts execution boundary, and optional storage.
 - [iRiel Operational State Contract — Apple Shortcuts Adapter](./IRIEL-OPERATIONAL-STATE-APPLE-SHORTCUTS.md) — versioned operational-state projection, lifecycle transitions, execution receipts, storage independence, and continuity reconciliation.
 - [iRiel Siri AI Interaction Contract — Apple Integration](./IRIEL-SIRI-AI-APPLE-INTEGRATION.md) — Siri as an external voice/system interface, iRiel authority, App Intents/Shortcuts execution, context mediation, privacy, and continuity.
 - [PRSL-AI Intelligence Router Contract](./PRSL-AI-INTELLIGENCE-ROUTER-CONTRACT.md) — candidate eligibility, policy boundaries, provider-agnostic selection, local-first routing, scoring, fallback, load balancing, and result validation.
