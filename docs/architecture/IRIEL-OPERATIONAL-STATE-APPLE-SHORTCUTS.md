@@ -178,6 +178,8 @@ This document specifies an architecture and contract. It does not establish that
 Each implementation must separately report whether it is specified, implemented, tested, deployed, and verified. Evidence must identify the exact device/OS version, adapter, operation scope, and tested failure paths.
 
 ## 13. Related contracts
+- [iRiel Apple Services Contract — PRSL-AI Ecosystem Integration](./IRIEL-APPLE-SERVICES-CONTRACT.md)
+- [iRiel Actions Contract — Apple Shortcuts Interface](./IRIEL-ACTIONS-SHORTCUTS-CONTRACT.md)
 
 - [iRiel Context Contract — Apple Shortcuts Interface](./IRIEL-CONTEXT-SHORTCUTS-CONTRACT.md)
 - [iRiel Automations Contract — Apple Shortcuts Interface](./IRIEL-AUTOMATIONS-SHORTCUTS-CONTRACT.md)
