@@ -96,11 +96,11 @@ The operation's hard requirements are gates, not preferences. A candidate that f
 
 A weighted score may rank candidates only after mandatory eligibility checks pass.
 
-Illustrative configurable model:
+Proposed baseline score, subject to policy configuration and versioning:
 
-Score(candidate) = (PrivacyFit × Wp) + (CapabilityMatch × Wc) + (ContextMatch × Wx) + (LatencyFit × Wl) + (CostFit × Wk) + (Reliability × Wr)
+Score(candidate) = (PrivacyFit × 3) + (CapabilityMatch × 3) + (ContextMatch × 2) + (LatencyFit × 2) + (CostFit × 1)
 
-Each normalized factor uses a documented scale, such as 0–1 or 0–100. Each weight is configured and versioned by routing policy. The weights in any implementation are not universal constants and must not be hard-coded as architectural truth.
+The values 3, 3, 2, 2, and 1 preserve the initial weighting proposal for privacy, capability match, context match, latency, and cost respectively. Each factor must use a documented, normalized scale with a consistent direction (a higher value always means a better fit). The weights and normalization rules must be configurable and versioned by routing policy; they are not immutable architectural constants. Reliability, availability, and compatibility are mandatory eligibility gates and may be used as tie-breakers or additional policy-defined ranking factors where justified.
 
 A candidate with a mandatory policy, authorization, data-residency, privacy, capability, or compatibility failure must be rejected before scoring. No latency or cost advantage may compensate for a failed privacy or authorization gate.
 
