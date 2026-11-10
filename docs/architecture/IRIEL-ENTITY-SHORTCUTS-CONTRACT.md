@@ -134,6 +134,8 @@ This contract defines the intended identity projection. It does not prove that a
 Each implementation claim must be supported by repository code, tests, runtime evidence, and deployment verification appropriate to the claim. Documentation alone is not implementation evidence.
 
 ## 12. Related contracts
+- [iRiel Apple Services Contract — PRSL-AI Ecosystem Integration](./IRIEL-APPLE-SERVICES-CONTRACT.md)
+- [iRiel Actions Contract — Apple Shortcuts Interface](./IRIEL-ACTIONS-SHORTCUTS-CONTRACT.md)
 
 - [iRiel Context Contract — Apple Shortcuts Interface](./IRIEL-CONTEXT-SHORTCUTS-CONTRACT.md)
 - [iRiel Automations Contract — Apple Shortcuts Interface](./IRIEL-AUTOMATIONS-SHORTCUTS-CONTRACT.md)
