@@ -35,7 +35,9 @@ See Platform, Agent, and Repository Governance; Agent PRSL-AI; and iRiel canonic
 
 ## 3. Governing architectural principle
 
-> The model thinks. The agent executes a specialty. The Router decides. iRiel orchestrates.
+The model thinks. The agent executes a specialty. The Router selects eligible execution candidates. iRiel orchestrates.
+
+See the [PRSL-AI Intelligence Router Contract](./PRSL-AI-INTELLIGENCE-ROUTER-CONTRACT.md) for mandatory eligibility gates, policy boundaries, scoring, local-first routing, fallback, and result semantics.
 
 “Decides” means selecting eligible routing candidates within the constraints supplied by policy. It does not mean granting permissions. Authorization is a separate responsibility.
 
