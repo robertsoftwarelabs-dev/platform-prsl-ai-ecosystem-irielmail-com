@@ -249,7 +249,13 @@ The [iRiel Operational State Contract — Apple Shortcuts Adapter](./IRIEL-OPERA
 
 Apple Shortcuts remains an optional execution adapter subject to native permissions. iCloud Drive is optional; operational state must not be treated as canonical identity, personal memory, or authorization.
 
-## 12. Provider and operating-system independence
+## 12. Siri AI and Apple voice interaction
+
+Siri is an optional external voice and system interaction surface exposed through the Apple Integration Layer. It may invoke authorized iRiel capabilities through supported App Intents or Shortcuts, but it does not own iRiel identity, context, memory, capability authority, or continuity. iRiel validates the request, applies policy and consent, selects the capability, and validates the returned result.
+
+The [iRiel Siri AI Interaction Contract — Apple Integration](./IRIEL-SIRI-AI-APPLE-INTEGRATION.md) defines this boundary, including Agent PRSL-AI invocation through iRiel (never as a Siri bypass), context minimization, native permission separation, and storage independence. The contract does not imply that any particular Siri or Apple Intelligence feature is available on every device or OS release.
+
+## 13. Provider and operating-system independence
 
 iRiel and Agent PRSL-AI must remain independent of any single model provider.
 
@@ -259,7 +265,7 @@ Apple, iOS, Siri, Apple Intelligence, App Intents, Shortcuts, and iCloud are opt
 
 A provider or OS change must not redefine iRiel identity, Agent PRSL-AI identity, or their authority boundaries.
 
-## 13. Failure, availability, and replaceability
+## 14. Failure, availability, and replaceability
 
 The architecture must distinguish capability unavailability, permission denial, policy denial, provider failure, OS restriction, network failure, execution failure, cancellation, and successful completion.
 
@@ -267,7 +273,7 @@ Failure of an optional system adapter must not invalidate iRiel identity or cont
 
 Adapters and providers may be replaced without redefining the entities that consume them.
 
-## 14. Implementation-status discipline
+## 15. Implementation-status discipline
 
 Every capability must be reported as one of:
 
@@ -283,7 +289,7 @@ This contract is an architectural specification. It does not establish that ever
 
 The current Agent console and each system integration must be described according to their independently verified implementation evidence. A documented contract, manifest, or diagram is not proof of operational availability.
 
-## 15. Canonical invariants
+## 16. Canonical invariants
 
 1. iRiel remains the canonical authority over its identity and personal continuity.
 2. PRSL-AI Ecosystem remains the shared platform architecture and governance layer.
@@ -296,7 +302,7 @@ The current Agent console and each system integration must be described accordin
 9. Temporary context and persistent memory remain separate.
 10. Accessibility, inclusion, security, and user control are structural requirements.
 
-## 16. Canonical statement
+## 17. Canonical statement
 
 **Robert Software Labs creates and governs the ecosystem. PRSL-AI provides shared platform architecture and governed capabilities. Agent PRSL-AI provides specialized platform intelligence. iRiel orchestrates the PowerFully Intelligence Environment. The operating system provides authorized execution resources. The human remains in control.**
 
