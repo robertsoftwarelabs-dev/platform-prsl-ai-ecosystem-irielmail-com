@@ -174,6 +174,8 @@ iRiel validates result provenance, operation identity, freshness, status, and ex
 A launch acknowledgement, timeout, missing response, or file write is not proof of successful execution. If the outcome cannot be verified, it must remain unverified or indeterminate. A failed or partial action must never be represented as full success.
 
 ## 13. Related contracts
+- [iRiel Apple Services Contract — PRSL-AI Ecosystem Integration](./IRIEL-APPLE-SERVICES-CONTRACT.md)
+- [iRiel Actions Contract — Apple Shortcuts Interface](./IRIEL-ACTIONS-SHORTCUTS-CONTRACT.md)
 
 - [iRiel Context Contract — Apple Shortcuts Interface](./IRIEL-CONTEXT-SHORTCUTS-CONTRACT.md)
 - [iRiel Automations Contract — Apple Shortcuts Interface](./IRIEL-AUTOMATIONS-SHORTCUTS-CONTRACT.md)
