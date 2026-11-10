@@ -16,7 +16,7 @@
 
 This contract defines the minimized operational state exchanged between iRiel and an Apple Shortcuts adapter. It specifies how an operation is requested, executed, reported, and reconciled without transferring canonical authority to a file, storage provider, or automation runtime.
 
-This contract is an adapter-specific profile of the broader [iRiel System Integration Contract](./IRIEL-SYSTEM-INTEGRATION-CONTRACT.md). It does not define iRiel identity, personal memory, or the complete iRiel state model.
+This contract is an adapter-specific profile of the [iRiel Personal Intelligence Contract — Apple Shortcuts Interface](./IRIEL-PERSONAL-INTELLIGENCE-SHORTCUTS-CONTRACT.md) and the broader [iRiel System Integration Contract](./IRIEL-SYSTEM-INTEGRATION-CONTRACT.md). It does not define iRiel identity, personal memory, or the complete iRiel state model.
 
 ## 2. Canonical authority and component roles
 
