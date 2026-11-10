@@ -156,6 +156,8 @@ This document specifies the context interface. It does not prove that a `Context
 Implementation claims require supporting code, tests, runtime evidence, and deployment verification appropriate to the claim.
 
 ## 12. Related contracts
+- [iRiel Apple Services Contract — PRSL-AI Ecosystem Integration](./IRIEL-APPLE-SERVICES-CONTRACT.md)
+- [iRiel Actions Contract — Apple Shortcuts Interface](./IRIEL-ACTIONS-SHORTCUTS-CONTRACT.md)
 
 - [iRiel Entity Contract — Apple Shortcuts Interface](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md)
 - [iRiel Intents Contract — Apple Shortcuts Interface](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md)
