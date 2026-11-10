@@ -151,7 +151,7 @@ The capability definition and its authorization contract remain independent of t
 
 Where an action has side effects, the implementation must apply the relevant authorization, confirmation, idempotency, and execution-result rules. A voice invocation must not silently weaken confirmation requirements that would apply to the same action in another interface.
 
-The [iRiel Operational State Contract — Apple Shortcuts Adapter](./IRIEL-OPERATIONAL-STATE-APPLE-SHORTCUTS.md) governs operational state when the Shortcuts adapter uses a state projection or hand-off record. Its versioning, expiry, stale-result, and failure rules remain applicable. App Intents implementations must preserve equivalent operation identity, authorization, and result-validation guarantees.
+The [iRiel Personal Intelligence Contract — Apple Shortcuts Interface](./IRIEL-PERSONAL-INTELLIGENCE-SHORTCUTS-CONTRACT.md) defines the minimum identity/operational interface and the inseparable relationship between Personal Intelligence and Resonance. The [iRiel Operational State Contract — Apple Shortcuts Adapter](./IRIEL-OPERATIONAL-STATE-APPLE-SHORTCUTS.md) governs operational state when the Shortcuts adapter uses a state projection or hand-off record. Its versioning, expiry, stale-result, and failure rules remain applicable. App Intents implementations must preserve equivalent operation identity, authorization, and result-validation guarantees.
 
 ## 7. Context and data mediation
 
