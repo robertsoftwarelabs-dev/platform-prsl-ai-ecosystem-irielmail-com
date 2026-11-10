@@ -138,7 +138,11 @@ Any future AppWeb connection to the iRiel Intelligence Server must use its versi
 
 The Server contract is a specification, not evidence of an implemented endpoint or deployed service.
 
-## 9. Implementation status and verification
+## 9. Intent, context, and automation contracts
+
+The [iRiel Intents Contract](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md) defines the user's or iRiel's desired outcome before an action is selected. The [iRiel Context Contract](./IRIEL-CONTEXT-SHORTCUTS-CONTRACT.md) defines the minimum, fresh, operation-scoped context projection that may be disclosed to an adapter. The [iRiel Automations Contract](./IRIEL-AUTOMATIONS-SHORTCUTS-CONTRACT.md) defines how authorized triggers and repeatable action sequences are validated, executed, and reported. These contracts do not transfer intent, context, identity, or authorization authority to the AppWeb client or Apple Shortcuts.
+
+## 10. Implementation status and verification
 
 The platform repository contains capability and Permission Manager specifications plus implementation slices and automated validation. The presence of a specification, validator, test fixture, or in-memory adapter contract does not prove a production authorization service, trusted persistent decision store, native permission adapter, deployed API, or live capability runtime.
 
