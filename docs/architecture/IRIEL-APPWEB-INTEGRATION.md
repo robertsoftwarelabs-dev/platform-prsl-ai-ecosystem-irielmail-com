@@ -132,7 +132,13 @@ Mandatory boundaries:
 
 The [iRiel System Integration Contract](./IRIEL-SYSTEM-INTEGRATION-CONTRACT.md) defines the complete relationship between iRiel, PRSL-AI, Agent PRSL-AI, and operating-system integration surfaces.
 
-## 8. Implementation status and verification
+## 8. Intelligence Server integration boundary
+
+Any future AppWeb connection to the iRiel Intelligence Server must use its versioned API or MCP interface contract, preserve client authentication and scoped authorization, and pass requests through iRiel orchestration, PRSL-AI policy, the canonical Intelligence Router, and trusted execution enforcement. The AppWeb client must not call providers or protected tools around those boundaries. See the [iRiel Intelligence Server Contract](./IRIEL-INTELLIGENCE-SERVER-CONTRACT.md).
+
+The Server contract is a specification, not evidence of an implemented endpoint or deployed service.
+
+## 9. Implementation status and verification
 
 The platform repository contains capability and Permission Manager specifications plus implementation slices and automated validation. The presence of a specification, validator, test fixture, or in-memory adapter contract does not prove a production authorization service, trusted persistent decision store, native permission adapter, deployed API, or live capability runtime.
 
