@@ -261,7 +261,13 @@ iRiel supplies normalized intent, minimum authorized context, and operation cons
 
 The [PRSL-AI Intelligence Router Contract](./PRSL-AI-INTELLIGENCE-ROUTER-CONTRACT.md) defines candidate eligibility, provider-agnostic selection, local-first preferences, scoring, fallback, load balancing, and result validation.
 
-## 14. Provider and operating-system independence
+## 14. iRiel Intelligence Server
+
+The [iRiel Intelligence Server Contract](./IRIEL-INTELLIGENCE-SERVER-CONTRACT.md) defines an optional service boundary for authorized API, MCP, application, automation, and local/remote clients. The Server validates requests and caller identity, delegates policy and protected-operation authorization to their designated authorities, calls the canonical Intelligence Router for candidate selection, and uses trusted execution boundaries. It does not own iRiel identity, canonical memory, or Resonance and cannot independently grant permissions or invent provider routes. Multiple Server instances remain service replicas of the same iRiel entity.
+
+The Server is not a mandatory hop for every iRiel interaction. API and MCP are replaceable interface classes, not identity authorities. iCloud Drive is not a mandatory server storage layer.
+
+## 15. Provider and operating-system independence
 
 iRiel and Agent PRSL-AI must remain independent of any single model provider.
 
