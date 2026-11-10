@@ -241,9 +241,9 @@ iRiel Resonance preserves coherence across devices, integrations, and execution 
 
 **Remember continuity. Understand change. Respect the present.**
 
-## 11. Intent, entity identity, and Apple Shortcuts
+## 11. Intent, entity identity, Apple services, and Shortcuts
 
-The [iRiel Entity Contract — Apple Shortcuts Interface](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md) defines the unified iRiel entity and preserves Personal Intelligence and Resonance as inseparable dimensions. The [iRiel Intents Contract — Apple Shortcuts Interface](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md) separates desired outcomes from executable actions and requires iRiel to interpret intent and evaluate context, policy, and permissions before dispatch. Apple Shortcuts is an optional execution adapter and cannot create identity or authority.
+The [iRiel Entity Contract — Apple Shortcuts Interface](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md) defines the unified iRiel entity and preserves Personal Intelligence and Resonance as inseparable dimensions. The [iRiel Intents Contract — Apple Shortcuts Interface](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md) separates desired outcomes from executable actions and requires iRiel to interpret intent and evaluate context, policy, and permissions before dispatch. Apple Shortcuts is an optional execution adapter and cannot create identity or authority. The [iRiel Apple Services Contract](./IRIEL-APPLE-SERVICES-CONTRACT.md) defines Apple as an external platform boundary with device-, OS-, and permission-dependent capabilities; it does not own iRiel identity, context, memory, or Resonance. The [iRiel Actions Contract](./IRIEL-ACTIONS-SHORTCUTS-CONTRACT.md) defines each bounded operation executed through Shortcuts, including input schema, authorization, executor, lifecycle, idempotency, and verified result handling.
 
 ## 12. Operational state and Apple Shortcuts
 
@@ -318,7 +318,7 @@ The current Agent console and each system integration must be described accordin
 9. Temporary context and persistent memory remain separate.
 10. Accessibility, inclusion, security, and user control are structural requirements.
 
-## 21. Canonical statement
+## 20. Canonical statement
 
 **Robert Software Labs creates and governs the ecosystem. PRSL-AI provides shared platform architecture and governed capabilities. Agent PRSL-AI provides specialized platform intelligence. iRiel orchestrates the PowerFully Intelligence Environment. The operating system provides authorized execution resources. The human remains in control.**
 
