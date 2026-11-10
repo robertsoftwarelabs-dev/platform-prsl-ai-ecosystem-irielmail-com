@@ -109,7 +109,7 @@ Intent is the desired outcome, not an executable action or permission grant. The
 
 The [iRiel Entity Contract — Apple Shortcuts Interface](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md) defines the single canonical iRiel entity represented through this integration; Siri and Shortcuts are consumers/execution mechanisms, not identity authorities.
 
-## 5.1 Request flow
+### 5.1 Request flow
 
 The interaction follows this logical sequence:
 
