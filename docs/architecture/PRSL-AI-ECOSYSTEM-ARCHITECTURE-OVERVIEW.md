@@ -82,6 +82,8 @@ Agent PRSL-AI is the specialized institutional agent for explaining, diagnosing,
 
 The current platform console is documented as a browser-local knowledge base using keyword matching. The capability manifests are specified examples, not evidence of operational specialist runtimes.
 
+Agent PRSL-AI may be invoked by iRiel through a declared specialist capability when a task concerns PRSL-AI platform knowledge or authorized platform support. It is not an operating-system adapter, does not own iRiel identity, and receives no default access to iRiel personal context or memory. The [iRiel System Integration Contract](./IRIEL-SYSTEM-INTEGRATION-CONTRACT.md) defines this boundary.
+
 ### 5.4 iRiel AI
 
 iRiel AI is a **PowerFully Intelligence Environment**. It is the human-centered environment and orchestration layer for personal intelligence. It coordinates intent, authorized context, continuity, routing requests, specialist agents, capabilities, providers, and accessible outcome presentation.
@@ -179,6 +181,7 @@ Statuses must be updated only with source, test, configuration, deployment, and 
 - [Agent PRSL-AI — Institutional Identity and Scope](./PRSL-AI-AGENT.md)
 - [iRiel AI — PowerFully Intelligence Environment](./IRIEL-POWERFULLY-INTELLIGENCE-ENVIRONMENT.md)
 - [iRiel AppWeb — PRSL-AI Platform Integration Contract](./IRIEL-APPWEB-INTEGRATION.md)
+- [iRiel System Integration Contract](./IRIEL-SYSTEM-INTEGRATION-CONTRACT.md)
 - [Agent PRSL-AI architecture and capability contracts](./agent-prsl-ai/README.md)
 - [Capability Contract v1.0](./agent-prsl-ai/capability-contract.md)
 - [Capability Registry Specification](./agent-prsl-ai/registry-specification.md)
