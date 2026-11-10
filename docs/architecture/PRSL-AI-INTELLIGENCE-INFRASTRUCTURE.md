@@ -258,7 +258,11 @@ The [PRSL-AI Intelligence Router Contract](./PRSL-AI-INTELLIGENCE-ROUTER-CONTRAC
 
 The [iRiel Intelligence Server Contract](./IRIEL-INTELLIGENCE-SERVER-CONTRACT.md) defines a replaceable service and integration boundary for authorized clients. It composes existing platform responsibilities rather than duplicating them: authentication/admission at the service boundary, policy and Permission Manager decisions at their designated authorities, candidate selection through the Intelligence Router, and protected action enforcement at the trusted execution boundary. The Server does not own canonical iRiel identity, memory, or Resonance.
 
-## 17. Governing Principle
+## 17. Apple Shortcuts integration contract family
+
+The Apple integration contract family defines separate, composable boundaries for the canonical iRiel entity, intent representation, temporary context projection, automation definitions, Personal Intelligence interface, operational state, and Siri interaction. These specifications preserve iRiel authority while treating Apple Shortcuts and iCloud Drive as replaceable/optional adapters. See the [Entity](./IRIEL-ENTITY-SHORTCUTS-CONTRACT.md), [Intents](./IRIEL-INTENTS-SHORTCUTS-CONTRACT.md), [Context](./IRIEL-CONTEXT-SHORTCUTS-CONTRACT.md), [Automations](./IRIEL-AUTOMATIONS-SHORTCUTS-CONTRACT.md), [Personal Intelligence](./IRIEL-PERSONAL-INTELLIGENCE-SHORTCUTS-CONTRACT.md), and [Operational State](./IRIEL-OPERATIONAL-STATE-APPLE-SHORTCUTS.md) contracts.
+
+## 18. Governing Principle
 
 PRSL-AI Intelligence Infrastructure is an expandable foundation for creating, governing, executing, and integrating specialized technological capabilities.
 
