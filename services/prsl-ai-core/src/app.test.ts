@@ -238,6 +238,24 @@ describe("PRSL-AI Core Fetch adapter", () => {
     expect(ports.executeAuthorized).toHaveBeenCalledTimes(1);
   });
 
+  it("enforces the request deadline when a trusted port does not respond", async () => {
+    const request = {
+      ...validRequest,
+      constraints: { ...validRequest.constraints, deadline_ms: 100 }
+    };
+    const ports = makePorts({
+      route: vi.fn(() => new Promise<RoutePlan | null>(() => undefined))
+    });
+    const response = await createCoreApp(ports).request("/v1/execute", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(request)
+    });
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ error: { code: "REQUEST_DEADLINE_EXCEEDED" } });
+    expect(ports.authorize).not.toHaveBeenCalled();
+  });
+
   it("fails closed when the router adapter is unavailable", async () => {
     const ports = makePorts({ route: vi.fn(async () => { throw new Error("unavailable"); }) });
     const response = await createCoreApp(ports).request("/v1/execute", {
