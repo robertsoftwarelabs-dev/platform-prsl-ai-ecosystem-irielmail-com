@@ -15,6 +15,7 @@ This package is the platform-owned Hono Fetch transport adapter. It is not the P
 - Execution is injected through a trusted port that must atomically verify and consume the one-time Permission Manager decision before invoking a runtime.
 - Request bodies are capped at 32 KiB; each request has a bounded deadline (100 ms–120 s) propagated to trusted ports.
 - Locality, provider, and region constraints are enforced by the adapter. A local-only request cannot be routed to a remote execution mode; an allowlist restricts but never grants permission.
+  - `on_device`: on-device only; `local`: on-device or RSL-local; `platform_hosted`: on-device, RSL-local, or platform-hosted; `any`: any policy-eligible mode, including approved remote only after Permission Manager authorization.
 - Remote fallback is always forbidden in the request contract.
 - The adapter does not store prompts, context, memory, credentials, or conversation history and does not log request bodies.
 
