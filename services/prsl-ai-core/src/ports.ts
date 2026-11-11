@@ -32,9 +32,9 @@ export type AuthorizedExecutionResult =
 export interface CorePorts {
   /** Must authenticate the calling service from trusted server-side credentials. */
   authenticate(request: Request): Promise<ServicePrincipal | null>;
-  /** Must call the platform policy and Intelligence Router; never trust a client-supplied candidate. */
+  /** Must resolve projection_ref server-side and call platform policy/Router; never trust client-supplied candidates or classification as authority. */
   route(request: CoreExecutionRequest, principal: ServicePrincipal): Promise<RoutePlan | null>;
-  /** Must call the platform Permission Manager; it is the only authority for protected operations. */
+  /** Must re-resolve the context projection and call the platform Permission Manager; client purpose/classification are hints, never proof of consent. */
   authorize(
     request: CoreExecutionRequest,
     plan: RoutePlan,
