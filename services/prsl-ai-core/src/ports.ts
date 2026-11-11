@@ -43,7 +43,8 @@ export interface CorePorts {
   ): Promise<AuthorizationDecision>;
   /**
    * Must atomically verify and consume the one-time Permission Manager decision
-   * at the trusted execution boundary before invoking the selected runtime.
+   * at the trusted execution boundary, enforce the request deadline, validate output
+   * against the registered capability schema, and only then return the result.
    */
   executeAuthorized(
     request: CoreExecutionRequest,
