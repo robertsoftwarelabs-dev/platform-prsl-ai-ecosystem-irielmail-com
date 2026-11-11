@@ -116,6 +116,66 @@ describe("PRSL-AI Core Fetch adapter", () => {
     expect(ports.executeAuthorized).not.toHaveBeenCalled();
   });
 
+  it("enforces provider allowlists without treating them as authorization", async () => {
+    const request = {
+      ...validRequest,
+      constraints: { ...validRequest.constraints, required_locality: "any", provider_allowlist: ["approved-provider"] }
+    };
+    const remotePlan: RoutePlan = {
+      ...localPlan,
+      execution_mode: "approved_remote",
+      provider_id: "unapproved-provider"
+    };
+    const ports = makePorts({ route: vi.fn(async () => remotePlan) });
+    const response = await createCoreApp(ports).request("/v1/execute", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(request)
+    });
+    expect(response.status).toBe(403);
+    expect(await response.json()).toMatchObject({ error: { code: "PROVIDER_CONSTRAINT_VIOLATION" } });
+    expect(ports.authorize).not.toHaveBeenCalled();
+    expect(ports.executeAuthorized).not.toHaveBeenCalled();
+  });
+
+  it("does not execute remote routes without Permission Manager approval", async () => {
+    const request = {
+      ...validRequest,
+      constraints: { ...validRequest.constraints, required_locality: "any" }
+    };
+    const remotePlan: RoutePlan = {
+      ...localPlan,
+      execution_mode: "approved_remote",
+      provider_id: "approved-provider"
+    };
+    const ports = makePorts({
+      route: vi.fn(async () => remotePlan),
+      authorize: vi.fn(async () => ({ status: "denied" as const, reason_code: "REMOTE_DISCLOSURE_NOT_AUTHORIZED" }))
+    });
+    const response = await createCoreApp(ports).request("/v1/execute", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(request)
+    });
+    expect(response.status).toBe(403);
+    expect(await response.json()).toMatchObject({ error: { code: "PERMISSION_DENIED" } });
+    expect(ports.executeAuthorized).not.toHaveBeenCalled();
+  });
+
+  it("rejects an invalid Permission Manager decision reference", async () => {
+    const ports = makePorts({
+      authorize: vi.fn(async () => ({ status: "granted" as const, decision_id: "not-a-uuid" }))
+    });
+    const response = await createCoreApp(ports).request("/v1/execute", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(validRequest)
+    });
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ error: { code: "PERMISSION_DECISION_INVALID" } });
+    expect(ports.executeAuthorized).not.toHaveBeenCalled();
+  });
+
   it("does not execute when the Permission Manager denies", async () => {
     const ports = makePorts({
       authorize: vi.fn(async () => ({ status: "denied" as const, reason_code: "CONSENT_REQUIRED" }))
