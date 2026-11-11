@@ -13,7 +13,8 @@ This package is the platform-owned Hono Fetch transport adapter. It is not the P
 - Routing is injected through the platform Intelligence Router port; this package contains no private model/provider router.
 - Protected-operation authorization is injected through the platform Permission Manager port.
 - Execution is injected through a trusted port that must atomically verify and consume the one-time Permission Manager decision before invoking a runtime.
-- Locality constraints are enforced by the adapter. A local-only request cannot be routed to a remote execution mode.
+- Request bodies are capped at 32 KiB; each request has a bounded deadline (100 ms–120 s) propagated to trusted ports.
+- Locality, provider, and region constraints are enforced by the adapter. A local-only request cannot be routed to a remote execution mode; an allowlist restricts but never grants permission.
 - Remote fallback is always forbidden in the request contract.
 - The adapter does not store prompts, context, memory, credentials, or conversation history and does not log request bodies.
 
