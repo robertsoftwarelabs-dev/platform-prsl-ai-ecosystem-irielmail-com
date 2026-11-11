@@ -1,10 +1,18 @@
 import { Hono } from "hono";
 import { bodyLimit } from "hono/body-limit";
 import { z } from "zod";
-import { coreExecutionRequestSchema, type CoreExecutionResponse } from "./contracts";
+import { coreExecutionRequestSchema, executionModeSchema, type CoreExecutionResponse } from "./contracts";
 import type { CorePorts, RoutePlan, ServicePrincipal } from "./ports";
 
 const REQUIRED_SCOPE = "prsl.core.execute";
+const routePlanSchema = z.object({
+  capability_id: z.string().min(1).max(128),
+  capability_version: z.string().min(1).max(64),
+  runtime_id: z.string().min(1).max(128),
+  execution_mode: executionModeSchema,
+  provider_id: z.string().min(1).max(128).optional(),
+  region_id: z.string().min(1).max(64).optional()
+}).strict();
 
 function localityAllows(
   required: "on_device" | "local" | "platform_hosted" | "any",
@@ -66,9 +74,10 @@ export function createCoreApp(ports?: CorePorts) {
     const raw = await c.req.json().catch(() => null);
     const parsed = coreExecutionRequestSchema.safeParse(raw);
     const fallbackId =
-      raw && typeof raw === "object" && "request_id" in raw && typeof raw.request_id === "string"
+      raw && typeof raw === "object" && "request_id" in raw &&
+      typeof raw.request_id === "string" && z.string().uuid().safeParse(raw.request_id).success
         ? raw.request_id
-        : "00000000-0000-4000-8000-000000000000";
+        : "invalid-request";
 
     if (!parsed.success) {
       return c.json(errorResponse(fallbackId, "failed", "INVALID_REQUEST"), 400);
@@ -109,6 +118,11 @@ export function createCoreApp(ports?: CorePorts) {
     if (!plan) {
       return c.json(errorResponse(request.request_id, "unavailable", "NO_ELIGIBLE_ROUTE"), 503);
     }
+    const validatedPlan = routePlanSchema.safeParse(plan);
+    if (!validatedPlan.success) {
+      return c.json(errorResponse(request.request_id, "unavailable", "ROUTE_PLAN_INVALID"), 503);
+    }
+    plan = validatedPlan.data;
 
     if (!localityAllows(request.constraints.required_locality, plan.execution_mode)) {
       return c.json(errorResponse(request.request_id, "blocked", "EXECUTION_LOCALITY_VIOLATION"), 403);
