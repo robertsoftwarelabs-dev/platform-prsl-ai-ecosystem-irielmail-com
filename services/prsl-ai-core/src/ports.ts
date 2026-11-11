@@ -13,6 +13,7 @@ export interface RoutePlan {
   runtime_id: string;
   execution_mode: z.infer<typeof executionModeSchema>;
   provider_id?: string;
+  region_id?: string;
 }
 
 export type AuthorizationDecision =
@@ -24,7 +25,6 @@ export type AuthorizedExecutionResult =
   | {
       status: "completed";
       output: unknown;
-      plan: RoutePlan;
     }
   | { status: "unavailable"; reason_code: string }
   | { status: "failed"; reason_code: string };
