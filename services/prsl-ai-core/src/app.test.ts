@@ -67,6 +67,21 @@ describe("PRSL-AI Core Fetch adapter", () => {
     expect(await response.json()).toMatchObject({ error: { code: "CORE_PORTS_UNAVAILABLE" } });
   });
 
+  it("rejects oversized request bodies before authentication", async () => {
+    const ports = makePorts();
+    const oversized = {
+      ...validRequest,
+      context: { ...validRequest.context, projection_ref: "x".repeat(40_000) }
+    };
+    const response = await createCoreApp(ports).request("/v1/execute", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(oversized)
+    });
+    expect(response.status).toBe(413);
+    expect(ports.authenticate).not.toHaveBeenCalled();
+  });
+
   it("rejects malformed requests before routing", async () => {
     const ports = makePorts();
     const response = await createCoreApp(ports).request("/v1/execute", {
