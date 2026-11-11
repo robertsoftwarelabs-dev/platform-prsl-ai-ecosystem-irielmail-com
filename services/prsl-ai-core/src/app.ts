@@ -22,6 +22,15 @@ function localityAllows(
   }
 }
 
+async function runWithDeadline<T>(signal: AbortSignal, task: () => Promise<T>): Promise<T> {
+  if (signal.aborted) throw new Error("REQUEST_DEADLINE_EXCEEDED");
+  return new Promise<T>((resolve, reject) => {
+    const onAbort = () => reject(new Error("REQUEST_DEADLINE_EXCEEDED"));
+    signal.addEventListener("abort", onAbort, { once: true });
+    task().then(resolve, reject).finally(() => signal.removeEventListener("abort", onAbort));
+  });
+}
+
 function errorResponse(
   requestId: string,
   status: CoreExecutionResponse["status"],
@@ -70,11 +79,12 @@ export function createCoreApp(ports?: CorePorts) {
       return c.json(errorResponse(request.request_id, "unavailable", "CORE_PORTS_UNAVAILABLE"), 503);
     }
 
+    const deadline = AbortSignal.timeout(request.constraints.deadline_ms);
     let principal: ServicePrincipal | null;
     try {
-      principal = await ports.authenticate(c.req.raw);
+      principal = await runWithDeadline(deadline, () => ports.authenticate(c.req.raw, deadline));
     } catch {
-      return c.json(errorResponse(request.request_id, "unavailable", "SERVICE_AUTH_UNAVAILABLE"), 503);
+      return c.json(errorResponse(request.request_id, "unavailable", deadline.aborted ? "REQUEST_DEADLINE_EXCEEDED" : "SERVICE_AUTH_UNAVAILABLE"), 503);
     }
     if (
       !principal ||
@@ -92,9 +102,9 @@ export function createCoreApp(ports?: CorePorts) {
 
     let plan: RoutePlan | null;
     try {
-      plan = await ports.route(request, principal);
+      plan = await runWithDeadline(deadline, () => ports.route(request, principal, deadline));
     } catch {
-      return c.json(errorResponse(request.request_id, "unavailable", "ROUTER_UNAVAILABLE"), 503);
+      return c.json(errorResponse(request.request_id, "unavailable", deadline.aborted ? "REQUEST_DEADLINE_EXCEEDED" : "ROUTER_UNAVAILABLE"), 503);
     }
     if (!plan) {
       return c.json(errorResponse(request.request_id, "unavailable", "NO_ELIGIBLE_ROUTE"), 503);
@@ -121,9 +131,9 @@ export function createCoreApp(ports?: CorePorts) {
 
     let authorization;
     try {
-      authorization = await ports.authorize(request, plan, principal);
+      authorization = await runWithDeadline(deadline, () => ports.authorize(request, plan, principal, deadline));
     } catch {
-      return c.json(errorResponse(request.request_id, "unavailable", "PERMISSION_MANAGER_UNAVAILABLE"), 503);
+      return c.json(errorResponse(request.request_id, "unavailable", deadline.aborted ? "REQUEST_DEADLINE_EXCEEDED" : "PERMISSION_MANAGER_UNAVAILABLE"), 503);
     }
     if (authorization.status === "denied") {
       return c.json(errorResponse(request.request_id, "blocked", "PERMISSION_DENIED"), 403);
@@ -138,9 +148,9 @@ export function createCoreApp(ports?: CorePorts) {
 
     let execution;
     try {
-      execution = await ports.executeAuthorized(request, plan, authorization.decision_id, principal);
+      execution = await runWithDeadline(deadline, () => ports.executeAuthorized(request, plan, authorization.decision_id, principal, deadline));
     } catch {
-      return c.json(errorResponse(request.request_id, "unavailable", "TRUSTED_EXECUTION_UNAVAILABLE"), 503);
+      return c.json(errorResponse(request.request_id, "unavailable", deadline.aborted ? "REQUEST_DEADLINE_EXCEEDED" : "TRUSTED_EXECUTION_UNAVAILABLE"), 503);
     }
 
     if (execution.status === "unavailable") {
