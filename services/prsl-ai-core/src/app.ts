@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { bodyLimit } from "hono/body-limit";
 import { z } from "zod";
 import { coreExecutionRequestSchema, type CoreExecutionResponse } from "./contracts";
 import type { CorePorts, RoutePlan, ServicePrincipal } from "./ports";
@@ -37,6 +38,8 @@ function errorResponse(
 export function createCoreApp(ports?: CorePorts) {
   const app = new Hono();
 
+  app.use("/v1/execute", bodyLimit({ maxSize: 32 * 1024 }));
+
   app.get("/healthz", (c) => {
     const ready = Boolean(ports);
     return c.json(
@@ -73,7 +76,14 @@ export function createCoreApp(ports?: CorePorts) {
     } catch {
       return c.json(errorResponse(request.request_id, "unavailable", "SERVICE_AUTH_UNAVAILABLE"), 503);
     }
-    if (!principal) {
+    if (
+      !principal ||
+      typeof principal.service_id !== "string" ||
+      principal.service_id.trim().length === 0 ||
+      typeof principal.audit_subject_ref !== "string" ||
+      principal.audit_subject_ref.trim().length === 0 ||
+      !Array.isArray(principal.scopes)
+    ) {
       return c.json(errorResponse(request.request_id, "blocked", "SERVICE_UNAUTHENTICATED"), 401);
     }
     if (!principal.scopes.includes(REQUIRED_SCOPE)) {
