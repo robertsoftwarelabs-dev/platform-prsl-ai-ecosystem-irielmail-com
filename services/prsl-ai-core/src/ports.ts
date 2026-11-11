@@ -31,14 +31,15 @@ export type AuthorizedExecutionResult =
 
 export interface CorePorts {
   /** Must authenticate the calling service from trusted server-side credentials. */
-  authenticate(request: Request): Promise<ServicePrincipal | null>;
+  authenticate(request: Request, signal: AbortSignal): Promise<ServicePrincipal | null>;
   /** Must resolve projection_ref server-side and call platform policy/Router; never trust client-supplied candidates or classification as authority. */
-  route(request: CoreExecutionRequest, principal: ServicePrincipal): Promise<RoutePlan | null>;
+  route(request: CoreExecutionRequest, principal: ServicePrincipal, signal: AbortSignal): Promise<RoutePlan | null>;
   /** Must re-resolve the context projection and call the platform Permission Manager; client purpose/classification are hints, never proof of consent. */
   authorize(
     request: CoreExecutionRequest,
     plan: RoutePlan,
-    principal: ServicePrincipal
+    principal: ServicePrincipal,
+    signal: AbortSignal
   ): Promise<AuthorizationDecision>;
   /**
    * Must atomically verify and consume the one-time Permission Manager decision
@@ -48,6 +49,7 @@ export interface CorePorts {
     request: CoreExecutionRequest,
     plan: RoutePlan,
     decisionId: string,
-    principal: ServicePrincipal
+    principal: ServicePrincipal,
+    signal: AbortSignal
   ): Promise<AuthorizedExecutionResult>;
 }
