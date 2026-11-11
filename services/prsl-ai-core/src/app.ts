@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { z } from "zod";
 import { coreExecutionRequestSchema, type CoreExecutionResponse } from "./contracts";
 import type { CorePorts, RoutePlan, ServicePrincipal } from "./ports";
 
@@ -92,12 +93,20 @@ export function createCoreApp(ports?: CorePorts) {
     if (!localityAllows(request.constraints.required_locality, plan.execution_mode)) {
       return c.json(errorResponse(request.request_id, "blocked", "EXECUTION_LOCALITY_VIOLATION"), 403);
     }
+    if (plan.execution_mode === "approved_remote" && !plan.provider_id) {
+      return c.json(errorResponse(request.request_id, "blocked", "REMOTE_PROVIDER_ID_REQUIRED"), 403);
+    }
     if (
       request.constraints.provider_allowlist.length > 0 &&
-      plan.provider_id &&
-      !request.constraints.provider_allowlist.includes(plan.provider_id)
+      (!plan.provider_id || !request.constraints.provider_allowlist.includes(plan.provider_id))
     ) {
       return c.json(errorResponse(request.request_id, "blocked", "PROVIDER_CONSTRAINT_VIOLATION"), 403);
+    }
+    if (
+      request.constraints.region_allowlist.length > 0 &&
+      (!plan.region_id || !request.constraints.region_allowlist.includes(plan.region_id))
+    ) {
+      return c.json(errorResponse(request.request_id, "blocked", "REGION_CONSTRAINT_VIOLATION"), 403);
     }
 
     let authorization;
@@ -107,10 +116,14 @@ export function createCoreApp(ports?: CorePorts) {
       return c.json(errorResponse(request.request_id, "unavailable", "PERMISSION_MANAGER_UNAVAILABLE"), 503);
     }
     if (authorization.status === "denied") {
-      return c.json(errorResponse(request.request_id, "blocked", authorization.reason_code), 403);
+      return c.json(errorResponse(request.request_id, "blocked", "PERMISSION_DENIED"), 403);
     }
     if (authorization.status === "indeterminate") {
-      return c.json(errorResponse(request.request_id, "unavailable", authorization.reason_code), 503);
+      return c.json(errorResponse(request.request_id, "unavailable", "PERMISSION_DECISION_INDETERMINATE"), 503);
+    }
+
+    if (!z.string().uuid().safeParse(authorization.decision_id).success) {
+      return c.json(errorResponse(request.request_id, "unavailable", "PERMISSION_DECISION_INVALID"), 503);
     }
 
     let execution;
@@ -121,10 +134,10 @@ export function createCoreApp(ports?: CorePorts) {
     }
 
     if (execution.status === "unavailable") {
-      return c.json(errorResponse(request.request_id, "unavailable", execution.reason_code), 503);
+      return c.json(errorResponse(request.request_id, "unavailable", "RUNTIME_UNAVAILABLE"), 503);
     }
     if (execution.status === "failed") {
-      return c.json(errorResponse(request.request_id, "failed", execution.reason_code), 502);
+      return c.json(errorResponse(request.request_id, "failed", "EXECUTION_FAILED"), 502);
     }
 
     const response: CoreExecutionResponse = {
@@ -135,8 +148,8 @@ export function createCoreApp(ports?: CorePorts) {
         capability_id: execution.plan.capability_id,
         capability_version: execution.plan.capability_version,
         runtime_id: execution.plan.runtime_id,
-        execution_mode: execution.plan.execution_mode,
-        ...(execution.plan.provider_id ? { provider_id: execution.plan.provider_id } : {})
+        execution_mode: plan.execution_mode,
+        ...(plan.provider_id ? { provider_id: plan.provider_id } : {})
       },
       output: execution.output
     };
