@@ -138,6 +138,24 @@ describe("PRSL-AI Core Fetch adapter", () => {
     expect(ports.executeAuthorized).not.toHaveBeenCalled();
   });
 
+  it("enforces region allowlists before authorization", async () => {
+    const request = {
+      ...validRequest,
+      constraints: { ...validRequest.constraints, region_allowlist: ["eu-west"] }
+    };
+    const plan: RoutePlan = { ...localPlan, region_id: "us-east" };
+    const ports = makePorts({ route: vi.fn(async () => plan) });
+    const response = await createCoreApp(ports).request("/v1/execute", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(request)
+    });
+    expect(response.status).toBe(403);
+    expect(await response.json()).toMatchObject({ error: { code: "REGION_CONSTRAINT_VIOLATION" } });
+    expect(ports.authorize).not.toHaveBeenCalled();
+    expect(ports.executeAuthorized).not.toHaveBeenCalled();
+  });
+
   it("does not execute remote routes without Permission Manager approval", async () => {
     const request = {
       ...validRequest,
