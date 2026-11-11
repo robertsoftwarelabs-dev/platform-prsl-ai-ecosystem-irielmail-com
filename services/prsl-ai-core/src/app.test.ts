@@ -44,8 +44,7 @@ function makePorts(overrides: Partial<CorePorts> = {}): CorePorts {
     authorize: vi.fn(async () => ({ status: "granted" as const, decision_id: "00000000-0000-4000-8000-000000000002" })),
     executeAuthorized: vi.fn(async () => ({
       status: "completed" as const,
-      output: { text: "result" },
-      plan: localPlan
+      output: { text: "result" }
     })),
     ...overrides
   };
