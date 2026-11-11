@@ -238,6 +238,21 @@ describe("PRSL-AI Core Fetch adapter", () => {
     expect(ports.executeAuthorized).toHaveBeenCalledTimes(1);
   });
 
+  it("rejects malformed route plans from the injected Router", async () => {
+    const ports = makePorts({
+      route: vi.fn(async () => ({ capability_id: "missing-runtime" } as unknown as RoutePlan))
+    });
+    const response = await createCoreApp(ports).request("/v1/execute", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(validRequest)
+    });
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ error: { code: "ROUTE_PLAN_INVALID" } });
+    expect(ports.authorize).not.toHaveBeenCalled();
+    expect(ports.executeAuthorized).not.toHaveBeenCalled();
+  });
+
   it("enforces the request deadline when a trusted port does not respond", async () => {
     const request = {
       ...validRequest,
