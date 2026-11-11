@@ -145,9 +145,9 @@ export function createCoreApp(ports?: CorePorts) {
       request_id: request.request_id,
       status: "completed",
       execution: {
-        capability_id: execution.plan.capability_id,
-        capability_version: execution.plan.capability_version,
-        runtime_id: execution.plan.runtime_id,
+        capability_id: plan.capability_id,
+        capability_version: plan.capability_version,
+        runtime_id: plan.runtime_id,
         execution_mode: plan.execution_mode,
         ...(plan.provider_id ? { provider_id: plan.provider_id } : {})
       },
