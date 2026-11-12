@@ -103,6 +103,7 @@ Start here:
 - [Implementation readiness and gap register](docs/architecture/IMPLEMENTATION-READINESS-AND-GAP-REGISTER.md)
 - [PRSL-AI Intelligence Infrastructure](docs/architecture/PRSL-AI-INTELLIGENCE-INFRASTRUCTURE.md)
 - [Agent PRSL-AI specification](docs/architecture/PRSL-AI-AGENT.md)
+- [PRSL-AI Agent Specification (PAS-001)](docs/specifications/PRSL-AI-AGENT-SPECIFICATION-PAS-001.md)
 - [Canonical iRiel definition](https://github.com/iRiel-AI-Environment/https-iriel-ai-by-robert-software-labs.lovable.app/blob/main/docs/architecture/IRIEL-POWERFULLY-INTELLIGENCE-ENVIRONMENT.md)
 - [iRiel ↔ PRSL-AI integration contract](docs/architecture/IRIEL-APPWEB-INTEGRATION.md)
 - [Platform and Agent repository governance](docs/architecture/PLATFORM-AGENT-REPOSITORY-GOVERNANCE.md)
