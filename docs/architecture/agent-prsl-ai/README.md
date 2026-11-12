@@ -10,96 +10,38 @@
 
 This documentation defines Agent PRSL-AI as the specialized platform agent within the PRSL-AI Ecosystem. It distinguishes architectural definitions from implementation status: inclusion in this catalog does not claim that a module, API, provider, adapter, or runtime is already implemented.
 
-**Repository decision:** Agent PRSL-AI does not require an independent Git repository. It is modularly owned and tested within the PRSL-AI Ecosystem repository. See [Platform, Agent, and Repository Governance](../PLATFORM-AGENT-REPOSITORY-GOVERNANCE.md) for the canonical ownership, dependency, release, and repository-split rules.
-
 ## Identity and scope
 
 - **Agent PRSL-AI** is the first-party specialized agent identity for institutional and technical knowledge of the PRSL-AI Ecosystem and authorized platform tasks.
 - **Powerful by Robert Software Labs** is its institutional signature; it is not a model/provider name and does not imply unrestricted autonomy.
-- **iRiel AI** is the distinct PowerFully Intelligence Environment that coordinates the user's broader personal intelligence experience and may integrate with approved PRSL-AI capabilities.
+- **iRiel AI** is the distinct Personal Intelligence Environment (PIE) that coordinates the user's broader personal intelligence experience.
 - **Capability modules** group related specialist functions.
 - **Capabilities** are individually identified operations with explicit input/output contracts.
-- **Integration extensions** connect the agent and authorized consumers to external platforms and system surfaces.
 - **PRSL-AI policy and routing** govern candidate selection, permissions, provider choice, and execution boundaries.
 - **The Permission Manager** is the only PRSL-AI component that issues authorization decisions for protected operations.
 - **Human authority** remains the source of user intent and consent.
-
-The governing separation is:
 
 > The model thinks. The agent executes a specialty. The Router decides. iRiel orchestrates.
 
 ## Repository and module boundary
 
-The canonical repository is the PRSL-AI Ecosystem platform repository. Agent-specific code, tests, manifests, evaluations, and documentation must remain identifiable as Agent-owned modules within that repository. Shared policy, routing, registry, Permission Manager, and common schemas remain platform-owned contracts; the Agent consumes them and must not fork or privately redefine them.
+The canonical repository is the PRSL-AI Ecosystem platform repository. Agent-specific code, tests, manifests, evaluations, and documentation remain identifiable as Agent-owned modules within that repository. Shared policy, routing, registry, Permission Manager, and common schemas remain platform-owned contracts; the Agent consumes them and must not fork or privately redefine them.
 
-An independent Agent repository is a future option only if deployment, distribution, team permissions, compliance, or release requirements establish a real need. Such a split requires an approved migration and compatibility plan. It is not the current architecture decision.
+An independent Agent repository is a future option only if deployment, distribution, team permissions, compliance, or release requirements establish a real need. Such a split requires an approved migration and compatibility plan.
 
 ## Documents
 
 | Document | Purpose |
 |---|---|
-| [Platform, Agent, and Repository Governance](../PLATFORM-AGENT-REPOSITORY-GOVERNANCE.md) | Canonical ownership, repository placement, module boundaries, dependency direction, release governance, and split criteria. |
-| [Agent PRSL-AI institutional and architectural specification](../PRSL-AI-AGENT.md) | Canonical agent identity, specialization, scope, responsibilities, and boundaries. |
-| [iRiel — PowerFully Intelligence Environment](https://github.com/iRiel-AI-Environment/https-iriel-ai-by-robert-software-labs.lovable.app/blob/main/docs/architecture/IRIEL-POWERFULLY-INTELLIGENCE-ENVIRONMENT.md) | Canonical definition of the environment that orchestrates personal intelligence. |
-| [Capability Contract v1.0](./capability-contract.md) | Shared contract for identity, schemas, permissions, dependencies, availability, and execution policy. |
-| [Capability Catalog](./capability-catalog.md) | Initial module and interface inventory with candidate capability operations. |
-| [Reasoning and Action Execution Pattern](./reasoning-action-execution-pattern.md) | ReAct-informed plan/action/observation/verification cycle, with PRSL-AI policy and authorization gates. |
-| [Executable Execution Contract v1.0](./executable-execution-contract.md) | Machine-readable execution envelope and cross-component dispatch/authorization gates. |
-| [Execution Envelope JSON Schema](./schemas/execution-envelope.schema.json) | State and trusted-reference contract for one bounded execution. |
-| [Execution Contract Test Vectors](./validation/execution-contract-cases.json) | Positive and negative registry, authorization, native-permission, and state-transition scenarios. |
+| [Agent PRSL-AI institutional and architectural specification](../PRSL-AI-AGENT.md) | Canonical identity, specialization, responsibilities, and boundaries. |
+| [PRSL-AI Agent Technical Contracts (PAS-TC)](./technical-contracts.md) | HTTP operations, request/response semantics, OAuth scopes, mTLS boundaries, errors, and conformance requirements. |
+| [OpenAPI 3.1 contract](../../../openapi/agent/prsl-ai-agent.v1.yaml) | Machine-readable API contract for the Agent API. |
+| [Platform, Agent, and Repository Governance](../PLATFORM-AGENT-REPOSITORY-GOVERNANCE.md) | Ownership, module boundaries, dependency direction, and release governance. |
 | [Capability Registry Specification](./registry-specification.md) | Registration, discovery, lifecycle, and dispatch governance. |
-| [Dependency Resolver Specification v1.0](./dependency-resolver-specification.md) | Trusted-snapshot dependency graph resolution, version constraints, cycle detection, and authority separation. |
-| [Dependency Resolver Runtime Core](../../../src/lib/dependency-resolver/README.md) | Framework-neutral graph resolution against a trusted registry adapter; no execution or authorization. |
-| [Dependency Resolution Request Schema](./schemas/dependency-resolution-request.schema.json) | Machine-readable request contract. |
-| [Dependency Resolution Result Schema](./schemas/dependency-resolution-result.schema.json) | Machine-readable resolution outcome, authorization requirements, model constraints, and dependency order. |
-| [Dependency Resolution Test Vectors](./validation/dependency-resolution-cases.json) | Synthetic positive and negative graph-resolution fixtures. |
-| [Permission Manager Specification](./permission-manager-specification.md) | Authorization authority, consent lifecycle, runtime gate, revocation, delegation, and fail-closed enforcement. |
-| [Permission Request Schema](./schemas/permission-request.schema.json) | Machine-readable input contract for one protected operation. |
-| [Permission Decision Schema](./schemas/permission-decision.schema.json) | Machine-readable, scope-bound authorization outcome. |
-| [Permission Manager Test Vectors](./validation/permission-manager-cases.json) | Positive and negative request/decision contract cases. |
-| [Permission Manager Runtime Core](../../../src/lib/permission-manager/README.md) | Implemented dependency-injected evaluation and pre-execution orchestration; production adapters remain unimplemented. |
-| [Capability Manifest JSON Schema](./schemas/capability-manifest.schema.json) | Machine-readable validation schema for capability manifests. |
-| Capability manifests | [Vision](./examples/vision-analyze-image.manifest.json) · [Voice](./examples/voice-synthesize-speech.manifest.json) · [Location](./examples/location-resolve-location.manifest.json) · [Recognizers](./examples/recognizers-classify-content.manifest.json) · [Tools](./examples/tools-evaluate-tool.manifest.json) · [Creative](./examples/creative-generate-text.manifest.json) · [Reader](./examples/reader-extract-document-content.manifest.json). All seven are specified examples, not implementation claims. |
-| [Validation instructions](./validation/README.md) | Local validation commands and CI behavior. |
-| [Apple Integration — Canonical Extension v5](./extensions/apple-integration-v5.md) | Controlled integration boundary for Apple technologies and system surfaces. |
+| [Capability Contract](./capability-contract.md) | Shared capability record contract. |
+| [Permission Manager Specification](./permission-manager-specification.md) | Authorization authority and protected-operation enforcement. |
+| [iRiel AppWeb integration contract](../IRIEL-APPWEB-INTEGRATION.md) | Consumer boundary between iRiel AppWeb and the platform. |
 
-## Canonical architecture flow
+## Implementation status
 
-`Human → iRiel identity/context → PRSL-AI intent and policy → Intelligence Router (candidate selection only) → Capability Registry (eligible metadata) → Permission Manager (authorization gate) → native host permission (when applicable) → approved capability → execution target`
-
-The ReAct-informed task loop is:
-
-`Interpret → Plan → Evaluate → Authorize → Act → Observe → Verify → Adapt or Stop`
-
-The flow is conceptual. Concrete runtime components and integrations must be verified separately.
-
-## Status vocabulary
-
-- **Canonical:** A user-designated architectural invariant or extension.
-- **Proposed:** A structured design awaiting explicit adoption or implementation.
-- **Planned:** A capability intended for future work.
-- **Implemented:** Present in code and verified.
-- **Verified:** Tested against a defined acceptance criterion.
-
-Do not use *Implemented* or *Verified* based only on documentation or a declared intention.
-
-## Design invariants
-
-1. Provider independence: capability identity does not depend on a model vendor.
-2. Minimum disclosure: only data required for a specific operation may cross a boundary.
-3. Explicit authority: the Permission Manager is the only PRSL-AI component that issues authorization decisions; a capability cannot grant itself permissions.
-4. Local-first preference: local execution is preferred where compatible and policy-compliant.
-5. Graceful degradation: optional integrations may be unavailable without invalidating the agent or capability identity.
-6. Memory separation: transient execution context does not automatically become persistent memory.
-7. Accessibility and inclusion are structural requirements, not optional presentation features.
-8. Human authority governs consent and consequential actions.
-
-## Validation
-
-GitHub Actions validates capability manifests, Permission Manager contracts, the cross-component execution contract, Dependency Resolver schemas and deterministic graph fixtures, the TypeScript decision-binding gate, and the TypeScript runtime orchestration core. These are deterministic contract tests against synthetic fixtures. A passing workflow is not proof of a deployed runtime, provider connection, permission grant, or operational capability.
-
-## Scope note
-
-The Permission Manager now has two implementation slices: a deterministic decision-binding gate and a framework-neutral runtime orchestration core. The runtime defines mandatory adapter contracts for authentication, registry, policy, consent, native permissions, remote disclosure, decision issuance/consumption, and minimized audit. These adapters are not yet implemented or deployed; the runtime is not a production authorization service. Until those trusted services and adapters exist and are independently verified, protected execution remains disabled or fail-closed.
-
-This documentation and its validators establish architecture and testable contract rules. They do not create application code, runtime registrations, Apple entitlements, provider connections, permissions, or deployed integrations.
+PAS-TC and the OpenAPI document are specifications. They do not prove that the API server, routes, OAuth issuer, mTLS deployment, feedback backend, diagnostics adapters, or external intelligence providers are live. Implementations MUST publish verified operation status separately and MUST pass the conformance requirements in PAS-TC before being advertised as available.
