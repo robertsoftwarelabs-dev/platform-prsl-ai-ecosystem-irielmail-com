@@ -1,0 +1,683 @@
+openapi: 3.1.0
+info:
+  title: PRSL-AI Agent API
+  version: 1.0.0
+  summary: Ecosystem support, discovery, documentation, diagnostics, and knowledge API.
+  description: |
+    Contract for Agent PRSL-AI. The API contract does not imply that every
+    operation is deployed. See docs/architecture/agent-prsl-ai/technical-contracts.md.
+  x-prsl:
+    platform: PRSL-AI
+    owner: Robert Software Labs
+    agentId: prsl-ai.agent
+    contract: PAS-TC
+    contractVersion: 1.0.0
+servers:
+  - url: / 
+    description: Deployment-relative server; configure the canonical host per environment.
+tags:
+  - name: PRSLAI.Assists.Ecosystem
+  - name: PRSLAI.Discovers.Knowledge
+  - name: PRSLAI.Explains.Architecture
+  - name: PRSLAI.Manages.Feedback
+  - name: PRSLAI.Monitors.Runtime
+  - name: PRSLAI.Understands.Languages
+  - name: PRSLAI.Reasons.Deeply
+security:
+  - OAuth2Bearer: []
+paths:
+  /agent/chat:
+    post:
+      tags: [PRSLAI.Assists.Ecosystem]
+      operationId: chatWithAgent
+      x-prsl-scope: prsl.agent.chat
+      summary: Ask the PRSL-AI Agent a platform question.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Grounded or explicitly qualified answer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '429': {$ref: '#/components/responses/RateLimited'}
+        '500': {$ref: '#/components/responses/InternalError'}
+  /agent/discover:
+    post:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: discoverEcosystemResources
+      x-prsl-scope: prsl.agent.search
+      summary: Discover visible ecosystem resources.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SearchRequest'}
+      responses:
+        '200':
+          description: Matching registry identifiers.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DiscoveryResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '429': {$ref: '#/components/responses/RateLimited'}
+  /agent/feedback:
+    post:
+      tags: [PRSLAI.Manages.Feedback]
+      operationId: submitAgentFeedback
+      x-prsl-scope: prsl.agent.feedback
+      summary: Submit user feedback.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/FeedbackRequest'}
+      responses:
+        '202':
+          description: Feedback accepted for processing.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/FeedbackResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '429': {$ref: '#/components/responses/RateLimited'}
+  /agent/docs/search:
+    post:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: searchAgentDocumentation
+      x-prsl-scope: prsl.agent.docs.read
+      summary: Search published and discoverable platform documentation.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SearchRequest'}
+      responses:
+        '200':
+          description: Matching document references.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/DocumentSearchResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/architecture/explain:
+    post:
+      tags: [PRSLAI.Explains.Architecture]
+      operationId: explainPlatformArchitecture
+      x-prsl-scope: prsl.agent.architecture.read
+      summary: Explain a documented architecture subject.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ArchitectureRequest'}
+      responses:
+        '200':
+          description: Explanation with canonical references.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ArchitectureResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/capabilities:
+    get:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: listCapabilities
+      x-prsl-scope: prsl.agent.registry.read
+      summary: List capabilities visible to the caller.
+      parameters: [{$ref: '#/components/parameters/Limit'}, {$ref: '#/components/parameters/Cursor'}]
+      responses:
+        '200':
+          description: Visible capability identifiers.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistryListResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/capabilities/{capabilityId}:
+    get:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: getCapability
+      x-prsl-scope: prsl.agent.registry.read
+      parameters: [{$ref: '#/components/parameters/CapabilityId'}]
+      responses:
+        '200':
+          description: Visible capability record.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistryRecordResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /agent/intents:
+    get:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: listIntents
+      x-prsl-scope: prsl.agent.registry.read
+      parameters: [{$ref: '#/components/parameters/Limit'}, {$ref: '#/components/parameters/Cursor'}]
+      responses:
+        '200':
+          description: Visible intent identifiers.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistryListResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/intents/{intentId}:
+    get:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: getIntent
+      x-prsl-scope: prsl.agent.registry.read
+      parameters: [{$ref: '#/components/parameters/IntentId'}]
+      responses:
+        '200':
+          description: Visible intent record.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistryRecordResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /agent/skills:
+    get:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: listSkills
+      x-prsl-scope: prsl.agent.registry.read
+      parameters: [{$ref: '#/components/parameters/Limit'}, {$ref: '#/components/parameters/Cursor'}]
+      responses:
+        '200':
+          description: Visible skill identifiers.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistryListResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/skills/{skillId}:
+    get:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: getSkill
+      x-prsl-scope: prsl.agent.registry.read
+      parameters: [{$ref: '#/components/parameters/SkillId'}]
+      responses:
+        '200':
+          description: Visible skill record.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistryRecordResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /agent/agents:
+    get:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: listAgents
+      x-prsl-scope: prsl.agent.registry.read
+      parameters: [{$ref: '#/components/parameters/Limit'}, {$ref: '#/components/parameters/Cursor'}]
+      responses:
+        '200':
+          description: Visible agent identifiers.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistryListResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/agents/{agentId}:
+    get:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: getAgent
+      x-prsl-scope: prsl.agent.registry.read
+      parameters: [{$ref: '#/components/parameters/AgentId'}]
+      responses:
+        '200':
+          description: Visible agent record.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistryRecordResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /agent/policies:
+    get:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: listPolicies
+      x-prsl-scope: prsl.agent.registry.read
+      parameters: [{$ref: '#/components/parameters/Limit'}, {$ref: '#/components/parameters/Cursor'}]
+      responses:
+        '200':
+          description: Policy metadata visible to the caller; no private policy internals.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistryListResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/policies/{policyId}:
+    get:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: getPolicy
+      x-prsl-scope: prsl.agent.registry.read
+      parameters: [{$ref: '#/components/parameters/PolicyId'}]
+      responses:
+        '200':
+          description: Visible policy metadata.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RegistryRecordResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /agent/runtime/status:
+    get:
+      tags: [PRSLAI.Monitors.Runtime]
+      operationId: getRuntimeStatus
+      x-prsl-scope: prsl.agent.runtime.read
+      responses:
+        '200':
+          description: Aggregate runtime health.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/RuntimeStatusResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/providers/status:
+    get:
+      tags: [PRSLAI.Monitors.Runtime]
+      operationId: getProviderStatus
+      x-prsl-scope: prsl.agent.runtime.read
+      responses:
+        '200':
+          description: Authorized provider health metadata.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ProviderStatusResponse'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/languages/detect:
+    post:
+      tags: [PRSLAI.Understands.Languages]
+      operationId: detectLanguage
+      x-prsl-scope: prsl.agent.languages.translate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/LanguageDetectionRequest'}
+      responses:
+        '200':
+          description: Detected language and confidence.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/LanguageDetectionResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/languages/translate:
+    post:
+      tags: [PRSLAI.Understands.Languages]
+      operationId: translateText
+      x-prsl-scope: prsl.agent.languages.translate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/TranslationRequest'}
+      responses:
+        '200':
+          description: Translated text.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/TranslationResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+  /agent/reason:
+    post:
+      tags: [PRSLAI.Reasons.Deeply]
+      operationId: reasonAboutProblem
+      x-prsl-scope: prsl.agent.reasoning.execute
+      summary: Return bounded analysis; does not execute mutations.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ReasoningRequest'}
+      responses:
+        '200':
+          description: Analysis with assumptions and evidence.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ReasoningResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '429': {$ref: '#/components/responses/RateLimited'}
+  /agent/knowledge/search:
+    post:
+      tags: [PRSLAI.Discovers.Knowledge]
+      operationId: searchKnowledge
+      x-prsl-scope: prsl.agent.search
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/SearchRequest'}
+      responses:
+        '200':
+          description: Approved knowledge results.
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/KnowledgeSearchResponse'}
+        '400': {$ref: '#/components/responses/BadRequest'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+components:
+  securitySchemes:
+    OAuth2Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        OAuth 2.0 access token issued by the environment-configured PRSL-AI
+        authorization server. Interactive clients use Authorization Code + PKCE.
+        Service clients use Client Credentials and deployment-enforced mTLS
+        where required by PSP. OAuth issuer and endpoints are deployment config.
+  parameters:
+    Limit:
+      name: limit
+      in: query
+      schema: {type: integer, minimum: 1, maximum: 100, default: 20}
+    Cursor:
+      name: cursor
+      in: query
+      schema: {type: string, maxLength: 2048}
+    CapabilityId:
+      name: capabilityId
+      in: path
+      required: true
+      schema: {type: string, minLength: 1, maxLength: 200}
+    IntentId:
+      name: intentId
+      in: path
+      required: true
+      schema: {type: string, minLength: 1, maxLength: 200}
+    SkillId:
+      name: skillId
+      in: path
+      required: true
+      schema: {type: string, minLength: 1, maxLength: 200}
+    AgentId:
+      name: agentId
+      in: path
+      required: true
+      schema: {type: string, minLength: 1, maxLength: 200}
+    PolicyId:
+      name: policyId
+      in: path
+      required: true
+      schema: {type: string, minLength: 1, maxLength: 200}
+  schemas:
+    Correlated:
+      type: object
+      required: [correlationId]
+      properties:
+        correlationId: {type: string, minLength: 1, maxLength: 128}
+    SearchRequest:
+      type: object
+      additionalProperties: false
+      required: [query]
+      properties:
+        query: {type: string, minLength: 1, maxLength: 2000}
+        domain: {type: string, maxLength: 200}
+        limit: {type: integer, minimum: 1, maximum: 100, default: 20}
+        cursor: {type: string, maxLength: 2048}
+    ChatRequest:
+      type: object
+      additionalProperties: false
+      required: [message]
+      properties:
+        message: {type: string, minLength: 1, maxLength: 20000}
+        context:
+          type: object
+          additionalProperties: false
+          properties:
+            module: {type: string, maxLength: 200}
+            locale: {type: string, maxLength: 35}
+            conversationId: {type: string, maxLength: 200}
+    ChatResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [response, sources, answerStatus]
+          properties:
+            response: {type: string}
+            sources: {type: array, items: {type: string}}
+            answerStatus: {type: string, enum: [grounded, partial, insufficient_evidence]}
+    DiscoveryResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          properties:
+            intents: {type: array, items: {type: string}}
+            capabilities: {type: array, items: {type: string}}
+            skills: {type: array, items: {type: string}}
+            agents: {type: array, items: {type: string}}
+            providers: {type: array, items: {type: string}}
+            nextCursor: {type: string}
+    FeedbackRequest:
+      type: object
+      additionalProperties: false
+      required: [category, title, description]
+      properties:
+        category: {type: string, enum: [bug-report, feature-request, ux-feedback, documentation, other]}
+        title: {type: string, minLength: 1, maxLength: 200}
+        description: {type: string, minLength: 1, maxLength: 10000}
+    FeedbackResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [ticketId, status]
+          properties:
+            ticketId: {type: string}
+            status: {type: string, enum: [accepted, queued]}
+    DocumentSearchResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [documents]
+          properties:
+            documents:
+              type: array
+              items:
+                type: object
+                required: [documentId, title]
+                properties:
+                  documentId: {type: string}
+                  title: {type: string}
+                  section: {type: string}
+                  repository: {type: string}
+                  path: {type: string}
+                  version: {type: string}
+                  relevance: {type: number, minimum: 0, maximum: 1}
+    ArchitectureRequest:
+      type: object
+      additionalProperties: false
+      required: [subject]
+      properties:
+        subject: {type: string, minLength: 1, maxLength: 500}
+        detailLevel: {type: string, enum: [brief, standard, deep], default: standard}
+        locale: {type: string, maxLength: 35}
+    ArchitectureResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [summary, contracts, apiReferences]
+          properties:
+            summary: {type: string}
+            contracts: {type: array, items: {type: string}}
+            apiReferences: {type: array, items: {type: string}}
+    RegistryListResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [items]
+          properties:
+            items: {type: array, items: {type: string}}
+            nextCursor: {type: string}
+    RegistryRecordResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [record]
+          properties:
+            record: {type: object, additionalProperties: true}
+    RuntimeStatusResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [status, components]
+          properties:
+            status: {type: string, enum: [healthy, degraded, unavailable, unknown]}
+            components:
+              type: object
+              additionalProperties:
+                type: string
+                enum: [healthy, degraded, unavailable, unknown]
+    ProviderStatusResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [providers]
+          properties:
+            providers:
+              type: array
+              items:
+                type: object
+                required: [id, status]
+                properties:
+                  id: {type: string}
+                  status: {type: string, enum: [healthy, degraded, unavailable, unknown, not-configured]}
+    LanguageDetectionRequest:
+      type: object
+      additionalProperties: false
+      required: [text]
+      properties:
+        text: {type: string, minLength: 1, maxLength: 20000}
+    LanguageDetectionResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [language, confidence]
+          properties:
+            language: {type: string, description: BCP 47 language tag}
+            confidence: {type: number, minimum: 0, maximum: 1}
+    TranslationRequest:
+      type: object
+      additionalProperties: false
+      required: [source, target, text]
+      properties:
+        source: {type: string, minLength: 2, maxLength: 35}
+        target: {type: string, minLength: 2, maxLength: 35}
+        text: {type: string, minLength: 1, maxLength: 20000}
+    TranslationResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [translatedText, source, target]
+          properties:
+            translatedText: {type: string}
+            source: {type: string}
+            target: {type: string}
+    ReasoningRequest:
+      type: object
+      additionalProperties: false
+      required: [problem]
+      properties:
+        problem: {type: string, minLength: 1, maxLength: 10000}
+        constraints: {type: array, maxItems: 50, items: {type: string, maxLength: 1000}}
+        domain: {type: string, maxLength: 200}
+        detailLevel: {type: string, enum: [brief, standard, deep], default: standard}
+    ReasoningResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [analysis, recommendations, assumptions, evidence]
+          properties:
+            analysis: {type: string}
+            recommendations: {type: array, items: {type: string}}
+            assumptions: {type: array, items: {type: string}}
+            evidence: {type: array, items: {type: string}}
+    KnowledgeSearchResponse:
+      allOf:
+        - $ref: '#/components/schemas/Correlated'
+        - type: object
+          required: [results]
+          properties:
+            results:
+              type: array
+              items:
+                type: object
+                required: [title, summary, sourceId]
+                properties:
+                  title: {type: string}
+                  summary: {type: string}
+                  sourceId: {type: string}
+                  reference: {type: string}
+    ErrorResponse:
+      type: object
+      required: [code, message, correlationId, timestamp]
+      properties:
+        code: {type: string}
+        message: {type: string}
+        correlationId: {type: string}
+        timestamp: {type: string, format: date-time}
+        details: {type: object, additionalProperties: true}
+  responses:
+    BadRequest:
+      description: Invalid request.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorResponse'}
+    Unauthorized:
+      description: Missing or invalid access token.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorResponse'}
+    Forbidden:
+      description: Required scope or policy authorization is missing.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorResponse'}
+    NotFound:
+      description: Resource not found or not visible to caller.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorResponse'}
+    RateLimited:
+      description: Rate limit exceeded.
+      headers:
+        Retry-After:
+          schema: {type: integer}
+        X-RateLimit-Limit:
+          schema: {type: integer}
+        X-RateLimit-Remaining:
+          schema: {type: integer}
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorResponse'}
+    InternalError:
+      description: Unexpected server error.
+      content:
+        application/json:
+          schema: {$ref: '#/components/schemas/ErrorResponse'}

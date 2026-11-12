@@ -103,3 +103,13 @@ GitHub Actions validates capability manifests, Permission Manager contracts, the
 The Permission Manager now has two implementation slices: a deterministic decision-binding gate and a framework-neutral runtime orchestration core. The runtime defines mandatory adapter contracts for authentication, registry, policy, consent, native permissions, remote disclosure, decision issuance/consumption, and minimized audit. These adapters are not yet implemented or deployed; the runtime is not a production authorization service. Until those trusted services and adapters exist and are independently verified, protected execution remains disabled or fail-closed.
 
 This documentation and its validators establish architecture and testable contract rules. They do not create application code, runtime registrations, Apple entitlements, provider connections, permissions, or deployed integrations.
+
+
+## Technical API contracts
+
+| Document | Purpose |
+|---|---|
+| [PRSL-AI Agent Technical Contracts (PAS-TC)](./technical-contracts.md) | HTTP operations, request/response semantics, OAuth scopes, mTLS boundaries, errors, and conformance requirements. |
+| [OpenAPI 3.1 contract](../../../openapi/agent/prsl-ai-agent.v1.yaml) | Machine-readable API contract for the Agent API. |
+
+PAS-TC and the OpenAPI document are specifications. They do not prove that the API server, routes, OAuth issuer, mTLS deployment, feedback backend, diagnostics adapters, or external intelligence providers are live. Implementations MUST publish verified operation status separately and MUST pass the PAS-TC conformance requirements before being advertised as available.
