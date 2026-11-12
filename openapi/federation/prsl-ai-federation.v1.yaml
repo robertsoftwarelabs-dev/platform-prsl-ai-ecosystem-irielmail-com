@@ -1,0 +1,391 @@
+openapi: 3.1.0
+info:
+  title: PRSL-AI Federation Gateway API
+  version: 1.0.0
+  description: >
+    Federation interface consumed by authorized iRiel clients. Deployment
+    origins and OAuth issuer details are environment configuration and are
+    intentionally not hard-coded in this contract.
+servers:
+  - url: /api/v1
+    description: Relative deployment base; resolve against the configured HTTPS origin.
+tags:
+  - name: Federation
+  - name: Agent
+  - name: Languages
+  - name: Reasoning
+  - name: Knowledge
+  - name: Capabilities
+security:
+  - OAuth2PKCE:
+      - federation.connect
+components:
+  securitySchemes:
+    OAuth2PKCE:
+      type: oauth2
+      description: Authorization Code with PKCE S256 for public interactive clients.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://REPLACE-WITH-CONFIGURED-ISSUER/oauth2/authorize
+          tokenUrl: https://REPLACE-WITH-CONFIGURED-ISSUER/oauth2/token
+          scopes:
+            federation.connect: Establish and inspect the caller federation session
+            federation.agent.chat: Submit a request to Agent PRSL-AI
+            federation.reason.execute: Request bounded reasoning
+            federation.knowledge.search: Search authorized ecosystem knowledge
+            federation.languages.translate: Translate caller-supplied text
+            federation.capabilities.read: Read visible capability descriptors
+  schemas:
+    FederationConnectRequest:
+      type: object
+      additionalProperties: false
+      required: [clientId, platform, version]
+      properties:
+        clientId:
+          type: string
+          minLength: 1
+          maxLength: 128
+        deviceId:
+          type: string
+          minLength: 1
+          maxLength: 128
+          description: Optional pseudonymous installation identifier; never a hardware identifier.
+        platform:
+          type: string
+          enum: [web, ios, android, desktop]
+        version:
+          type: string
+          minLength: 1
+          maxLength: 64
+        installedPackages:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+            maxLength: 128
+        localCapabilities:
+          type: array
+          maxItems: 100
+          items:
+            type: string
+            maxLength: 128
+          description: Untrusted informational declarations; never authorization grants.
+    FederationSession:
+      type: object
+      additionalProperties: false
+      required: [sessionId, ecosystemVersion, connectedAt, mode, services]
+      properties:
+        sessionId:
+          type: string
+        ecosystemVersion:
+          type: string
+        connectedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+        mode:
+          type: string
+          enum: [offline, online, hybrid]
+        services:
+          type: object
+          additionalProperties: false
+          required: [agent, language, knowledge, reasoning, capabilities]
+          properties:
+            agent: { type: boolean }
+            language: { type: boolean }
+            knowledge: { type: boolean }
+            reasoning: { type: boolean }
+            capabilities: { type: boolean }
+    FederationStatus:
+      type: object
+      additionalProperties: false
+      required: [connected, mode, services]
+      properties:
+        connected: { type: boolean }
+        session:
+          oneOf:
+            - $ref: '#/components/schemas/FederationSession'
+            - type: 'null'
+        mode:
+          type: string
+          enum: [offline, online, hybrid]
+        services:
+          $ref: '#/components/schemas/FederationSession/properties/services'
+    AgentChatRequest:
+      type: object
+      additionalProperties: false
+      required: [message]
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 20000
+        context:
+          type: object
+          description: Optional non-sensitive module metadata only unless separately consented.
+          additionalProperties: true
+        conversationId:
+          type: string
+          maxLength: 128
+    AgentChatResponse:
+      type: object
+      additionalProperties: false
+      required: [responseId, source, answer, references, correlationId]
+      properties:
+        responseId: { type: string }
+        source: { type: string }
+        answer: { type: string }
+        references:
+          type: array
+          items: { type: string }
+        suggestedActions:
+          type: array
+          items: { type: string }
+        correlationId: { type: string }
+    LanguageTranslationRequest:
+      type: object
+      additionalProperties: false
+      required: [sourceLanguage, targetLanguage, text]
+      properties:
+        sourceLanguage: { type: string, minLength: 2, maxLength: 35 }
+        targetLanguage: { type: string, minLength: 2, maxLength: 35 }
+        text: { type: string, minLength: 1, maxLength: 50000 }
+    LanguageTranslationResponse:
+      type: object
+      additionalProperties: false
+      required: [translatedText, correlationId]
+      properties:
+        translatedText: { type: string }
+        detectedLanguage: { type: string }
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Advisory score; not a calibrated probability unless documented by the implementation.
+        correlationId: { type: string }
+    ReasoningRequest:
+      type: object
+      additionalProperties: false
+      required: [topic]
+      properties:
+        topic: { type: string, minLength: 1, maxLength: 20000 }
+        objective: { type: string, maxLength: 5000 }
+        depth:
+          type: string
+          enum: [basic, advanced, expert]
+    ReasoningResponse:
+      type: object
+      additionalProperties: false
+      required: [analysis, recommendations, correlationId]
+      properties:
+        analysis: { type: string }
+        recommendations:
+          type: array
+          items: { type: string }
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        correlationId: { type: string }
+    KnowledgeSearchRequest:
+      type: object
+      additionalProperties: false
+      required: [query]
+      properties:
+        query: { type: string, minLength: 1, maxLength: 2000 }
+        limit: { type: integer, minimum: 1, maximum: 50, default: 10 }
+    KnowledgeSearchResult:
+      type: object
+      additionalProperties: false
+      required: [id, title, source]
+      properties:
+        id: { type: string }
+        title: { type: string }
+        excerpt: { type: string }
+        source: { type: string }
+    KnowledgeSearchResponse:
+      type: object
+      additionalProperties: false
+      required: [results, correlationId]
+      properties:
+        results:
+          type: array
+          items: { $ref: '#/components/schemas/KnowledgeSearchResult' }
+        correlationId: { type: string }
+    CapabilityDescriptor:
+      type: object
+      additionalProperties: false
+      required: [capabilityId, name, category, enabled]
+      properties:
+        capabilityId: { type: string }
+        name: { type: string }
+        category: { type: string }
+        enabled: { type: boolean, description: Registry state, not an execution authorization grant. }
+        api: { type: string }
+        version: { type: string }
+    CapabilityList:
+      type: object
+      additionalProperties: false
+      required: [items, correlationId]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/CapabilityDescriptor' }
+        correlationId: { type: string }
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [code, message, correlationId, timestamp]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        correlationId: { type: string }
+        timestamp: { type: string, format: date-time }
+        traceId: { type: string }
+  responses:
+    Unauthorized:
+      description: Missing, invalid, expired, or revoked access token.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    Forbidden:
+      description: Required scope or policy authorization is absent.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    TooManyRequests:
+      description: Rate limit exceeded.
+      headers:
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+paths:
+  /federation/connect:
+    post:
+      operationId: connectToEcosystem
+      tags: [Federation]
+      security:
+        - OAuth2PKCE: [federation.connect]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FederationConnectRequest' }
+      responses:
+        '200':
+          description: Federation session established or refreshed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FederationSession' }
+        '400': { description: Invalid request, content: { application/json: { schema: { $ref: '#/components/schemas/ErrorResponse' } } } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+  /federation/status:
+    get:
+      operationId: getFederationStatus
+      tags: [Federation]
+      security:
+        - OAuth2PKCE: [federation.connect]
+      responses:
+        '200':
+          description: Authenticated caller federation status.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FederationStatus' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /federation/agent/chat:
+    post:
+      operationId: chatWithPrslAgent
+      tags: [Agent]
+      security:
+        - OAuth2PKCE: [federation.agent.chat]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AgentChatRequest' }
+      responses:
+        '200':
+          description: Agent response.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AgentChatResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+  /federation/languages/translate:
+    post:
+      operationId: translateText
+      tags: [Languages]
+      security:
+        - OAuth2PKCE: [federation.languages.translate]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LanguageTranslationRequest' }
+      responses:
+        '200':
+          description: Translation result.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LanguageTranslationResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /federation/reason:
+    post:
+      operationId: executeDeepReasoning
+      tags: [Reasoning]
+      security:
+        - OAuth2PKCE: [federation.reason.execute]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReasoningRequest' }
+      responses:
+        '200':
+          description: Bounded reasoning result.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ReasoningResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /federation/knowledge/search:
+    post:
+      operationId: searchKnowledge
+      tags: [Knowledge]
+      security:
+        - OAuth2PKCE: [federation.knowledge.search]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/KnowledgeSearchRequest' }
+      responses:
+        '200':
+          description: Authorized knowledge results.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/KnowledgeSearchResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /federation/capabilities:
+    get:
+      operationId: getCapabilities
+      tags: [Capabilities]
+      security:
+        - OAuth2PKCE: [federation.capabilities.read]
+      responses:
+        '200':
+          description: Capability descriptors visible to the caller.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CapabilityList' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
