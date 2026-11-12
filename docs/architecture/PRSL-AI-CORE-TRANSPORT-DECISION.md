@@ -1,7 +1,7 @@
 # PRSL-AI Core Transport Decision — Hono Fetch Adapter
 
 **Decision ID:** CORE-TRANSPORT-001  
-**Status:** Accepted architectural decision; implementation and production readiness remain open  
+**Status:** Accepted architectural decision; Hono Fetch adapter foundation implemented; production readiness remains open  
 **Owner:** Robert Software Labs / PRSL-AI Ecosystem  
 **Date:** 2026-11-11
 
@@ -52,7 +52,7 @@ The Hono transport adapter cannot create permissions, widen scopes, register tru
 ## 5. Migration sequence
 
 1. Define the platform-owned versioned Core request/response contract against the existing Capability and Router contracts.
-2. Implement the Hono Fetch adapter inside the PRSL-AI platform repository using injected platform-owned ports.
+2. Implemented: the Hono Fetch adapter now exists under `services/prsl-ai-core/` and fails closed until platform-owned ports are configured. This is a transport foundation, not a production Core runtime.
 3. Connect production registry, policy, Permission Manager, and trusted execution adapters only after each adapter passes its own security and contract tests.
 4. Register the RSL-controlled local runtime through the approved provider/runtime contract. Do not enable remote inference as a temporary substitute.
 5. Add cross-repository contract tests between platform and AppWeb.
@@ -64,7 +64,7 @@ The Hono transport adapter cannot create permissions, widen scopes, register tru
 
 This decision does not select a hosting provider, deployment target, model vendor, inference endpoint, DNS configuration, or account. It does not claim that a production Core service, Intelligence Router runtime, local model runtime, or AppWeb integration currently exists.
 
-The implementation gap remains tracked in [GAP-023](./IMPLEMENTATION-READINESS-AND-GAP-REGISTER.md), with production Router, provider, authentication, Permission Manager, and trusted execution blockers tracked separately.
+The remaining implementation gap is tracked in [GAP-023](./IMPLEMENTATION-READINESS-AND-GAP-REGISTER.md). Production Router, provider/runtime, authentication, Permission Manager adapters, trusted execution, deployment, and AppWeb integration remain unimplemented or unverified.
 
 ---
 

@@ -1,0 +1,31 @@
+name: PRSL-AI Core Fetch Adapter
+
+on:
+  pull_request:
+    paths:
+      - "services/prsl-ai-core/**"
+      - ".github/workflows/prsl-ai-core.yml"
+  push:
+    branches: [main, "engineering/**"]
+    paths:
+      - "services/prsl-ai-core/**"
+      - ".github/workflows/prsl-ai-core.yml"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/prsl-ai-core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: services/prsl-ai-core/package.json
+      - run: npm install
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - run: npm run build
+      - run: npm test
